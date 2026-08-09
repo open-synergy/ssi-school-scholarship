@@ -69,9 +69,9 @@ odoo.define("ssi_school_scholarship.school_scholarship_program_tour", function (
             // Scholarship Type (selecting it triggers the onchange that
             // fills the Deduction/Disbursement/Deferred Recognition tabs
             // in the background -- those tabs are reviewed later, in
-            // Flow 5, once they are actually open), School, Academic
+            // Flow 7, once they are actually open), School, Academic
             // Year. Funding Basis keeps its "Need Based" default. Code is
-            // left as "/" so Flow 7 (Generate Code) has an effect.
+            // left as "/" so Flow 8 (Generate Code) has an effect.
             {
                 content: "Fill in the Name",
                 trigger: ".o_field_widget[name='name']",
@@ -143,7 +143,50 @@ odoo.define("ssi_school_scholarship.school_scholarship_program_tour", function (
                 in_modal: false,
             },
 
-            // ── Flow 5 — Review the accounting fields defaulted from the
+            // ── Flow 5 — On the Scope tab, add one line. The program is
+            // rejected on save without at least one Scope line, so this
+            // step is required, not optional. Scope Basis, Benefit Type,
+            // Computation and Periodicity keep their defaults (Product /
+            // Fee Reduction / Percentage / Per Payment Term); only
+            // Product and Percentage need to be filled in, since
+            // Percentage defaults to 0 which the Percentage computation
+            // rejects.
+            {
+                content: "Open the Scope tab",
+                trigger: ".o_notebook .nav-link:contains(Scope)",
+            },
+            {
+                content: "Add a Scope line",
+                trigger:
+                    ".o_field_widget[name='scope_ids'] .o_field_x2many_list_row_add a",
+            },
+            {
+                content: "Select the Product",
+                trigger: ".o_selected_row .o_field_widget[name='product_id'] input",
+                run: "text TOUR Program Product",
+            },
+            {
+                content: "Pick the Product from the dropdown",
+                trigger:
+                    ".ui-autocomplete .ui-menu-item a:contains(TOUR Program Product)",
+                in_modal: false,
+            },
+            {
+                content: "Fill in the Percentage",
+                trigger: ".o_selected_row .o_field_widget[name='percentage'] input",
+                run: "text 40",
+            },
+            {
+                // Commit the last edited cell -- never `press Tab`
+                // (odoo-development-ui-test references/patterns.md §C).
+                // Click an already-committed cell on the same row to
+                // blur.
+                content: "Commit the Scope line",
+                trigger: ".o_selected_row .o_field_widget[name='product_id']",
+                run: "click",
+            },
+
+            // ── Flow 7 — Review the accounting fields defaulted from the
             // Scholarship Type on the Deduction tab. Opening the tab is
             // required before its fields can be asserted: they are
             // rendered inside a Bootstrap `.tab-pane` that Odoo keeps
@@ -175,7 +218,7 @@ odoo.define("ssi_school_scholarship.school_scholarship_program_tour", function (
                 },
             },
 
-            // ── Flow 7 — Click Generate Code in the header to
+            // ── Flow 8 — Click Generate Code in the header to
             // automatically assign a code from the configured
             // sequence.template, since the Code field is still "/".
             {
@@ -191,7 +234,7 @@ odoo.define("ssi_school_scholarship.school_scholarship_program_tour", function (
                 },
             },
 
-            // ── Flow 8 — Click Save.
+            // ── Flow 9 — Click Save.
             {
                 content: "Save the record",
                 trigger: ".o_form_button_save",

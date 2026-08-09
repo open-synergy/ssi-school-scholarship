@@ -8,3 +8,5 @@ from . import test_school_scholarship_funding_source
 from . import test_ui_school_scholarship_funding_source
 from . import test_school_scholarship_program
 from . import test_ui_school_scholarship_program
+from . import test_school_scholarship_program_scope
+from . import test_school_scholarship_criteria

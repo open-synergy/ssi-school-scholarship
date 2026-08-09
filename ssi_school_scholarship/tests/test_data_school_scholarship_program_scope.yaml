@@ -1,0 +1,1285 @@
+scenarios:
+  - name: "Scope - Create Percentage Product"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Scope Sale Journal 1"
+          code: "TSCJ01"
+          type: "sale"
+
+      - step: "Create the discount account used by the scholarship type"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Scope Discount Account 1"
+          code: "TSCA01"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type"
+        values:
+          name: "Test Scope Type 1"
+          code: "TSCT01"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Create the grade type used by the school"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type"
+        values:
+          name: "Test Scope Grade Type 1"
+          code: "TSCGT01"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school"
+        values:
+          name: "Test Scope School 1"
+          code: "TSCS01"
+          grade_type_id: "REC: grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year"
+        values:
+          name: "Test Scope Academic Year 1"
+          code: "TSCY01"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_account"
+        values:
+          name: "Test Scope Analytic 1"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source"
+        values:
+          name: "Test Scope Funding Source 1"
+          code: "TSCF01"
+          analytic_account_id: "REC: analytic_account.id"
+
+      - step: "Create the product covered by the scope line"
+        action: "create"
+        model: "product.product"
+        save_as: "product"
+        values:
+          name: "Test Scope Product 1"
+          type: "service"
+
+      - step: "Create the scholarship program with a percentage scope line"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program"
+        values:
+          name: "Test Scope Program 1"
+          code: "TSCP001"
+          type_id: "REC: type.id"
+          school_id: "REC: school.id"
+          academic_year_id: "REC: academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source.id"]]]
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Assert the scope line was created"
+        action: "assert"
+        target: "program"
+        asserts:
+          scope_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+  - name: "Scope - Edit Percentage"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Scope Sale Journal 2"
+          code: "TSCJ02"
+          type: "sale"
+
+      - step: "Create the discount account used by the scholarship type"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Scope Discount Account 2"
+          code: "TSCA02"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type"
+        values:
+          name: "Test Scope Type 2"
+          code: "TSCT02"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Create the grade type used by the school"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type"
+        values:
+          name: "Test Scope Grade Type 2"
+          code: "TSCGT02"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school"
+        values:
+          name: "Test Scope School 2"
+          code: "TSCS02"
+          grade_type_id: "REC: grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year"
+        values:
+          name: "Test Scope Academic Year 2"
+          code: "TSCY02"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_account"
+        values:
+          name: "Test Scope Analytic 2"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source"
+        values:
+          name: "Test Scope Funding Source 2"
+          code: "TSCF02"
+          analytic_account_id: "REC: analytic_account.id"
+
+      - step: "Create the product covered by the scope line"
+        action: "create"
+        model: "product.product"
+        save_as: "product"
+        values:
+          name: "Test Scope Product 2"
+          type: "service"
+
+      - step: "Create the scholarship program with a percentage scope line"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program"
+        values:
+          name: "Test Scope Program 2"
+          code: "TSCP002"
+          type_id: "REC: type.id"
+          school_id: "REC: school.id"
+          academic_year_id: "REC: academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source.id"]]]
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Get the scope line just created"
+        action: "search"
+        model: "school_scholarship_program_scope"
+        domain: [["program_id", "=", "REC: program.id"]]
+        save_as: "scope"
+        limit: 1
+
+      - step: "Update the scope line percentage"
+        action: "write"
+        target: "scope"
+        values:
+          percentage: 60.0
+
+      - step: "Assert the percentage was updated"
+        action: "assert"
+        target: "scope"
+        asserts:
+          percentage:
+            type: "value"
+            expected: 60.0
+
+  - name: "Scope - Unlink Then Add Another"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Scope Sale Journal 3"
+          code: "TSCJ03"
+          type: "sale"
+
+      - step: "Create the discount account used by the scholarship type"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Scope Discount Account 3"
+          code: "TSCA03"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type"
+        values:
+          name: "Test Scope Type 3"
+          code: "TSCT03"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Create the grade type used by the school"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type"
+        values:
+          name: "Test Scope Grade Type 3"
+          code: "TSCGT03"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school"
+        values:
+          name: "Test Scope School 3"
+          code: "TSCS03"
+          grade_type_id: "REC: grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year"
+        values:
+          name: "Test Scope Academic Year 3"
+          code: "TSCY03"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_account"
+        values:
+          name: "Test Scope Analytic 3"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source"
+        values:
+          name: "Test Scope Funding Source 3"
+          code: "TSCF03"
+          analytic_account_id: "REC: analytic_account.id"
+
+      - step: "Create the first product covered by the scope line"
+        action: "create"
+        model: "product.product"
+        save_as: "product_a"
+        values:
+          name: "Test Scope Product 3a"
+          type: "service"
+
+      - step: "Create the second product to replace the first with"
+        action: "create"
+        model: "product.product"
+        save_as: "product_b"
+        values:
+          name: "Test Scope Product 3b"
+          type: "service"
+
+      - step: "Create the scholarship program with one scope line"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program"
+        values:
+          name: "Test Scope Program 3"
+          code: "TSCP003"
+          type_id: "REC: type.id"
+          school_id: "REC: school.id"
+          academic_year_id: "REC: academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source.id"]]]
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product_a.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Get the original scope line"
+        action: "search"
+        model: "school_scholarship_program_scope"
+        domain: [["program_id", "=", "REC: program.id"]]
+        save_as: "old_scope"
+        limit: 1
+
+      - step: "Unlink the original line and add another in one write"
+        action: "write"
+        target: "program"
+        values:
+          scope_ids:
+            - - 2
+              - "REC: old_scope.id"
+              - 0
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product_b.id"
+                benefit_type: "cash"
+                computation: "full"
+
+      - step: "Assert the program still has exactly one scope line"
+        action: "assert"
+        target: "program"
+        asserts:
+          scope_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+  - name: "Scope - Fee Reduction Requires Per Payment Term"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Scope Sale Journal 4"
+          code: "TSCJ04"
+          type: "sale"
+
+      - step: "Create the discount account used by the scholarship type"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Scope Discount Account 4"
+          code: "TSCA04"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type"
+        values:
+          name: "Test Scope Type 4"
+          code: "TSCT04"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Create the grade type used by the school"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type"
+        values:
+          name: "Test Scope Grade Type 4"
+          code: "TSCGT04"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school"
+        values:
+          name: "Test Scope School 4"
+          code: "TSCS04"
+          grade_type_id: "REC: grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year"
+        values:
+          name: "Test Scope Academic Year 4"
+          code: "TSCY04"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_account"
+        values:
+          name: "Test Scope Analytic 4"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source"
+        values:
+          name: "Test Scope Funding Source 4"
+          code: "TSCF04"
+          analytic_account_id: "REC: analytic_account.id"
+
+      - step: "Create the baseline product"
+        action: "create"
+        model: "product.product"
+        save_as: "product"
+        values:
+          name: "Test Scope Product 4"
+          type: "service"
+
+      - step: "Create the product category for the offending line"
+        action: "create"
+        model: "product.category"
+        save_as: "product_category"
+        values:
+          name: "Test Scope Category 4"
+
+      - step: "Create the scholarship program with a valid baseline scope line"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program"
+        values:
+          name: "Test Scope Program 4"
+          code: "TSCP004"
+          type_id: "REC: type.id"
+          school_id: "REC: school.id"
+          academic_year_id: "REC: academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source.id"]]]
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Reject a Fee Reduction scope line with Monthly periodicity"
+        action: "create"
+        model: "school_scholarship_program_scope"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "Per Payment Term"
+        values:
+          program_id: "REC: program.id"
+          scope_basis: "product_category"
+          product_category_id: "REC: product_category.id"
+          benefit_type: "fee_reduction"
+          computation: "full"
+          periodicity: "monthly"
+
+  - name: "Scope - Product Basis Without Product"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Scope Sale Journal 5"
+          code: "TSCJ05"
+          type: "sale"
+
+      - step: "Create the discount account used by the scholarship type"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Scope Discount Account 5"
+          code: "TSCA05"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type"
+        values:
+          name: "Test Scope Type 5"
+          code: "TSCT05"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Create the grade type used by the school"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type"
+        values:
+          name: "Test Scope Grade Type 5"
+          code: "TSCGT05"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school"
+        values:
+          name: "Test Scope School 5"
+          code: "TSCS05"
+          grade_type_id: "REC: grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year"
+        values:
+          name: "Test Scope Academic Year 5"
+          code: "TSCY05"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_account"
+        values:
+          name: "Test Scope Analytic 5"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source"
+        values:
+          name: "Test Scope Funding Source 5"
+          code: "TSCF05"
+          analytic_account_id: "REC: analytic_account.id"
+
+      - step: "Create the baseline product"
+        action: "create"
+        model: "product.product"
+        save_as: "product"
+        values:
+          name: "Test Scope Product 5"
+          type: "service"
+
+      - step: "Create the scholarship program with a valid baseline scope line"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program"
+        values:
+          name: "Test Scope Program 5"
+          code: "TSCP005"
+          type_id: "REC: type.id"
+          school_id: "REC: school.id"
+          academic_year_id: "REC: academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source.id"]]]
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Reject a Product basis scope line without a Product"
+        action: "create"
+        model: "school_scholarship_program_scope"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "requires Product"
+        values:
+          program_id: "REC: program.id"
+          scope_basis: "product"
+          benefit_type: "cash"
+          computation: "full"
+
+  - name: "Scope - Product Category Basis Without Category"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Scope Sale Journal 6"
+          code: "TSCJ06"
+          type: "sale"
+
+      - step: "Create the discount account used by the scholarship type"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Scope Discount Account 6"
+          code: "TSCA06"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type"
+        values:
+          name: "Test Scope Type 6"
+          code: "TSCT06"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Create the grade type used by the school"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type"
+        values:
+          name: "Test Scope Grade Type 6"
+          code: "TSCGT06"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school"
+        values:
+          name: "Test Scope School 6"
+          code: "TSCS06"
+          grade_type_id: "REC: grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year"
+        values:
+          name: "Test Scope Academic Year 6"
+          code: "TSCY06"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_account"
+        values:
+          name: "Test Scope Analytic 6"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source"
+        values:
+          name: "Test Scope Funding Source 6"
+          code: "TSCF06"
+          analytic_account_id: "REC: analytic_account.id"
+
+      - step: "Create the baseline product"
+        action: "create"
+        model: "product.product"
+        save_as: "product"
+        values:
+          name: "Test Scope Product 6"
+          type: "service"
+
+      - step: "Create the scholarship program with a valid baseline scope line"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program"
+        values:
+          name: "Test Scope Program 6"
+          code: "TSCP006"
+          type_id: "REC: type.id"
+          school_id: "REC: school.id"
+          academic_year_id: "REC: academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source.id"]]]
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Reject a Product Category basis scope line without a category"
+        action: "create"
+        model: "school_scholarship_program_scope"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "requires Product Category"
+        values:
+          program_id: "REC: program.id"
+          scope_basis: "product_category"
+          benefit_type: "cash"
+          computation: "full"
+
+  - name: "Scope - Percentage Zero"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Scope Sale Journal 7"
+          code: "TSCJ07"
+          type: "sale"
+
+      - step: "Create the discount account used by the scholarship type"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Scope Discount Account 7"
+          code: "TSCA07"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type"
+        values:
+          name: "Test Scope Type 7"
+          code: "TSCT07"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Create the grade type used by the school"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type"
+        values:
+          name: "Test Scope Grade Type 7"
+          code: "TSCGT07"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school"
+        values:
+          name: "Test Scope School 7"
+          code: "TSCS07"
+          grade_type_id: "REC: grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year"
+        values:
+          name: "Test Scope Academic Year 7"
+          code: "TSCY07"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_account"
+        values:
+          name: "Test Scope Analytic 7"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source"
+        values:
+          name: "Test Scope Funding Source 7"
+          code: "TSCF07"
+          analytic_account_id: "REC: analytic_account.id"
+
+      - step: "Create the baseline product"
+        action: "create"
+        model: "product.product"
+        save_as: "product"
+        values:
+          name: "Test Scope Product 7"
+          type: "service"
+
+      - step: "Create a second product for the offending line"
+        action: "create"
+        model: "product.product"
+        save_as: "product_b"
+        values:
+          name: "Test Scope Product 7b"
+          type: "service"
+
+      - step: "Create the scholarship program with a valid baseline scope line"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program"
+        values:
+          name: "Test Scope Program 7"
+          code: "TSCP007"
+          type_id: "REC: type.id"
+          school_id: "REC: school.id"
+          academic_year_id: "REC: academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source.id"]]]
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Reject a Percentage scope line with Percentage at zero"
+        action: "create"
+        model: "school_scholarship_program_scope"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "Percentage must be above 0"
+        values:
+          program_id: "REC: program.id"
+          scope_basis: "product"
+          product_id: "REC: product_b.id"
+          computation: "percentage"
+          percentage: 0.0
+
+  - name: "Scope - Percentage Above 100"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Scope Sale Journal 8"
+          code: "TSCJ08"
+          type: "sale"
+
+      - step: "Create the discount account used by the scholarship type"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Scope Discount Account 8"
+          code: "TSCA08"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type"
+        values:
+          name: "Test Scope Type 8"
+          code: "TSCT08"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Create the grade type used by the school"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type"
+        values:
+          name: "Test Scope Grade Type 8"
+          code: "TSCGT08"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school"
+        values:
+          name: "Test Scope School 8"
+          code: "TSCS08"
+          grade_type_id: "REC: grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year"
+        values:
+          name: "Test Scope Academic Year 8"
+          code: "TSCY08"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_account"
+        values:
+          name: "Test Scope Analytic 8"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source"
+        values:
+          name: "Test Scope Funding Source 8"
+          code: "TSCF08"
+          analytic_account_id: "REC: analytic_account.id"
+
+      - step: "Create the baseline product"
+        action: "create"
+        model: "product.product"
+        save_as: "product"
+        values:
+          name: "Test Scope Product 8"
+          type: "service"
+
+      - step: "Create a second product for the offending line"
+        action: "create"
+        model: "product.product"
+        save_as: "product_b"
+        values:
+          name: "Test Scope Product 8b"
+          type: "service"
+
+      - step: "Create the scholarship program with a valid baseline scope line"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program"
+        values:
+          name: "Test Scope Program 8"
+          code: "TSCP008"
+          type_id: "REC: type.id"
+          school_id: "REC: school.id"
+          academic_year_id: "REC: academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source.id"]]]
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Reject a Percentage scope line with Percentage at 120"
+        action: "create"
+        model: "school_scholarship_program_scope"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "Percentage must be above 0"
+        values:
+          program_id: "REC: program.id"
+          scope_basis: "product"
+          product_id: "REC: product_b.id"
+          computation: "percentage"
+          percentage: 120.0
+
+  - name: "Scope - Duplicate Product Target"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Scope Sale Journal 9"
+          code: "TSCJ09"
+          type: "sale"
+
+      - step: "Create the discount account used by the scholarship type"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Scope Discount Account 9"
+          code: "TSCA09"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type"
+        values:
+          name: "Test Scope Type 9"
+          code: "TSCT09"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Create the grade type used by the school"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type"
+        values:
+          name: "Test Scope Grade Type 9"
+          code: "TSCGT09"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school"
+        values:
+          name: "Test Scope School 9"
+          code: "TSCS09"
+          grade_type_id: "REC: grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year"
+        values:
+          name: "Test Scope Academic Year 9"
+          code: "TSCY09"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_account"
+        values:
+          name: "Test Scope Analytic 9"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source"
+        values:
+          name: "Test Scope Funding Source 9"
+          code: "TSCF09"
+          analytic_account_id: "REC: analytic_account.id"
+
+      - step: "Create the shared product"
+        action: "create"
+        model: "product.product"
+        save_as: "product"
+        values:
+          name: "Test Scope Product 9"
+          type: "service"
+
+      - step: "Create the scholarship program with a scope line on the product"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program"
+        values:
+          name: "Test Scope Program 9"
+          code: "TSCP009"
+          type_id: "REC: type.id"
+          school_id: "REC: school.id"
+          academic_year_id: "REC: academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source.id"]]]
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Reject a second scope line on the same product"
+        action: "create"
+        model: "school_scholarship_program_scope"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "already covers the same target"
+        values:
+          program_id: "REC: program.id"
+          scope_basis: "product"
+          product_id: "REC: product.id"
+          benefit_type: "cash"
+          computation: "full"
+
+  - name: "Scope - Duplicate Category Target"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Scope Sale Journal 10"
+          code: "TSCJ10"
+          type: "sale"
+
+      - step: "Create the discount account used by the scholarship type"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Scope Discount Account 10"
+          code: "TSCA10"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type"
+        values:
+          name: "Test Scope Type 10"
+          code: "TSCT10"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Create the grade type used by the school"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type"
+        values:
+          name: "Test Scope Grade Type 10"
+          code: "TSCGT10"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school"
+        values:
+          name: "Test Scope School 10"
+          code: "TSCS10"
+          grade_type_id: "REC: grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year"
+        values:
+          name: "Test Scope Academic Year 10"
+          code: "TSCY10"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_account"
+        values:
+          name: "Test Scope Analytic 10"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source"
+        values:
+          name: "Test Scope Funding Source 10"
+          code: "TSCF10"
+          analytic_account_id: "REC: analytic_account.id"
+
+      - step: "Create the baseline product"
+        action: "create"
+        model: "product.product"
+        save_as: "product"
+        values:
+          name: "Test Scope Product 10"
+          type: "service"
+
+      - step: "Create the shared product category"
+        action: "create"
+        model: "product.category"
+        save_as: "product_category"
+        values:
+          name: "Test Scope Category 10"
+
+      - step: "Create the scholarship program with a category scope line"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program"
+        values:
+          name: "Test Scope Program 10"
+          code: "TSCP010"
+          type_id: "REC: type.id"
+          school_id: "REC: school.id"
+          academic_year_id: "REC: academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source.id"]]]
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+            - - 0
+              - 0
+              - scope_basis: "product_category"
+                product_category_id: "REC: product_category.id"
+                benefit_type: "cash"
+                computation: "full"
+
+      - step: "Reject a second scope line on the same category"
+        action: "create"
+        model: "school_scholarship_program_scope"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "already covers the same target"
+        values:
+          program_id: "REC: program.id"
+          scope_basis: "product_category"
+          product_category_id: "REC: product_category.id"
+          benefit_type: "cash"
+          computation: "full"

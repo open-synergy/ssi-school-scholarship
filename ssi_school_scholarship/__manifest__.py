@@ -29,6 +29,8 @@
         "security/ir_model_access/school_scholarship_type.xml",
         "security/ir_model_access/school_scholarship_funding_source.xml",
         "security/ir_model_access/school_scholarship_program.xml",
+        "security/ir_model_access/school_scholarship_program_scope.xml",
+        "security/ir_model_access/school_scholarship_criteria.xml",
         "menu.xml",
         "views/school_scholarship_type.xml",
         "views/school_scholarship_funding_source.xml",
