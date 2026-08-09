@@ -308,18 +308,27 @@ class SchoolScholarshipDeduction(models.Model):
         typed on the header and racing the newly-added row's own
         onchange in the web client.
 
-        Written as three independent guard clauses -- rather than one
-        compound ``and`` condition -- so each only needs its own single
-        variable exercised true/false for full branch coverage, instead
-        of every combination of the compound expression's operands.
+        Written as guard clauses -- rather than one compound ``and``
+        condition -- so each only needs its own single variable
+        exercised true/false for full branch coverage, instead of
+        every combination of the compound expression's operands. The
+        final assignment is unconditional rather than gated on
+        ``invoice_account_id`` being truthy: by the time it runs, the
+        guards above already guarantee ``receivable_account_id`` is
+        empty, so assigning it another falsy value (the transient
+        state right after a bare row-add, before its own Customer
+        Invoice is picked) is a harmless no-op, not a regression --
+        that transient state cannot be reproduced through
+        ``odoo.tests.common.Form`` at all (its ``new()`` context only
+        evaluates dependent onchanges once every value in the
+        ``with`` block is set, never on the bare row in between), only
+        through the real web client's own sequential RPCs.
         """
         if self.receivable_account_id:
             return
         if not self.allocation_ids:
             return
-        account_id = self.allocation_ids[0].invoice_account_id
-        if account_id:
-            self.receivable_account_id = account_id
+        self.receivable_account_id = self.allocation_ids[0].invoice_account_id
 
     @ssi_decorator.pre_open_action()
     def _05_check_reconcilable(self):
