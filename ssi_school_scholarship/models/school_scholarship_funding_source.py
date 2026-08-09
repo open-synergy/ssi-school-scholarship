@@ -84,9 +84,14 @@ class SchoolScholarshipFundingSource(models.Model):
             ``school_scholarship_funding_source`` record already uses
             the same ``analytic_account_id``.
         """
+        # No falsy-value guard: ``analytic_account_id`` is ``required``,
+        # and its DB column carries a NOT NULL constraint enforced by
+        # the actual INSERT/UPDATE, which always runs before this
+        # ``@api.constrains`` method (see ``BaseModel.create``/
+        # ``write``). A record can therefore never reach this method
+        # with an empty ``analytic_account_id``, so such a guard would
+        # be dead code.
         for record in self:
-            if not record.analytic_account_id:
-                continue
             duplicate_count = self.search_count(
                 [
                     ("id", "!=", record.id),
