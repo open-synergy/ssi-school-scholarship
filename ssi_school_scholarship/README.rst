@@ -35,6 +35,7 @@ Scholarship Award
 * `Create Scholarship Award <docs/school_scholarship_award/01-create.html>`_
 * `Confirm Scholarship Award <docs/school_scholarship_award/04-confirm.html>`_
 * `Approve Scholarship Award <docs/school_scholarship_award/05-approve.html>`_
+* `Generate Scholarship Award Schedule <docs/school_scholarship_award/06-generate-schedule.html>`_
 * `Cancel Scholarship Award <docs/school_scholarship_award/10-cancel.html>`_
 
 

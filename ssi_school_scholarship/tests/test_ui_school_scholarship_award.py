@@ -246,6 +246,87 @@ class TestUiSchoolScholarshipAward(HttpSavepointCase):
         )
         cls.tour_award_approve.action_confirm()
 
+        # Pre-Condition for 06-generate-schedule -- a Payment Term
+        # already matching the tour Benefit line's Product, so opening
+        # the award auto-generates one Schedule line for it.
+        cls.tour_payment_term_scheduled = cls.env[
+            "school_enrollment_payment_term"
+        ].create(
+            {
+                "enrollment_id": cls.tour_enrollment.id,
+                "name": "TOUR AWARD SCHEDULE TERM A",
+                "date_invoice": "2026-08-01",
+                "detail_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "product_id": cls.tour_product.id,
+                            "price_unit": 1000000.0,
+                        },
+                    )
+                ],
+            }
+        )
+        cls.tour_award_generate_schedule = cls.env["school_scholarship_award"].create(
+            {
+                "name": "TOUR-AWARD-SCHEDULE-001",
+                "program_id": cls.tour_program.id,
+                "student_id": cls.tour_student.id,
+                "enrollment_id": cls.tour_enrollment.id,
+                "date_start": "2026-07-01",
+                "date_end": "2026-12-31",
+                "user_id": admin.id,
+                "benefit_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "name": "TOUR Award Schedule Benefit",
+                            "product_id": cls.tour_product.id,
+                            "price_unit": 1000000.0,
+                            "percentage": 100.0,
+                        },
+                    )
+                ],
+                "funding_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "funding_source_id": cls.tour_funding_source.id,
+                            "percentage": 100.0,
+                        },
+                    )
+                ],
+            }
+        )
+        cls.tour_award_generate_schedule.action_confirm()
+        cls.tour_award_generate_schedule.action_approve_approval()
+
+        # Added only AFTER the award above already opened (and thus
+        # already auto-generated its Schedule for Term A), so this
+        # second Payment Term is not covered by any Schedule line yet
+        # -- the tour's click on Generate Schedule is what creates one
+        # for it.
+        cls.tour_payment_term_new = cls.env["school_enrollment_payment_term"].create(
+            {
+                "enrollment_id": cls.tour_enrollment.id,
+                "name": "TOUR AWARD SCHEDULE TERM B",
+                "date_invoice": "2026-09-01",
+                "detail_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "product_id": cls.tour_product.id,
+                            "price_unit": 500000.0,
+                        },
+                    )
+                ],
+            }
+        )
+
         # Pre-Condition for 10-cancel -- a Draft award, plus the
         # Cancellation Reason the wizard requires.
         cls.tour_award_cancel = cls.env["school_scholarship_award"].create(
@@ -312,6 +393,18 @@ class TestUiSchoolScholarshipAward(HttpSavepointCase):
         self.start_tour(
             "/web",
             "ssi_school_scholarship_school_scholarship_award_approve",
+            login="admin",
+        )
+
+    def test_generate_schedule(self):
+        """Run the generate schedule tour for
+        ``school_scholarship_award``.
+
+        IK: docs/school_scholarship_award/06-generate-schedule.md
+        """
+        self.start_tour(
+            "/web",
+            "ssi_school_scholarship_school_scholarship_award_generate_schedule",
             login="admin",
         )
 

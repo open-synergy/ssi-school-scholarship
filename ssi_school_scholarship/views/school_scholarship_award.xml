@@ -70,6 +70,15 @@
     <field name="inherit_id" ref="ssi_transaction_mixin.mixin_transaction_view_form" />
     <field name="arch" type="xml">
         <data>
+            <xpath expr="//header" position="inside">
+                <field name="generate_schedule_ok" invisible="1" />
+                <button
+                        name="action_generate_schedule"
+                        type="object"
+                        string="Generate Schedule"
+                        attrs="{'invisible': [('generate_schedule_ok', '=', False)]}"
+                    />
+            </xpath>
             <xpath expr="//field[@name='user_id']" position="after">
                 <field name="program_id" />
                 <field name="type_id" />
@@ -104,6 +113,8 @@
                         widget="monetary"
                         options="{'currency_field': 'company_currency_id'}"
                     />
+                <field name="schedule_count" />
+                <field name="realized_count" />
             </xpath>
             <xpath expr="//page[1]" position="before">
                 <page name="benefit" string="Benefit">
@@ -159,6 +170,24 @@
                             <field name="percentage" />
                             <field name="amount_committed" />
                             <field name="amount_realized" />
+                            <field name="currency_id" invisible="1" />
+                        </tree>
+                    </field>
+                </page>
+                <page name="schedule" string="Schedule">
+                    <field name="schedule_ids" colspan="4" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="benefit_id" />
+                            <field name="payment_term_id" />
+                            <field name="date" />
+                            <field name="base_amount" />
+                            <field name="amount_planned" />
+                            <field name="amount_planned_manual" invisible="1" />
+                            <field name="amount_realized" />
+                            <field name="state" />
+                            <field name="payment_term_state" />
+                            <field name="customer_invoice_id" />
+                            <field name="note" />
                             <field name="currency_id" invisible="1" />
                         </tree>
                     </field>
