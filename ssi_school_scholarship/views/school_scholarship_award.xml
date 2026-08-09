@@ -138,9 +138,10 @@
                                  onchange_name() when Product is picked; it
                                  is not user-facing here, but the field
                                  still must be present in the view so the
-                                 web client tracks the onchange's result --
-                                 omitting it drops the value client-side and
-                                 the required-field check fails on save. -->
+                                 web client tracks the onchange's result.
+                                 Omitting it drops the value client-side,
+                                 and the required-field check fails on
+                                 save. -->
                             <field name="name" invisible="1" />
                         </tree>
                     </field>
