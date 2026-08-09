@@ -14,11 +14,22 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__name
+msgid "# Document"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__academic_year_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__academic_year_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__academic_year_id
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_funding_source_view_search
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_program_view_search
 msgid "Academic Year"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__academic_year_id
+msgid "Academic year of the selected program."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -34,7 +45,23 @@ msgid "Academic year this scholarship program applies to."
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__account_id
+msgid "Account"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_benefit__account_id
+msgid ""
+"Accounting account this line posts to when a later document realizes it: the"
+" award's Employee Benefit Account when the award is flagged as an employee "
+"benefit, the award's Expense Account when Benefit Type is Cash, otherwise "
+"the award's Discount Account."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__message_needaction
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__message_needaction
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__message_needaction
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__message_needaction
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__message_needaction
 msgid "Action Needed"
@@ -44,35 +71,64 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__active
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__active
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__active
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award__compliance_state__active
 msgid "Active"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__active_approval_ids
+msgid "Active Approvals"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__active_approver_partner_ids
+msgid "Active Partners"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__active_approver_user_ids
+msgid "Active Users"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__activity_ids
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__activity_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__activity_ids
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__activity_ids
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__activity_ids
 msgid "Activities"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__activity_exception_decoration
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__activity_exception_decoration
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__activity_exception_decoration
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__activity_exception_decoration
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__activity_exception_decoration
 msgid "Activity Exception Decoration"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__activity_state
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__activity_state
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__activity_state
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__activity_state
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__activity_state
 msgid "Activity State"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__activity_type_icon
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__activity_type_icon
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__activity_type_icon
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__activity_type_icon
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__activity_type_icon
 msgid "Activity Type Icon"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_letter__letter_type__agreement
+msgid "Agreement"
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -81,8 +137,74 @@ msgid "Allow Asymmetric Recognition"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_funding__allowed_funding_source_ids
+msgid "Allowed Funding Sources"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__allowed_policy_template_ids
+msgid "Allowed Policy Templates"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__allowed_pricelist_ids
+msgid "Allowed Pricelists"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__allowed_uom_ids
+msgid "Allowed UoMs"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__allowed_usage_ids
+msgid "Allowed Usages"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__amount_available
+msgid "Amount Available"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__amount_awarded
+msgid "Amount Awarded"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__amount_remaining
+msgid ""
+"Amount Awarded not yet realized (Amount Awarded minus Amount Realized)."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_funding__amount_committed
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__amount_committed
+msgid "Amount Committed"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__amount_realized
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_funding__amount_realized
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__amount_realized
+msgid "Amount Realized"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__amount_remaining
+msgid "Amount Remaining"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__analytic_account_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_funding__analytic_account_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__analytic_account_id
 msgid "Analytic Account"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_funding__analytic_account_id
+msgid "Analytic account of the selected Funding Source."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -96,10 +218,45 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__approval_template_id
+msgid "Approval Configuration"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__approval_template_id
+msgid "Approval Template"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__approval_ids
+msgid "Approvals"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__approve_ok
+msgid ""
+"Approve policy\n"
+"\n"
+"* If active user can see and execute 'Approve' button"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__approved
+msgid "Approved"
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_type__deferred_expense_account_id
 msgid ""
 "Asset account used to defer recognition of the cash scholarship expense "
 "across periods, before it is recognised to the Expense Account."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__deferred_expense_account_id
+msgid ""
+"Asset account used to defer recognition of the cash scholarship expense "
+"across periods. Defaulted from the selected Program."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -117,6 +274,13 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__deferred_discount_account_id
+msgid ""
+"Asset account used to defer recognition of the scholarship deduction across "
+"periods. Defaulted from the selected Program."
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__deferred_discount_account_id
 msgid ""
 "Asset account used to defer recognition of the scholarship deduction across "
@@ -124,10 +288,87 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__message_attachment_count
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__message_attachment_count
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__message_attachment_count
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__message_attachment_count
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__message_attachment_count
 msgid "Attachment Count"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__award_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_funding__award_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__award_id
+msgid "Award"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:res.groups,name:ssi_school_scholarship.school_scholarship_award_all_group
+msgid "Award All"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:res.groups,name:ssi_school_scholarship.school_scholarship_award_company_group
+msgid "Award Company"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:res.groups,name:ssi_school_scholarship.school_scholarship_award_company_child_group
+msgid "Award Company and All Child Companies"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__award_funding_ids
+msgid "Award Fundings"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_letter__letter_type__award_letter
+msgid "Award Letter"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:res.groups,name:ssi_school_scholarship.school_scholarship_award_user_group
+msgid "Award User"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:res.groups,name:ssi_school_scholarship.school_scholarship_award_validator_group
+msgid "Award Validator"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:res.groups,name:ssi_school_scholarship.school_scholarship_award_viewer_group
+msgid "Award Viewer"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_funding_source__award_funding_ids
+msgid "Award funding lines drawing from this funding source."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__renewal_of_award_id
+msgid ""
+"Award this award is a renewal of, if any. The renewal mechanism itself "
+"(creating this link through a dedicated action) is a later, Phase 3 item; "
+"here it is only recorded."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__award_ids
+msgid "Awards"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__award_ids
+msgid "Awards granted under this program."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__renewal_award_ids
+msgid "Awards that renew this award."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -138,11 +379,103 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_form
+msgid "Benefit"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__benefit_type
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program_scope__benefit_type
 msgid "Benefit Type"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__benefit_ids
+msgid ""
+"Benefit lines granted by this award. At least one line is required before "
+"this award can be confirmed."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__benefit_ids
+msgid "Benefits"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__approve_ok
+msgid "Can Approve"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__cancel_ok
+msgid "Can Cancel"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__confirm_ok
+msgid "Can Confirm"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__create_deduction_ok
+msgid "Can Create Deduction"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__done_ok
+msgid "Can Finished"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__generate_schedule_ok
+msgid "Can Generate Schedule"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__manual_number_ok
+msgid "Can Input Manual Document Number"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__reject_ok
+msgid "Can Reject"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__restart_ok
+msgid "Can Restart"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__restart_approval_ok
+msgid "Can Restart Approval"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__revoke_ok
+msgid "Can Revoke"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__open_ok
+msgid "Can Start"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__cancel_reason_id
+msgid "Cancel Reason"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__cancel_ok
+msgid ""
+"Cancel policy\n"
+"\n"
+"* If active user can see and execute 'Cancel' button"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_benefit__benefit_type__cash
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_program_scope__benefit_type__cash
 msgid "Cash"
 msgstr ""
@@ -158,6 +491,7 @@ msgid "Ceiling"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_benefit__max_amount_per_period
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program_scope__max_amount_per_period
 msgid ""
 "Ceiling this line may cover in a single period. Zero means there is no "
@@ -194,8 +528,28 @@ msgid "Code"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__company_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__company_id
 msgid "Company"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__company_currency_id
+msgid "Company Currency"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__company_partner_id
+msgid "Company Partner"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__company_id
+msgid ""
+"Company that own the document\n"
+"\n"
+"* Automatically filled with user's company.\n"
+"  Default company can be changed"
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -204,6 +558,23 @@ msgid "Company that owns this funding source."
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award__compliance_state__completed
+msgid "Completed"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_form
+msgid "Compliance & Renewal"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__compliance_state
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_search
+msgid "Compliance State"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__computation
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program_scope__computation
 msgid "Computation"
 msgstr ""
@@ -211,6 +582,21 @@ msgstr ""
 #. module: ssi_school_scholarship
 #: model:ir.ui.menu,name:ssi_school_scholarship.menu_school_scholarship_configuration
 msgid "Configuration"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__confirm_ok
+msgid ""
+"Confirm policy\n"
+"\n"
+"* If active user can see and execute 'Confirm' button"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__discount_account_id
+msgid ""
+"Contra-revenue account the scholarship deduction is booked to. Defaulted "
+"from the selected Program."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -228,8 +614,12 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__create_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__create_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_funding__create_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_criteria__create_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__create_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__create_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__create_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program_scope__create_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__create_uid
@@ -237,8 +627,12 @@ msgid "Created by"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__create_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__create_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_funding__create_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_criteria__create_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__create_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__create_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__create_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program_scope__create_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__create_date
@@ -253,9 +647,18 @@ msgid "Criteria"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__currency_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_funding__currency_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__currency_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program_scope__currency_id
 msgid "Currency"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_funding__currency_id
+msgid ""
+"Currency the Amount Committed and Amount Realized fields are expressed in, "
+"following the award's Company Currency."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -272,18 +675,42 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__date
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__date
+msgid "Date"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__date_signed
+msgid "Date Signed"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_letter__date
+msgid "Date the letter was issued."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_letter__date_signed
+msgid "Date the letter was signed, if already signed."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_program_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_type_view_form
 msgid "Deduction"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_program_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_type_view_form
 msgid "Deduction Configuration"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__deduction_journal_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__deduction_journal_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__deduction_journal_id
 msgid "Deduction Journal"
@@ -295,30 +722,35 @@ msgid "Deduction Product"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__deferred_discount_account_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__deferred_discount_account_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__deferred_discount_account_id
 msgid "Deferred Discount Account"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__deferred_expense_account_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__deferred_expense_account_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__deferred_expense_account_id
 msgid "Deferred Expense Account"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_program_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_type_view_form
 msgid "Deferred Recognition"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_program_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_type_view_form
 msgid "Deferred Recognition Configuration"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__name
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__description
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_program_view_form
 msgid "Description"
@@ -330,32 +762,40 @@ msgid "Description of this scholarship program."
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_program_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_type_view_form
 msgid "Disbursement"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_program_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_type_view_form
 msgid "Disbursement Configuration"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__disbursement_journal_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__disbursement_journal_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__disbursement_journal_id
 msgid "Disbursement Journal"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__discount_account_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__discount_account_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__discount_account_id
 msgid "Discount Account"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_funding__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_criteria__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program_scope__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__display_name
@@ -382,6 +822,11 @@ msgid "Display order of this criterion within the program."
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_funding__sequence
+msgid "Display order of this funding line within the award."
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program_scope__sequence
 msgid "Display order of this scope line within the program."
 msgstr ""
@@ -390,6 +835,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_criteria__criteria_domain
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_criteria__evaluation_method__domain
 msgid "Domain"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__done_ok
+msgid ""
+"Done policy\n"
+"\n"
+"* If active user can see and execute 'Done' button"
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -405,9 +858,18 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__employee_benefit_account_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__employee_benefit_account_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__employee_benefit_account_id
 msgid "Employee Benefit Account"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__employee_benefit_account_id
+msgid ""
+"Employee benefit expense account used instead of the Discount Account when "
+"this award is flagged as an employee benefit. Defaulted from the selected "
+"Program."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -426,11 +888,29 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__date_end
+msgid "End Date"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__enrollment_id
+msgid "Enrollment"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__enrollment_id
+msgid ""
+"Enrollment this award is billed against. Must belong to the selected "
+"Student."
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_criteria__evaluation_method
 msgid "Evaluation Method"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__expense_account_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__expense_account_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__expense_account_id
 msgid "Expense Account"
@@ -439,6 +919,13 @@ msgstr ""
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_type__expense_account_id
 msgid "Expense account the cash scholarship disbursement is booked to."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__expense_account_id
+msgid ""
+"Expense account the cash scholarship disbursement is booked to. Defaulted "
+"from the selected Program."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -457,6 +944,7 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_benefit__benefit_type__fee_reduction
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_program_scope__benefit_type__fee_reduction
 msgid "Fee Reduction"
 msgstr ""
@@ -470,47 +958,74 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__date_start
+msgid "First period this award applies to."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__amount_fixed
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program_scope__amount_fixed
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_benefit__computation__fixed
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_program_scope__computation__fixed
 msgid "Fixed Amount"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_benefit__amount_fixed
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program_scope__amount_fixed
 msgid "Fixed amount covered by this line when Computation is Fixed Amount."
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__message_follower_ids
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__message_follower_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__message_follower_ids
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__message_follower_ids
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__message_follower_ids
 msgid "Followers"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__message_channel_ids
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__message_channel_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__message_channel_ids
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__message_channel_ids
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__message_channel_ids
 msgid "Followers (Channels)"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__message_partner_ids
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__message_partner_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__message_partner_ids
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__message_partner_ids
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__message_partner_ids
 msgid "Followers (Partners)"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__activity_type_icon
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_funding_source__activity_type_icon
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_letter__activity_type_icon
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__activity_type_icon
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_type__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_letter__note
+msgid "Free-form note about this letter."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_benefit__computation__full
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_program_scope__computation__full
 msgid "Full Coverage"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_form
+msgid "Funding"
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -520,13 +1035,54 @@ msgid "Funding Basis"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_funding__funding_source_id
+msgid "Funding Source"
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__funding_source_ids
 msgid "Funding Sources"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__funding_ids
+msgid ""
+"Funding lines this award draws from. Their Percentage must add up to exactly"
+" 100%, and no Funding Source may appear more than once."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_funding__funding_source_id
+msgid ""
+"Funding source this line draws from. Restricted to the funding sources "
+"allowed by the award's Program."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_funding__allowed_funding_source_ids
+msgid ""
+"Funding sources allowed by the award's Program, used to restrict the "
+"selectable Funding Source on this line."
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__funding_source_ids
 msgid "Funding sources an award granted under this program may draw from."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__funding_ids
+msgid "Fundings"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__grade_id
+msgid "Grade"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__grade_id
+msgid "Grade of the selected enrollment."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -541,10 +1097,23 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_search
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_funding_source_view_search
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_program_view_search
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_type_view_search
 msgid "Group By"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__renewal_sequence
+msgid ""
+"How many times this award has been renewed, walking up the Renewal Of chain."
+" Zero for an award that is not itself a renewal."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_benefit__periodicity
+msgid "How often this line's benefit recurs."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -556,6 +1125,7 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_benefit__computation
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program_scope__computation
 msgid ""
 "How the benefit amount is computed: a percentage of the billing component, a"
@@ -575,8 +1145,12 @@ msgid "Hybrid"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_funding__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_criteria__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program_scope__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__id
@@ -584,22 +1158,30 @@ msgid "ID"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__activity_exception_icon
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__activity_exception_icon
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__activity_exception_icon
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__activity_exception_icon
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__activity_exception_icon
 msgid "Icon"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__activity_exception_icon
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_funding_source__activity_exception_icon
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_letter__activity_exception_icon
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__activity_exception_icon
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_type__activity_exception_icon
 msgid "Icon to indicate an exception activity."
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__message_needaction
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__message_unread
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_funding_source__message_needaction
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_funding_source__message_unread
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_letter__message_needaction
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_letter__message_unread
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__message_needaction
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__message_unread
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_type__message_needaction
@@ -608,13 +1190,16 @@ msgid "If checked, new messages require your attention."
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__message_has_error
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_funding_source__message_has_error
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_letter__message_has_error
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__message_has_error
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_type__message_has_error
 msgid "If checked, some messages have a delivery error."
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__is_employee_benefit
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__is_employee_benefit
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__is_employee_benefit
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_type_view_search
@@ -622,7 +1207,9 @@ msgid "Is Employee Benefit"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__message_is_follower
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__message_is_follower
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__message_is_follower
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__message_is_follower
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__message_is_follower
 msgid "Is Follower"
@@ -646,6 +1233,14 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__disbursement_journal_id
+msgid ""
+"Journal used to post the cash disbursement entry when the scholarship is "
+"paid out to the student instead of deducted from the invoice. Defaulted from"
+" the selected Program."
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__disbursement_journal_id
 msgid ""
 "Journal used to post the cash disbursement entry when the scholarship is "
@@ -661,11 +1256,25 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__recognition_journal_id
+msgid ""
+"Journal used to post the periodic recognition entry that releases the "
+"deferred discount or deferred expense. Defaulted from the selected Program."
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__recognition_journal_id
 msgid ""
 "Journal used to post the periodic recognition entry that releases the "
 "deferred discount or deferred expense. Defaulted from the selected "
 "Scholarship Type."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__deduction_journal_id
+msgid ""
+"Journal used to post the scholarship deduction (discount) entry on the "
+"student invoice. Defaulted from the selected Program."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -684,8 +1293,17 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_letter__letter_type
+msgid "Kind of letter this record represents."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_funding____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_criteria____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program_scope____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type____last_update
@@ -693,8 +1311,12 @@ msgid "Last Modified on"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__write_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__write_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_funding__write_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_criteria__write_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__write_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__write_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__write_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program_scope__write_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__write_uid
@@ -702,8 +1324,12 @@ msgid "Last Updated by"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__write_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__write_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_funding__write_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_criteria__write_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__write_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__write_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__write_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program_scope__write_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__write_date
@@ -711,7 +1337,34 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__date_end
+msgid ""
+"Last period this award applies to. Must not be earlier than Start Date."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__letter_type
+msgid "Letter Type"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__letter_ids
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_form
+msgid "Letters"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__letter_ids
+msgid ""
+"Letters related to this award (award letter, agreement, revocation, "
+"renewal). The physical file of each letter is attached on its chatter, not "
+"stored as a field."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__message_main_attachment_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__message_main_attachment_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__message_main_attachment_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__message_main_attachment_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__message_main_attachment_id
 msgid "Main Attachment"
@@ -720,6 +1373,14 @@ msgstr ""
 #. module: ssi_school_scholarship
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_criteria__evaluation_method__manual
 msgid "Manual"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__manual_number_ok
+msgid ""
+"Manual number assignment policy\n"
+"\n"
+"* If active user can edit document number"
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -749,6 +1410,7 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__max_amount_per_period
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program_scope__max_amount_per_period
 msgid "Max Amount per Period"
 msgstr ""
@@ -785,26 +1447,33 @@ msgid "Merit Based"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__message_has_error
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__message_has_error
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__message_has_error
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__message_has_error
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__message_has_error
 msgid "Message Delivery error"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__message_ids
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__message_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__message_ids
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__message_ids
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__message_ids
 msgid "Messages"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_benefit__periodicity__monthly
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_program_scope__periodicity__monthly
 msgid "Monthly"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__my_activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__my_activity_date_deadline
 msgid "My Activity Deadline"
@@ -818,40 +1487,67 @@ msgid "Name"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_letter__signed_by
+msgid "Name of the person who signed the letter."
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_program__funding_basis__need
 msgid "Need Based"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__need_validation
+msgid "Need Validation"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__activity_date_deadline
 msgid "Next Activity Deadline"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__activity_summary
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__activity_summary
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__activity_summary
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__activity_summary
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__activity_summary
 msgid "Next Activity Summary"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__activity_type_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__activity_type_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__activity_type_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__activity_type_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__activity_type_id
 msgid "Next Activity Type"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__next_approval_ids
+msgid "Next Approvals"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__note
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__note
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__note
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__note
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__note
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__note
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_letter_view_form
 msgid "Note"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__message_needaction_counter
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__message_needaction_counter
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__message_needaction_counter
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__message_needaction_counter
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__message_needaction_counter
 msgid "Number of Actions"
@@ -860,48 +1556,76 @@ msgstr ""
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__quota_used
 msgid ""
-"Number of awards already granted under this program. Always zero for now: "
-"the award model this is derived from does not exist yet and is wired up in a"
-" later item."
+"Number of awards already granted under this program, counting awards whose "
+"state is Open or Done."
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__message_has_error_counter
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__message_has_error_counter
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__message_has_error_counter
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__message_has_error_counter
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__message_has_error_counter
 msgid "Number of errors"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__message_needaction_counter
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_funding_source__message_needaction_counter
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_letter__message_needaction_counter
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__message_needaction_counter
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_type__message_needaction_counter
 msgid "Number of messages which requires an action"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__message_has_error_counter
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_funding_source__message_has_error_counter
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_letter__message_has_error_counter
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__message_has_error_counter
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_type__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__message_unread_counter
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_funding_source__message_unread_counter
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_letter__message_unread_counter
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__message_unread_counter
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_type__message_unread_counter
 msgid "Number of unread messages"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_benefit__periodicity__one_time
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_program_scope__periodicity__one_time
 msgid "One Time"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__compliance_state
+msgid ""
+"Ongoing compliance status of this award. Evaluation of this status is a "
+"later, Phase 3 item; here it is only recorded."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__partner_id
+msgid "Partner"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__payable_account_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__payable_account_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__payable_account_id
 msgid "Payable Account"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__payable_account_id
+msgid ""
+"Payable account used to record the school's obligation to the student before"
+" the cash scholarship is disbursed. Defaulted from the selected Program."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -921,14 +1645,26 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_benefit__periodicity__per_payment_term
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_program_scope__periodicity__per_payment_term
 msgid "Per Payment Term"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__percentage
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_funding__percentage
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program_scope__percentage
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_benefit__computation__percentage
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_program_scope__computation__percentage
 msgid "Percentage"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_funding__percentage
+msgid ""
+"Percentage of the award's Amount Awarded drawn from this Funding Source. The"
+" Percentage of every funding line of the same award must add up to exactly "
+"100%."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -939,20 +1675,101 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_benefit__percentage
+msgid ""
+"Percentage of the billing component covered by this line. Only relevant when"
+" Computation is Percentage."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__periodicity
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program_scope__periodicity
 msgid "Periodicity"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__policy_template_id
+msgid "Policy Template"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__create_deduction_ok
+msgid ""
+"Policy that determines whether a deduction document may be created from this"
+" award. The deduction document itself is out of this item's scope; this "
+"policy field is wired up in advance."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__generate_schedule_ok
+msgid ""
+"Policy that determines whether the per-period deduction schedule may be "
+"generated for this award. The schedule generator itself is a later item; "
+"this policy field is wired up in advance."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__revoke_ok
+msgid ""
+"Policy that determines whether this award may be revoked. Revocation itself "
+"is a later, Phase 3 item; this policy field is wired up in advance."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_funding__amount_committed
+msgid ""
+"Portion of the award's Amount Awarded committed to this Funding Source "
+"(Percentage applied to the award's Amount Awarded)."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_funding__amount_realized
+msgid ""
+"Portion of the award's Amount Realized attributed to this Funding Source. "
+"Always zero for now: the schedule model this is derived from is not part of "
+"this item's scope and is wired up in a later item."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__price_subtotal
+msgid "Price Subtotal"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__price_unit
+msgid "Price Unit"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__pricelist_id
+msgid "Pricelist"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award__compliance_state__probation
+msgid "Probation"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__product_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program_scope__product_id
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_program_scope__scope_basis__product
 msgid "Product"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__product_category_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program_scope__product_category_id
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_program_scope__scope_basis__product_category
 msgid "Product Category"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_benefit__product_category_id
+msgid ""
+"Product category this benefit line covers. Defaulted from the selected Scope"
+" when its Scope Basis is Product Category; left empty for a line covering a "
+"single Product."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -960,6 +1777,13 @@ msgstr ""
 msgid ""
 "Product category this scope line covers. Required, and exclusive with "
 "Product, when Scope Basis is Product Category."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_benefit__product_id
+msgid ""
+"Product this benefit line covers. Defaulted from the selected Scope when its"
+" Scope Basis is Product."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -976,9 +1800,19 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__program_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_criteria__program_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program_scope__program_id
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_search
 msgid "Program"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_benefit__scope_id
+msgid ""
+"Program scope line this benefit line is based on. Selecting it fills the "
+"rest of this line's fields; leave empty for an ad hoc benefit not tied to "
+"any configured scope."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -995,6 +1829,12 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__quantity
+msgid "Quantity"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_benefit__periodicity__quarterly
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_program_scope__periodicity__quarterly
 msgid "Quarterly"
 msgstr ""
@@ -1015,14 +1855,36 @@ msgid "Quota Used"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__recognition_journal_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__recognition_journal_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__recognition_journal_id
 msgid "Recognition Journal"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__reject_ok
+msgid ""
+"Reject policy\n"
+"\n"
+"* If active user can see and execute 'Reject' button"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__rejected
+msgid "Rejected"
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_criteria__weight
 msgid "Relative weight of this criterion in the committee's scoring."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_funding_source__amount_available
+msgid ""
+"Remaining amount this funding source may still commit (Ceiling minus Amount "
+"Committed). Zero Ceiling means there is no ceiling, but is not treated as "
+"unlimited here."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -1034,15 +1896,79 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_letter__letter_type__renewal
+msgid "Renewal Letter"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__renewal_of_award_id
+msgid "Renewal Of"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__renewal_sequence
+msgid "Renewal Sequence"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__renewal_award_ids
+msgid "Renewals"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__user_id
+msgid "Responsible"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__activity_user_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__activity_user_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__activity_user_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__activity_user_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__activity_user_id
 msgid "Responsible User"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__restart_approval_ok
+msgid ""
+"Restart approval policy\n"
+"\n"
+"* If active user can see and execute 'Restart Approval' button"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__restart_ok
+msgid ""
+"Restart policy\n"
+"\n"
+"* If active user can see and execute 'Restart' button"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__reviewer_id
+msgid "Reviewer"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_letter__letter_type__revocation
+msgid "Revocation Letter"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award__compliance_state__revoked
+msgid "Revoked"
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.ui.menu,name:ssi_school_scholarship.menu_school_scholarship
 msgid "Scholarship"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.actions.act_window,name:ssi_school_scholarship.school_scholarship_award_action
+#: model:ir.ui.menu,name:ssi_school_scholarship.school_scholarship_award_menu
+msgid "Scholarship Awards"
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -1068,6 +1994,7 @@ msgid "Scholarship Programs"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__type_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__type_id
 #: model:res.groups,name:ssi_school_scholarship.school_scholarship_type_group
 msgid "Scholarship Type"
@@ -1077,6 +2004,26 @@ msgstr ""
 #: model:ir.actions.act_window,name:ssi_school_scholarship.school_scholarship_type_action
 #: model:ir.ui.menu,name:ssi_school_scholarship.school_scholarship_type_menu
 msgid "Scholarship Types"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_benefit__award_id
+msgid "Scholarship award this benefit line belongs to."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_funding__award_id
+msgid "Scholarship award this funding line belongs to."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_letter__award_id
+msgid "Scholarship award this letter belongs to."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__program_id
+msgid "Scholarship program this award is granted under."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -1090,6 +2037,11 @@ msgid "Scholarship program this scope line belongs to."
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__type_id
+msgid "Scholarship type of the selected program."
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__type_id
 msgid ""
 "Scholarship type this program follows. Selecting a type fills the accounting"
@@ -1098,8 +2050,10 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__school_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__school_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__school_id
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_search
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_funding_source_view_search
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_program_view_search
 msgid "School"
@@ -1126,6 +2080,21 @@ msgid "School - Scholarship - Workflow"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model,name:ssi_school_scholarship.model_school_scholarship_award
+msgid "School Scholarship Award"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model,name:ssi_school_scholarship.model_school_scholarship_award_benefit
+msgid "School Scholarship Award Benefit"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model,name:ssi_school_scholarship.model_school_scholarship_award_funding
+msgid "School Scholarship Award Funding"
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model,name:ssi_school_scholarship.model_school_scholarship_criteria
 msgid "School Scholarship Criteria"
 msgstr ""
@@ -1133,6 +2102,11 @@ msgstr ""
 #. module: ssi_school_scholarship
 #: model:ir.model,name:ssi_school_scholarship.model_school_scholarship_funding_source
 msgid "School Scholarship Funding Source"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model,name:ssi_school_scholarship.model_school_scholarship_letter
+msgid "School Scholarship Letter"
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -1151,6 +2125,11 @@ msgid "School Scholarship Type"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__school_id
+msgid "School of the selected enrollment."
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_funding_source__school_id
 msgid ""
 "School this funding source is earmarked for. Leave empty when the funding "
@@ -1163,6 +2142,7 @@ msgid "School this scholarship program applies to."
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__scope_id
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_program_view_form
 msgid "Scope"
 msgstr ""
@@ -1185,11 +2165,14 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_benefit__periodicity__semester
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_program_scope__periodicity__semester
 msgid "Semester"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__sequence
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_funding__sequence
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_criteria__sequence
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__sequence
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program_scope__sequence
@@ -1205,7 +2188,52 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__signed_by
+msgid "Signed By"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__standard_price_subtotal
+msgid "Standard Price Subtotal"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__standard_price_subtotal_diff
+msgid "Standard Price Subtotal Diff."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__standard_price_unit
+msgid "Standard Price Unit"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__standard_price_unit_diff
+msgid "Standard Price Unit Diff."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__date_start
+msgid "Start Date"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__open_ok
+msgid ""
+"Start policy\n"
+"\n"
+"* If active user can see and execute 'Start' button"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__state
+msgid "State"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__activity_state
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_funding_source__activity_state
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_letter__activity_state
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__activity_state
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_type__activity_state
 msgid ""
@@ -1216,35 +2244,174 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__student_id
+msgid "Student"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__student_id
+msgid "Student this scholarship award is granted to."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award__compliance_state__suspended
+msgid "Suspended"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__price_tax
+msgid "Tax"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__tax_ids
+msgid "Tax(es)"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__date
+msgid ""
+"The date of the award document (the SK date). This is not an accounting date"
+" — the award never posts a journal entry of its own."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__partner_id
+msgid ""
+"The student's contact partner. Must match the partner billed on the "
+"student's invoices so the deduction created by a later document can be "
+"reconciled against it."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__price_total
+msgid "Total"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_funding_source__amount_realized
+msgid ""
+"Total amount already realized against this funding source. Always zero for "
+"now: the schedule model this is derived from is not part of this item's "
+"scope and is wired up in a later item."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_funding_source__amount_committed
+msgid ""
+"Total amount committed against this funding source by awards whose Funding "
+"line references it and whose state is Open or Done."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__amount_realized
+msgid ""
+"Total amount of this award already realized through a per-period deduction. "
+"Always zero for now: the schedule model this is derived from is not part of "
+"this item's scope and is wired up in a later item."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__amount_awarded
+msgid "Total value of this award, computed as the sum of its Benefit lines."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__name
+msgid ""
+"Transaction/document number\n"
+"\n"
+"* Unique indentifer of transaction\n"
+"* Leave '/' to automatically generate number\n"
+"* Change '/' into any number/identifier to manually assign number.\n"
+"  Manual number assignment can be done in 'Draft' state\n"
+"  Only user with 'Can Manualy Assign Number' policy can manually assign number.\n"
+"* Transaction with number other than '/' can not be deleted."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__activity_exception_decoration
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_funding_source__activity_exception_decoration
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_letter__activity_exception_decoration
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__activity_exception_decoration
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_type__activity_exception_decoration
 msgid "Type of the exception activity on record."
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__message_unread
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__message_unread
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__message_unread
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__message_unread
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__message_unread
 msgid "Unread Messages"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__message_unread_counter
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__message_unread_counter
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__message_unread_counter
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__message_unread_counter
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__message_unread_counter
 msgid "Unread Messages Counter"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__uom_id
+msgid "UoM"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__uom_quantity
+msgid "UoM Quantity"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__usage_id
+msgid "Usage"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__user_id
+msgid ""
+"User that responsible for document\n"
+"\n"
+"* Create user can be different with responsible user\n"
+"* Automatically filled with user that initiate document creation.\n"
+"  Default responsible can be changed."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__reviewer_id
+msgid ""
+"User that responsible to review document\n"
+"\n"
+"* Unless it configured to approve reviewer does not equal to approver"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__active_approver_user_ids
+msgid "Users that can approve/reject document"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award__compliance_state__warning
+msgid "Warning"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__website_message_ids
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__website_message_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_letter__website_message_ids
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__website_message_ids
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__website_message_ids
 msgid "Website Messages"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__website_message_ids
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_funding_source__website_message_ids
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_letter__website_message_ids
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__website_message_ids
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_type__website_message_ids
 msgid "Website communication history"
@@ -1264,10 +2431,18 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_benefit__benefit_type
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program_scope__benefit_type
 msgid ""
 "Whether the benefit reduces the billed fee directly, or is paid out to the "
 "student as cash."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__is_employee_benefit
+msgid ""
+"Whether this award is an employee benefit rather than a regular scholarship."
+" Defaulted from the selected Program, but may be overridden for this award."
 msgstr ""
 
 #. module: ssi_school_scholarship
