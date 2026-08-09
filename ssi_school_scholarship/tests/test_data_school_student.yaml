@@ -1,0 +1,435 @@
+options:
+  auto_refresh: true
+
+scenarios:
+  - name: "Student - Scholarship Visibility"
+    steps:
+      # ── Shared fixture chain (suffix SV) ─────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type_sv"
+        values:
+          name: "SV Grade Type"
+          code: "SVGT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school_sv"
+        values:
+          name: "SV School"
+          code: "SVSC"
+          grade_type_id: "REC: grade_type_sv.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year_sv"
+        values:
+          name: "SV Academic Year"
+          code: "SVAY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term_sv"
+        values:
+          name: "SV Term"
+          code: "SVTM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year_sv.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade_sv"
+        values:
+          name: "SV Grade"
+          code: "SVGR"
+          type_id: "REC: grade_type_sv.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class_sv"
+        values:
+          name: "SV Class"
+          code: "SVCL"
+          school_id: "REC: school_sv.id"
+          grade_id: "REC: grade_sv.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_sv"
+        values:
+          name: "SV Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source_sv"
+        values:
+          name: "SV Funding Source"
+          code: "SVFS"
+          analytic_account_id: "REC: analytic_sv.id"
+
+      - step: "Create the product covered by the benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "product_sv"
+        values:
+          name: "SV Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal_sv"
+        values:
+          name: "SV Journal"
+          code: "JSV"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account_sv"
+        values:
+          name: "SV Discount Account"
+          code: "SVDA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type_sv"
+        values:
+          name: "SV Type"
+          code: "SVTY"
+          deduction_journal_id: "REC: journal_sv.id"
+          discount_account_id: "REC: discount_account_sv.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program_sv"
+        values:
+          name: "SV Program"
+          code: "SVPRG"
+          type_id: "REC: type_sv.id"
+          school_id: "REC: school_sv.id"
+          academic_year_id: "REC: academic_year_sv.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source_sv.id"]]]
+          deduction_journal_id: "REC: journal_sv.id"
+          discount_account_id: "REC: discount_account_sv.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product_sv.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      # ── Positive (compute, empty condition): Student A has no
+      # scholarship award at all.
+      - step: "Create Student A's contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact_sva"
+        values:
+          name: "SV Contact A"
+
+      - step: "Create Student A"
+        action: "create"
+        model: "school_student"
+        save_as: "student_sva"
+        values:
+          name: "SV Student A"
+          code: "SVSA"
+          contact_id: "REC: contact_sva.id"
+          school_id: "REC: school_sv.id"
+
+      - step: "Create Student A's enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment_sva"
+        values:
+          academic_year_id: "REC: academic_year_sv.id"
+          academic_term_id: "REC: academic_term_sv.id"
+          school_id: "REC: school_sv.id"
+          grade_id: "REC: grade_sv.id"
+          grade_class_id: "REC: grade_class_sv.id"
+          student_id: "REC: student_sva.id"
+
+      - step: "Assert Student A has no scholarship"
+        action: "assert"
+        target: "student_sva"
+        asserts:
+          has_scholarship:
+            type: "value"
+            expected: false
+          scholarship_award_count:
+            type: "value"
+            expected: 0
+          active_award_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Assert Student A's enrollment has no scholarship amount either"
+        action: "assert"
+        target: "enrollment_sva"
+        asserts:
+          amount_scholarship:
+            type: "value"
+            expected: 0.0
+          scholarship_award_count:
+            type: "value"
+            expected: 0
+
+      # ── Positive (compute): Student B has one Open award whose
+      # period covers today -> has_scholarship true, count 1, and
+      # active_award_id points to it. Dates are fixed, at least two
+      # days away from the authoring date, to avoid flakiness from
+      # the demo data's Europe/Brussels ``context_today`` (see
+      # odoo-development-unit-test test-traps.md T-02).
+      - step: "Create Student B's contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact_svb"
+        values:
+          name: "SV Contact B"
+
+      - step: "Create Student B"
+        action: "create"
+        model: "school_student"
+        save_as: "student_svb"
+        values:
+          name: "SV Student B"
+          code: "SVSB"
+          contact_id: "REC: contact_svb.id"
+          school_id: "REC: school_sv.id"
+
+      - step: "Create Student B's enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment_svb"
+        values:
+          academic_year_id: "REC: academic_year_sv.id"
+          academic_term_id: "REC: academic_term_sv.id"
+          school_id: "REC: school_sv.id"
+          grade_id: "REC: grade_sv.id"
+          grade_class_id: "REC: grade_class_sv.id"
+          student_id: "REC: student_svb.id"
+
+      - step: "Create Student B's award, active today"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award_svb"
+        values:
+          program_id: "REC: program_sv.id"
+          student_id: "REC: student_svb.id"
+          enrollment_id: "REC: enrollment_svb.id"
+          date_start: 2026-08-07
+          date_end: 2027-08-09
+          # Owned by admin so the ``as_user: base.user_admin`` steps
+          # below are not rejected by the internal_user_rule record
+          # rule (odoo-development-unit-test test-traps.md T-05).
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "SV Benefit B"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 0.0
+                product_id: "REC: product_sv.id"
+
+      - step: "Confirm Student B's award as admin"
+        action: "call"
+        target: "award_svb"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve Student B's award as admin"
+        action: "call"
+        target: "award_svb"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert Student B has an active scholarship"
+        action: "assert"
+        target: "student_svb"
+        asserts:
+          has_scholarship:
+            type: "value"
+            expected: true
+          scholarship_award_count:
+            type: "value"
+            expected: 1
+          active_award_id:
+            type: "m2o"
+            expected: "REC: award_svb"
+
+      # ── Positive (compute): Student C has an award, but it stays
+      # in Draft -- only Open/Done are counted by has_scholarship.
+      - step: "Create Student C's contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact_svc"
+        values:
+          name: "SV Contact C"
+
+      - step: "Create Student C"
+        action: "create"
+        model: "school_student"
+        save_as: "student_svc"
+        values:
+          name: "SV Student C"
+          code: "SVSC2"
+          contact_id: "REC: contact_svc.id"
+          school_id: "REC: school_sv.id"
+
+      - step: "Create Student C's enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment_svc"
+        values:
+          academic_year_id: "REC: academic_year_sv.id"
+          academic_term_id: "REC: academic_term_sv.id"
+          school_id: "REC: school_sv.id"
+          grade_id: "REC: grade_sv.id"
+          grade_class_id: "REC: grade_class_sv.id"
+          student_id: "REC: student_svc.id"
+
+      - step: "Create Student C's award, left in Draft"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award_svc"
+        values:
+          program_id: "REC: program_sv.id"
+          student_id: "REC: student_svc.id"
+          enrollment_id: "REC: enrollment_svc.id"
+          date_start: 2026-08-07
+          date_end: 2027-08-09
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "SV Benefit C"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 0.0
+                product_id: "REC: product_sv.id"
+
+      - step: "Assert Student C's Draft award does not count as a scholarship"
+        action: "assert"
+        target: "student_svc"
+        asserts:
+          has_scholarship:
+            type: "value"
+            expected: false
+          scholarship_award_count:
+            type: "value"
+            expected: 1
+
+      # ── Positive (compute): Student E has an Open award whose
+      # period has already lapsed -> active_award_id stays empty,
+      # even though has_scholarship is still true.
+      - step: "Create Student E's contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact_sve"
+        values:
+          name: "SV Contact E"
+
+      - step: "Create Student E"
+        action: "create"
+        model: "school_student"
+        save_as: "student_sve"
+        values:
+          name: "SV Student E"
+          code: "SVSE"
+          contact_id: "REC: contact_sve.id"
+          school_id: "REC: school_sv.id"
+
+      - step: "Create Student E's enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment_sve"
+        values:
+          academic_year_id: "REC: academic_year_sv.id"
+          academic_term_id: "REC: academic_term_sv.id"
+          school_id: "REC: school_sv.id"
+          grade_id: "REC: grade_sv.id"
+          grade_class_id: "REC: grade_class_sv.id"
+          student_id: "REC: student_sve.id"
+
+      - step: "Create Student E's award, whose period has lapsed"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award_sve"
+        values:
+          program_id: "REC: program_sv.id"
+          student_id: "REC: student_sve.id"
+          enrollment_id: "REC: enrollment_sve.id"
+          date_start: 2025-01-01
+          date_end: 2025-06-30
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "SV Benefit E"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 0.0
+                product_id: "REC: product_sv.id"
+
+      - step: "Confirm Student E's award as admin"
+        action: "call"
+        target: "award_sve"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve Student E's award as admin"
+        action: "call"
+        target: "award_sve"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert Student E's active award is empty despite having a scholarship"
+        action: "assert"
+        target: "student_sve"
+        asserts:
+          has_scholarship:
+            type: "value"
+            expected: true
+          active_award_id:
+            type: "value"
+            operator: "is_falsy"

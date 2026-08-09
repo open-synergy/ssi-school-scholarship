@@ -55,6 +55,8 @@
         "views/school_scholarship_program.xml",
         "views/school_scholarship_letter.xml",
         "views/school_scholarship_award.xml",
+        "views/school_student.xml",
+        "views/school_enrollment.xml",
         "views/assets.xml",
     ],
 }
