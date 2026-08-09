@@ -4,4 +4,6 @@
 
 from . import school_scholarship_type  # noqa: F401
 from . import school_scholarship_funding_source  # noqa: F401
+from . import school_scholarship_program_scope  # noqa: F401
+from . import school_scholarship_criteria  # noqa: F401
 from . import school_scholarship_program  # noqa: F401

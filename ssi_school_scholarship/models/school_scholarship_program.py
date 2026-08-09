@@ -2,7 +2,8 @@
 # Copyright 2026 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class SchoolScholarshipProgram(models.Model):
@@ -214,6 +215,67 @@ class SchoolScholarshipProgram(models.Model):
         "Always zero for now: the award model this is derived from "
         "does not exist yet and is wired up in a later item.",
     )
+    scope_ids = fields.One2many(
+        string="Scopes",
+        comodel_name="school_scholarship_program_scope",
+        inverse_name="program_id",
+        help="Fee coverage lines defining exactly which billing "
+        "components this program's benefit applies to, and how much "
+        "each one covers. At least one line is required for the "
+        "program to reduce any fee.",
+    )
+    criteria_ids = fields.One2many(
+        string="Criteria",
+        comodel_name="school_scholarship_criteria",
+        inverse_name="program_id",
+        help="Eligibility criteria checklist used by the committee "
+        "when deciding whether to award this program to an "
+        "applicant.",
+    )
+
+    @api.constrains("scope_ids")
+    def _check_scope_ids(self):
+        """Require at least one Scope line before the program is saved.
+
+        A program without any scope line would not reduce any fee at
+        all, so an empty ``scope_ids`` is treated as a configuration
+        error rather than a valid "not yet scoped" state.
+
+        :raises ValidationError: when ``scope_ids`` is empty.
+        """
+        for record in self:
+            if not record.scope_ids:
+                error_message = """
+Document Type: %s
+Context: Configure scholarship program
+Database ID: %s
+Problem: Program has no Scope line and would not reduce any fee
+Solution: Add at least one Scope line
+""" % (
+                    self._description,
+                    record.id,
+                )
+                raise ValidationError(_(error_message))
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Create records, then enforce the at-least-one-scope check.
+
+        ``@api.constrains("scope_ids")`` alone does not fire on
+        ``create()`` when the caller never mentions ``scope_ids`` in
+        ``vals`` at all: Odoo's ORM only re-validates the constrains
+        whose trigger fields were actually present among the keys
+        passed to ``create()``/``write()``, and a key that is absent
+        is not the same as one explicitly set to empty. Re-running
+        the check on the freshly created records closes that gap.
+
+        :param vals_list: list of value dictionaries for the new
+            records.
+        :return: the newly created recordset.
+        """
+        records = super().create(vals_list)
+        records._check_scope_ids()
+        return records
 
     @api.depends()
     def _compute_quota_used(self):

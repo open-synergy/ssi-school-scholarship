@@ -87,8 +87,18 @@ class TestUiSchoolScholarshipProgram(HttpSavepointCase):
             }
         )
 
+        # Pre-Condition -- a Product, picked from the Scope tab's inline
+        # tree by its unique name. The program is rejected on save
+        # without at least one Scope line.
+        cls.tour_product = cls.env["product.product"].create(
+            {
+                "name": "TOUR Program Product",
+                "type": "service",
+            }
+        )
+
         # Pre-Condition for Generate Code (docs/school_scholarship_program/
-        # 01-create.md, Flow 7): an active sequence.template for this
+        # 01-create.md, Flow 9): an active sequence.template for this
         # model is required, or clicking the button raises a UserError
         # instead of assigning a code.
         cls.code_sequence = cls.env["ir.sequence"].create(

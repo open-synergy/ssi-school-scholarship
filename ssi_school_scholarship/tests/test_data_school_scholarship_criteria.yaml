@@ -1,5 +1,5 @@
 scenarios:
-  - name: "Program - Create"
+  - name: "Criteria - Create Manual Hard Requirement"
     steps:
       - step: "Get the account.account.type Income reference"
         action: "ref"
@@ -11,8 +11,8 @@ scenarios:
         model: "account.journal"
         save_as: "sale_journal"
         values:
-          name: "Test Program Sale Journal 1"
-          code: "TPRGJ01"
+          name: "Test Criteria Sale Journal 1"
+          code: "TCRJ01"
           type: "sale"
 
       - step: "Create the discount account used by the scholarship type"
@@ -20,8 +20,8 @@ scenarios:
         model: "account.account"
         save_as: "discount_account"
         values:
-          name: "Test Program Discount Account 1"
-          code: "TPRGA01"
+          name: "Test Criteria Discount Account 1"
+          code: "TCRA01"
           user_type_id: "REC: account_type_income.id"
           reconcile: false
 
@@ -30,8 +30,8 @@ scenarios:
         model: "school_scholarship_type"
         save_as: "type"
         values:
-          name: "Test Program Type 1"
-          code: "TPRGT01"
+          name: "Test Criteria Type 1"
+          code: "TCRT01"
           deduction_journal_id: "REC: sale_journal.id"
           discount_account_id: "REC: discount_account.id"
 
@@ -40,16 +40,16 @@ scenarios:
         model: "school_grade_type"
         save_as: "grade_type"
         values:
-          name: "Test Program Grade Type 1"
-          code: "TPRGGT01"
+          name: "Test Criteria Grade Type 1"
+          code: "TCRGT01"
 
       - step: "Create the school"
         action: "create"
         model: "school"
         save_as: "school"
         values:
-          name: "Test Program School 1"
-          code: "TPRGS01"
+          name: "Test Criteria School 1"
+          code: "TCRS01"
           grade_type_id: "REC: grade_type.id"
 
       - step: "Create the academic year"
@@ -57,8 +57,8 @@ scenarios:
         model: "school_academic_year"
         save_as: "academic_year"
         values:
-          name: "Test Program Academic Year 1"
-          code: "TPRGY01"
+          name: "Test Criteria Academic Year 1"
+          code: "TCRY01"
           date_start: 2026-07-01
           date_end: 2027-06-30
 
@@ -67,15 +67,15 @@ scenarios:
         model: "account.analytic.account"
         save_as: "analytic_account"
         values:
-          name: "Test Program Analytic 1"
+          name: "Test Criteria Analytic 1"
 
       - step: "Create the funding source"
         action: "create"
         model: "school_scholarship_funding_source"
         save_as: "funding_source"
         values:
-          name: "Test Program Funding Source 1"
-          code: "TPRGF01"
+          name: "Test Criteria Funding Source 1"
+          code: "TCRF01"
           analytic_account_id: "REC: analytic_account.id"
 
       - step: "Create the product covered by the baseline scope line"
@@ -83,16 +83,16 @@ scenarios:
         model: "product.product"
         save_as: "product"
         values:
-          name: "Test Program Product 1"
+          name: "Test Criteria Product 1"
           type: "service"
 
-      - step: "Create the scholarship program"
+      - step: "Create the scholarship program with a baseline scope line"
         action: "create"
         model: "school_scholarship_program"
         save_as: "program"
         values:
-          name: "Test Scholarship Program"
-          code: "TPRG001"
+          name: "Test Criteria Program 1"
+          code: "TCRP001"
           type_id: "REC: type.id"
           school_id: "REC: school.id"
           academic_year_id: "REC: academic_year.id"
@@ -108,24 +108,31 @@ scenarios:
                 computation: "percentage"
                 percentage: 40.0
 
-      - step: "Assert the scholarship program was created"
+      - step: "Create a manual hard requirement criterion"
+        action: "create"
+        model: "school_scholarship_criteria"
+        save_as: "criteria"
+        values:
+          program_id: "REC: program.id"
+          name: "Household income below threshold"
+          evaluation_method: "manual"
+          is_hard_requirement: true
+
+      - step: "Assert the criterion was created"
         action: "assert"
-        target: "program"
+        target: "criteria"
         asserts:
           id:
             type: "value"
             operator: "is_truthy"
-          name:
+          evaluation_method:
             type: "value"
-            expected: "Test Scholarship Program"
-          code:
+            expected: "manual"
+          is_hard_requirement:
             type: "value"
-            expected: "TPRG001"
-          funding_basis:
-            type: "value"
-            expected: "need"
+            expected: true
 
-  - name: "Program - Edit Name"
+  - name: "Criteria - Domain Without Domain"
     steps:
       - step: "Get the account.account.type Income reference"
         action: "ref"
@@ -137,8 +144,8 @@ scenarios:
         model: "account.journal"
         save_as: "sale_journal"
         values:
-          name: "Test Program Sale Journal 2"
-          code: "TPRGJ02"
+          name: "Test Criteria Sale Journal 2"
+          code: "TCRJ02"
           type: "sale"
 
       - step: "Create the discount account used by the scholarship type"
@@ -146,8 +153,8 @@ scenarios:
         model: "account.account"
         save_as: "discount_account"
         values:
-          name: "Test Program Discount Account 2"
-          code: "TPRGA02"
+          name: "Test Criteria Discount Account 2"
+          code: "TCRA02"
           user_type_id: "REC: account_type_income.id"
           reconcile: false
 
@@ -156,8 +163,8 @@ scenarios:
         model: "school_scholarship_type"
         save_as: "type"
         values:
-          name: "Test Program Type 2"
-          code: "TPRGT02"
+          name: "Test Criteria Type 2"
+          code: "TCRT02"
           deduction_journal_id: "REC: sale_journal.id"
           discount_account_id: "REC: discount_account.id"
 
@@ -166,16 +173,16 @@ scenarios:
         model: "school_grade_type"
         save_as: "grade_type"
         values:
-          name: "Test Program Grade Type 2"
-          code: "TPRGGT02"
+          name: "Test Criteria Grade Type 2"
+          code: "TCRGT02"
 
       - step: "Create the school"
         action: "create"
         model: "school"
         save_as: "school"
         values:
-          name: "Test Program School 2"
-          code: "TPRGS02"
+          name: "Test Criteria School 2"
+          code: "TCRS02"
           grade_type_id: "REC: grade_type.id"
 
       - step: "Create the academic year"
@@ -183,8 +190,8 @@ scenarios:
         model: "school_academic_year"
         save_as: "academic_year"
         values:
-          name: "Test Program Academic Year 2"
-          code: "TPRGY02"
+          name: "Test Criteria Academic Year 2"
+          code: "TCRY02"
           date_start: 2026-07-01
           date_end: 2027-06-30
 
@@ -193,15 +200,15 @@ scenarios:
         model: "account.analytic.account"
         save_as: "analytic_account"
         values:
-          name: "Test Program Analytic 2"
+          name: "Test Criteria Analytic 2"
 
       - step: "Create the funding source"
         action: "create"
         model: "school_scholarship_funding_source"
         save_as: "funding_source"
         values:
-          name: "Test Program Funding Source 2"
-          code: "TPRGF02"
+          name: "Test Criteria Funding Source 2"
+          code: "TCRF02"
           analytic_account_id: "REC: analytic_account.id"
 
       - step: "Create the product covered by the baseline scope line"
@@ -209,16 +216,16 @@ scenarios:
         model: "product.product"
         save_as: "product"
         values:
-          name: "Test Program Product 2"
+          name: "Test Criteria Product 2"
           type: "service"
 
-      - step: "Create the scholarship program to edit"
+      - step: "Create the scholarship program with a baseline scope line"
         action: "create"
         model: "school_scholarship_program"
         save_as: "program"
         values:
-          name: "Original Program Name"
-          code: "TPRG002"
+          name: "Test Criteria Program 2"
+          code: "TCRP002"
           type_id: "REC: type.id"
           school_id: "REC: school.id"
           academic_year_id: "REC: academic_year.id"
@@ -234,303 +241,134 @@ scenarios:
                 computation: "percentage"
                 percentage: 40.0
 
-      - step: "Update the program name"
-        action: "write"
-        target: "program"
-        values:
-          name: "Updated Program Name"
-
-      - step: "Assert the name was updated"
-        action: "assert"
-        target: "program"
-        asserts:
-          name:
-            type: "value"
-            expected: "Updated Program Name"
-
-  - name: "Program - Delete"
-    steps:
-      - step: "Get the account.account.type Income reference"
-        action: "ref"
-        xml_id: "account.data_account_type_revenue"
-        save_as: "account_type_income"
-
-      - step: "Create the sale journal used by the scholarship type"
+      - step: "Reject a Domain criterion without a Domain"
         action: "create"
-        model: "account.journal"
-        save_as: "sale_journal"
-        values:
-          name: "Test Program Sale Journal 2b"
-          code: "TPRGJ02B"
-          type: "sale"
-
-      - step: "Create the discount account used by the scholarship type"
-        action: "create"
-        model: "account.account"
-        save_as: "discount_account"
-        values:
-          name: "Test Program Discount Account 2b"
-          code: "TPRGA02B"
-          user_type_id: "REC: account_type_income.id"
-          reconcile: false
-
-      - step: "Create the scholarship type"
-        action: "create"
-        model: "school_scholarship_type"
-        save_as: "type"
-        values:
-          name: "Test Program Type 2b"
-          code: "TPRGT02B"
-          deduction_journal_id: "REC: sale_journal.id"
-          discount_account_id: "REC: discount_account.id"
-
-      - step: "Create the grade type used by the school"
-        action: "create"
-        model: "school_grade_type"
-        save_as: "grade_type"
-        values:
-          name: "Test Program Grade Type 2b"
-          code: "TPRGGT02B"
-
-      - step: "Create the school"
-        action: "create"
-        model: "school"
-        save_as: "school"
-        values:
-          name: "Test Program School 2b"
-          code: "TPRGS02B"
-          grade_type_id: "REC: grade_type.id"
-
-      - step: "Create the academic year"
-        action: "create"
-        model: "school_academic_year"
-        save_as: "academic_year"
-        values:
-          name: "Test Program Academic Year 2b"
-          code: "TPRGY02B"
-          date_start: 2026-07-01
-          date_end: 2027-06-30
-
-      - step: "Create the analytic account for the funding source"
-        action: "create"
-        model: "account.analytic.account"
-        save_as: "analytic_account"
-        values:
-          name: "Test Program Analytic 2b"
-
-      - step: "Create the funding source"
-        action: "create"
-        model: "school_scholarship_funding_source"
-        save_as: "funding_source"
-        values:
-          name: "Test Program Funding Source 2b"
-          code: "TPRGF02B"
-          analytic_account_id: "REC: analytic_account.id"
-
-      - step: "Create the product covered by the baseline scope line"
-        action: "create"
-        model: "product.product"
-        save_as: "product"
-        values:
-          name: "Test Program Product 2b"
-          type: "service"
-
-      - step: "Create the scholarship program to delete"
-        action: "create"
-        model: "school_scholarship_program"
-        save_as: "program"
-        values:
-          name: "Program To Delete"
-          code: "TPRG002B"
-          type_id: "REC: type.id"
-          school_id: "REC: school.id"
-          academic_year_id: "REC: academic_year.id"
-          funding_source_ids: [[6, 0, ["REC: funding_source.id"]]]
-          deduction_journal_id: "REC: sale_journal.id"
-          discount_account_id: "REC: discount_account.id"
-          scope_ids:
-            - - 0
-              - 0
-              - scope_basis: "product"
-                product_id: "REC: product.id"
-                benefit_type: "fee_reduction"
-                computation: "percentage"
-                percentage: 40.0
-
-      - step: "Delete the scholarship program"
-        action: "call"
-        target: "program"
-        method: "unlink"
-
-      - step: "Verify the scholarship program no longer exists"
-        action: "search"
-        model: "school_scholarship_program"
-        domain: [["code", "=", "TPRG002B"]]
-        save_as: "result"
-        expect_count: 0
-
-  - name: "Program - Onchange Fills Account Fields From Type, Then Stays Editable"
-    steps:
-      - step: "Get the account.account.type Income reference"
-        action: "ref"
-        xml_id: "account.data_account_type_revenue"
-        save_as: "account_type_income"
-
-      - step: "Create the sale journal used by the scholarship type"
-        action: "create"
-        model: "account.journal"
-        save_as: "sale_journal"
-        values:
-          name: "Test Program Sale Journal 3"
-          code: "TPRGJ03"
-          type: "sale"
-
-      - step: "Create the discount account used by the scholarship type"
-        action: "create"
-        model: "account.account"
-        save_as: "discount_account"
-        values:
-          name: "Test Program Discount Account 3"
-          code: "TPRGA03"
-          user_type_id: "REC: account_type_income.id"
-          reconcile: false
-
-      - step: "Create a different discount account to switch to"
-        action: "create"
-        model: "account.account"
-        save_as: "other_discount_account"
-        values:
-          name: "Test Program Other Discount Account 3"
-          code: "TPRGA03B"
-          user_type_id: "REC: account_type_income.id"
-          reconcile: false
-
-      - step: "Create the scholarship type, flagged as an employee benefit"
-        action: "create"
-        model: "school_scholarship_type"
-        save_as: "type"
-        values:
-          name: "Test Program Type 3"
-          code: "TPRGT03"
-          deduction_journal_id: "REC: sale_journal.id"
-          discount_account_id: "REC: discount_account.id"
-          is_employee_benefit: true
-
-      - step: "Open a new program form and select the type"
-        action: "form"
-        model: "school_scholarship_program"
-        save: false
-        ops:
-          - set:
-              type_id: "REC: type"
-          - assert:
-              deduction_journal_id:
-                type: "m2o"
-                expected: "REC: sale_journal"
-              discount_account_id:
-                type: "m2o"
-                expected: "REC: discount_account"
-              is_employee_benefit:
-                type: "value"
-                expected: true
-          - set:
-              discount_account_id: "REC: other_discount_account"
-          - assert:
-              discount_account_id:
-                type: "m2o"
-                expected: "REC: other_discount_account"
-
-  - name: "Program - No Scope Rejected"
-    steps:
-      - step: "Get the account.account.type Income reference"
-        action: "ref"
-        xml_id: "account.data_account_type_revenue"
-        save_as: "account_type_income"
-
-      - step: "Create the sale journal used by the scholarship type"
-        action: "create"
-        model: "account.journal"
-        save_as: "sale_journal"
-        values:
-          name: "Test Program Sale Journal 4"
-          code: "TPRGJ04"
-          type: "sale"
-
-      - step: "Create the discount account used by the scholarship type"
-        action: "create"
-        model: "account.account"
-        save_as: "discount_account"
-        values:
-          name: "Test Program Discount Account 4"
-          code: "TPRGA04"
-          user_type_id: "REC: account_type_income.id"
-          reconcile: false
-
-      - step: "Create the scholarship type"
-        action: "create"
-        model: "school_scholarship_type"
-        save_as: "type"
-        values:
-          name: "Test Program Type 4"
-          code: "TPRGT04"
-          deduction_journal_id: "REC: sale_journal.id"
-          discount_account_id: "REC: discount_account.id"
-
-      - step: "Create the grade type used by the school"
-        action: "create"
-        model: "school_grade_type"
-        save_as: "grade_type"
-        values:
-          name: "Test Program Grade Type 4"
-          code: "TPRGGT04"
-
-      - step: "Create the school"
-        action: "create"
-        model: "school"
-        save_as: "school"
-        values:
-          name: "Test Program School 4"
-          code: "TPRGS04"
-          grade_type_id: "REC: grade_type.id"
-
-      - step: "Create the academic year"
-        action: "create"
-        model: "school_academic_year"
-        save_as: "academic_year"
-        values:
-          name: "Test Program Academic Year 4"
-          code: "TPRGY04"
-          date_start: 2026-07-01
-          date_end: 2027-06-30
-
-      - step: "Create the analytic account for the funding source"
-        action: "create"
-        model: "account.analytic.account"
-        save_as: "analytic_account"
-        values:
-          name: "Test Program Analytic 4"
-
-      - step: "Create the funding source"
-        action: "create"
-        model: "school_scholarship_funding_source"
-        save_as: "funding_source"
-        values:
-          name: "Test Program Funding Source 4"
-          code: "TPRGF04"
-          analytic_account_id: "REC: analytic_account.id"
-
-      - step: "Reject a program created without any scope line"
-        action: "create"
-        model: "school_scholarship_program"
+        model: "school_scholarship_criteria"
         expect_error:
           type: "ValidationError"
-          message_contains: "no Scope line"
+          message_contains: "requires Domain"
         values:
-          name: "Test Program Without Scope"
-          code: "TPRG004"
+          program_id: "REC: program.id"
+          name: "Domain-evaluated criterion"
+          evaluation_method: "domain"
+
+  - name: "Criteria - Python Without Code"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Criteria Sale Journal 3"
+          code: "TCRJ03"
+          type: "sale"
+
+      - step: "Create the discount account used by the scholarship type"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Criteria Discount Account 3"
+          code: "TCRA03"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type"
+        values:
+          name: "Test Criteria Type 3"
+          code: "TCRT03"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Create the grade type used by the school"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type"
+        values:
+          name: "Test Criteria Grade Type 3"
+          code: "TCRGT03"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school"
+        values:
+          name: "Test Criteria School 3"
+          code: "TCRS03"
+          grade_type_id: "REC: grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year"
+        values:
+          name: "Test Criteria Academic Year 3"
+          code: "TCRY03"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_account"
+        values:
+          name: "Test Criteria Analytic 3"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source"
+        values:
+          name: "Test Criteria Funding Source 3"
+          code: "TCRF03"
+          analytic_account_id: "REC: analytic_account.id"
+
+      - step: "Create the product covered by the baseline scope line"
+        action: "create"
+        model: "product.product"
+        save_as: "product"
+        values:
+          name: "Test Criteria Product 3"
+          type: "service"
+
+      - step: "Create the scholarship program with a baseline scope line"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program"
+        values:
+          name: "Test Criteria Program 3"
+          code: "TCRP003"
           type_id: "REC: type.id"
           school_id: "REC: school.id"
           academic_year_id: "REC: academic_year.id"
           funding_source_ids: [[6, 0, ["REC: funding_source.id"]]]
           deduction_journal_id: "REC: sale_journal.id"
           discount_account_id: "REC: discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Reject a Python Code criterion with an empty code"
+        action: "create"
+        model: "school_scholarship_criteria"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "requires Python Code"
+        values:
+          program_id: "REC: program.id"
+          name: "Python-evaluated criterion"
+          evaluation_method: "python"
+          python_code: ""

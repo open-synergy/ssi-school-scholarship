@@ -88,6 +88,54 @@
                         <field name="max_renewal" />
                     </group>
                 </page>
+                <page name="scope" string="Scope">
+                    <field name="scope_ids" colspan="4" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle" />
+                            <field name="scope_basis" />
+                            <field
+                                    name="product_id"
+                                    attrs="{'invisible': [('scope_basis', '!=', 'product')], 'required': [('scope_basis', '=', 'product')]}"
+                                />
+                            <field
+                                    name="product_category_id"
+                                    attrs="{'invisible': [('scope_basis', '!=', 'product_category')], 'required': [('scope_basis', '=', 'product_category')]}"
+                                />
+                            <field name="benefit_type" />
+                            <field name="computation" />
+                            <field
+                                    name="percentage"
+                                    attrs="{'invisible': [('computation', '!=', 'percentage')]}"
+                                />
+                            <field
+                                    name="amount_fixed"
+                                    attrs="{'invisible': [('computation', '!=', 'fixed')]}"
+                                />
+                            <field name="max_amount_per_period" />
+                            <field name="periodicity" />
+                            <field name="currency_id" invisible="1" />
+                        </tree>
+                    </field>
+                </page>
+                <page name="criteria" string="Criteria">
+                    <field name="criteria_ids" colspan="4" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle" />
+                            <field name="name" />
+                            <field name="evaluation_method" />
+                            <field
+                                    name="criteria_domain"
+                                    attrs="{'invisible': [('evaluation_method', '!=', 'domain')]}"
+                                />
+                            <field
+                                    name="python_code"
+                                    attrs="{'invisible': [('evaluation_method', '!=', 'python')]}"
+                                />
+                            <field name="is_hard_requirement" />
+                            <field name="weight" />
+                        </tree>
+                    </field>
+                </page>
                 <page name="deduction" string="Deduction">
                     <group name="deduction_group" string="Deduction Configuration">
                         <field name="deduction_journal_id" />
