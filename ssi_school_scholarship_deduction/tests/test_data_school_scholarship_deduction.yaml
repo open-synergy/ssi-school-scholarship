@@ -1,0 +1,1513 @@
+scenarios:
+  - name: "Deduction - Create, Compute, Workflow, Reconcile, And Cancel"
+    steps:
+      # ── Shared fixture chain (suffix D1) ─────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "d1_grade_type"
+        values:
+          name: "D1 Grade Type"
+          code: "D1GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "d1_school"
+        values:
+          name: "D1 School"
+          code: "D1SC"
+          grade_type_id: "REC: d1_grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "d1_academic_year"
+        values:
+          name: "D1 Academic Year"
+          code: "D1AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "d1_academic_term"
+        values:
+          name: "D1 Term"
+          code: "D1TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: d1_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "d1_grade"
+        values:
+          name: "D1 Grade"
+          code: "D1GR"
+          type_id: "REC: d1_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "d1_grade_class"
+        values:
+          name: "D1 Class"
+          code: "D1CL"
+          school_id: "REC: d1_school.id"
+          grade_id: "REC: d1_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "d1_contact"
+        values:
+          name: "D1 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "d1_student"
+        values:
+          name: "D1 Student"
+          code: "D1ST"
+          contact_id: "REC: d1_contact.id"
+          school_id: "REC: d1_school.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "d1_enrollment"
+        values:
+          academic_year_id: "REC: d1_academic_year.id"
+          academic_term_id: "REC: d1_academic_term.id"
+          school_id: "REC: d1_school.id"
+          grade_id: "REC: d1_grade.id"
+          grade_class_id: "REC: d1_grade_class.id"
+          student_id: "REC: d1_student.id"
+
+      - step: "Create the analytic account for funding source A"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "d1_analytic_a"
+        values:
+          name: "D1 Analytic A"
+
+      - step: "Create the analytic account for funding source B"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "d1_analytic_b"
+        values:
+          name: "D1 Analytic B"
+
+      - step: "Create funding source A"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "d1_funding_source_a"
+        values:
+          name: "D1 Funding Source A"
+          code: "D1FSA"
+          analytic_account_id: "REC: d1_analytic_a.id"
+
+      - step: "Create funding source B"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "d1_funding_source_b"
+        values:
+          name: "D1 Funding Source B"
+          code: "D1FSB"
+          analytic_account_id: "REC: d1_analytic_b.id"
+
+      - step: "Create the product covered by the benefit lines"
+        action: "create"
+        model: "product.product"
+        save_as: "d1_product"
+        values:
+          name: "D1 Product"
+          type: "service"
+
+      - step: "Create the sale journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "d1_journal"
+        values:
+          name: "D1 Journal"
+          code: "JD1"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Get the account.account.type Receivable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "account_type_receivable"
+
+      - step: "Create the receivable account shared by the invoices and deductions"
+        action: "create"
+        model: "account.account"
+        save_as: "d1_receivable_account"
+        values:
+          name: "D1 Receivable Account"
+          code: "D1RA"
+          user_type_id: "REC: account_type_receivable.id"
+          reconcile: true
+
+      - step: "Create the discount account the deduction lines post to"
+        action: "create"
+        model: "account.account"
+        save_as: "d1_discount_account"
+        values:
+          name: "D1 Discount Account"
+          code: "D1DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the income account the invoice lines post to"
+        action: "create"
+        model: "account.account"
+        save_as: "d1_income_account"
+        values:
+          name: "D1 Income Account"
+          code: "D1IA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "d1_invoice_type"
+        values:
+          name: "D1 Invoice Type"
+          code: "/"
+          journal_id: "REC: d1_journal.id"
+          receivable_account_id: "REC: d1_receivable_account.id"
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "d1_type"
+        values:
+          name: "D1 Type"
+          code: "D1TY"
+          deduction_journal_id: "REC: d1_journal.id"
+          discount_account_id: "REC: d1_discount_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "d1_program"
+        values:
+          name: "D1 Program"
+          code: "D1PRG"
+          type_id: "REC: d1_type.id"
+          school_id: "REC: d1_school.id"
+          academic_year_id: "REC: d1_academic_year.id"
+          funding_source_ids:
+            [[6, 0, ["REC: d1_funding_source_a.id", "REC: d1_funding_source_b.id"]]]
+          deduction_journal_id: "REC: d1_journal.id"
+          discount_account_id: "REC: d1_discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: d1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 100000.0
+
+      # ── Positive (transition state / reconcile, partial): 400000
+      # deduction against a 1000000 invoice ──────────────────────────
+      - step: "Create the award backing the partial deduction"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "d1_award_partial"
+        values:
+          program_id: "REC: d1_program.id"
+          student_id: "REC: d1_student.id"
+          enrollment_id: "REC: d1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "D1 Partial Benefit"
+                product_id: "REC: d1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: d1_funding_source_a.id"
+                percentage: 100.0
+
+      - step: "Find the partial award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: d1_award_partial.id"]]
+        limit: 1
+        save_as: "d1_benefit_partial"
+
+      - step: "Find the partial award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: d1_award_partial.id"]]
+        limit: 1
+        save_as: "d1_funding_partial"
+
+      - step: "Create the Schedule line realizing the partial Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "d1_schedule_partial"
+        values:
+          benefit_id: "REC: d1_benefit_partial.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Assert the Schedule line's Amount Planned matches the fixed amount"
+        action: "assert"
+        target: "d1_schedule_partial"
+        asserts:
+          amount_planned:
+            type: "value"
+            expected: 400000.0
+
+      - step: "Create the invoice the partial deduction is allocated against"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "d1_invoice_partial"
+        values:
+          type_id: "REC: d1_invoice_type.id"
+          partner_id: "REC: d1_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: d1_journal.id"
+          receivable_account_id: "REC: d1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the partial invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "d1_invoice_partial_line"
+        values:
+          customer_invoice_id: "REC: d1_invoice_partial.id"
+          name: "D1 Partial Invoice Line"
+          account_id: "REC: d1_income_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+
+      - step: "Confirm the partial invoice"
+        action: "call"
+        target: "d1_invoice_partial"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the partial invoice and post its journal entry"
+        action: "call"
+        target: "d1_invoice_partial"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          amount_residual:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "Create the partial deduction document"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "d1_deduction_partial"
+        values:
+          award_id: "REC: d1_award_partial.id"
+          date: 2026-08-05
+          journal_id: "REC: d1_journal.id"
+          receivable_account_id: "REC: d1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: d1_schedule_partial.id"
+                funding_id: "REC: d1_funding_partial.id"
+                final_account_id: "REC: d1_discount_account.id"
+                name: "D1 Partial Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: d1_invoice_partial.id"
+                amount_allocated: 400000.0
+
+      - step: "Assert the partial deduction's computed amounts before opening"
+        action: "assert"
+        target: "d1_deduction_partial"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          amount_total:
+            type: "value"
+            expected: 400000.0
+          amount_allocated:
+            type: "value"
+            expected: 400000.0
+          amount_unallocated:
+            type: "value"
+            expected: 0.0
+
+      - step: "Confirm the partial deduction as admin"
+        action: "call"
+        target: "d1_deduction_partial"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Invalidate cache before approving (avoids stale policy cache)"
+        action: "call"
+        target: "d1_deduction_partial"
+        method: "invalidate_cache"
+
+      - step: "Approve the partial deduction, opening it"
+        action: "call"
+        target: "d1_deduction_partial"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          move_id:
+            type: "value"
+            operator: "is_truthy"
+          receivable_move_line_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Assert the partial invoice's residual dropped by the deduction"
+        action: "assert"
+        target: "d1_invoice_partial"
+        refresh: true
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: 600000.0
+          realized:
+            type: "value"
+            expected: false
+
+      - step: "Assert the realized Schedule line changed state"
+        action: "assert"
+        target: "d1_schedule_partial"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "realized"
+
+      - step: "Create the cancellation reason"
+        action: "create"
+        model: "base.cancel_reason"
+        save_as: "d1_reason"
+        values:
+          name: "D1 Cancel Reason"
+          code: "D1CR"
+
+      - step: "Cancel the partial deduction via the wizard"
+        action: "wizard"
+        model: "base.select_cancel_reason"
+        target: "d1_deduction_partial"
+        as_user: "base.user_admin"
+        values:
+          cancel_reason_id: "REC: d1_reason.id"
+        method: "action_confirm"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Assert cancelling reversed the reconciliation and the schedule"
+        action: "assert"
+        target: "d1_deduction_partial"
+        refresh: true
+        asserts:
+          move_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Assert cancelling restored the invoice's full residual"
+        action: "assert"
+        target: "d1_invoice_partial"
+        refresh: true
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "Assert cancelling reset the Schedule line back to scheduled"
+        action: "assert"
+        target: "d1_schedule_partial"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "scheduled"
+
+      # ── Positive: full allocation fully reconciles the invoice ────
+      - step: "Create the award backing the full deduction"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "d1_award_full"
+        values:
+          program_id: "REC: d1_program.id"
+          student_id: "REC: d1_student.id"
+          enrollment_id: "REC: d1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "D1 Full Benefit"
+                product_id: "REC: d1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 1000000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: d1_funding_source_a.id"
+                percentage: 100.0
+
+      - step: "Find the full award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: d1_award_full.id"]]
+        limit: 1
+        save_as: "d1_benefit_full"
+
+      - step: "Find the full award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: d1_award_full.id"]]
+        limit: 1
+        save_as: "d1_funding_full"
+
+      - step: "Create the Schedule line realizing the full Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "d1_schedule_full"
+        values:
+          benefit_id: "REC: d1_benefit_full.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the invoice the full deduction is allocated against"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "d1_invoice_full"
+        values:
+          type_id: "REC: d1_invoice_type.id"
+          partner_id: "REC: d1_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: d1_journal.id"
+          receivable_account_id: "REC: d1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the full invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "d1_invoice_full_line"
+        values:
+          customer_invoice_id: "REC: d1_invoice_full.id"
+          name: "D1 Full Invoice Line"
+          account_id: "REC: d1_income_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+
+      - step: "Confirm the full invoice"
+        action: "call"
+        target: "d1_invoice_full"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the full invoice and post its journal entry"
+        action: "call"
+        target: "d1_invoice_full"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the full deduction document"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "d1_deduction_full"
+        values:
+          award_id: "REC: d1_award_full.id"
+          date: 2026-08-05
+          journal_id: "REC: d1_journal.id"
+          receivable_account_id: "REC: d1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: d1_schedule_full.id"
+                funding_id: "REC: d1_funding_full.id"
+                final_account_id: "REC: d1_discount_account.id"
+                name: "D1 Full Deduction Line"
+                uom_quantity: 1
+                price_unit: 1000000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: d1_invoice_full.id"
+                amount_allocated: 1000000.0
+
+      - step: "Confirm the full deduction as admin"
+        action: "call"
+        target: "d1_deduction_full"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Invalidate cache before approving the full deduction"
+        action: "call"
+        target: "d1_deduction_full"
+        method: "invalidate_cache"
+
+      - step: "Approve the full deduction, fully reconciling the invoice"
+        action: "call"
+        target: "d1_deduction_full"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          reconciled:
+            type: "value"
+            expected: true
+
+      - step: "Assert the fully-allocated invoice's residual reached zero"
+        action: "assert"
+        target: "d1_invoice_full"
+        refresh: true
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: 0.0
+
+      # ── Positive (compute): amount_total sums two lines; empty
+      # condition; amount_unallocated reaches zero once fully
+      # allocated ────────────────────────────────────────────────────
+      - step: "Create the award backing the two-line deduction"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "d1_award_two"
+        values:
+          program_id: "REC: d1_program.id"
+          student_id: "REC: d1_student.id"
+          enrollment_id: "REC: d1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "D1 Two-Line Benefit A"
+                product_id: "REC: d1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 300000.0
+                periodicity: "one_time"
+            - - 0
+              - 0
+              - name: "D1 Two-Line Benefit B"
+                product_id: "REC: d1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 100000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: d1_funding_source_a.id"
+                percentage: 100.0
+
+      - step: "Find the two-line award's first Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain:
+          [
+            ["award_id", "=", "REC: d1_award_two.id"],
+            ["name", "=", "D1 Two-Line Benefit A"],
+          ]
+        limit: 1
+        save_as: "d1_benefit_two_a"
+
+      - step: "Find the two-line award's second Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain:
+          [
+            ["award_id", "=", "REC: d1_award_two.id"],
+            ["name", "=", "D1 Two-Line Benefit B"],
+          ]
+        limit: 1
+        save_as: "d1_benefit_two_b"
+
+      - step: "Find the two-line award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: d1_award_two.id"]]
+        limit: 1
+        save_as: "d1_funding_two"
+
+      - step: "Create the Schedule line for the first Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "d1_schedule_two_a"
+        values:
+          benefit_id: "REC: d1_benefit_two_a.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the Schedule line for the second Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "d1_schedule_two_b"
+        values:
+          benefit_id: "REC: d1_benefit_two_b.id"
+          date: 2026-09-01
+          state: "scheduled"
+
+      - step: "Create a deduction with no Lines yet"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "d1_deduction_empty"
+        values:
+          award_id: "REC: d1_award_two.id"
+          date: 2026-08-05
+          journal_id: "REC: d1_journal.id"
+          receivable_account_id: "REC: d1_receivable_account.id"
+
+      - step: "Assert Amount Total is zero without any Line"
+        action: "assert"
+        target: "d1_deduction_empty"
+        asserts:
+          amount_total:
+            type: "value"
+            expected: 0.0
+
+      - step: "Create the invoice the two-line deduction is allocated against"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "d1_invoice_two"
+        values:
+          type_id: "REC: d1_invoice_type.id"
+          partner_id: "REC: d1_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: d1_journal.id"
+          receivable_account_id: "REC: d1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the two-line deduction's invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "d1_invoice_two_line"
+        values:
+          customer_invoice_id: "REC: d1_invoice_two.id"
+          name: "D1 Two-Line Invoice Line"
+          account_id: "REC: d1_income_account.id"
+          uom_quantity: 1
+          price_unit: 400000.0
+
+      - step: "Confirm the two-line deduction's invoice"
+        action: "call"
+        target: "d1_invoice_two"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Approve the two-line deduction's invoice, giving it a residual"
+        action: "call"
+        target: "d1_invoice_two"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          amount_residual:
+            type: "value"
+            expected: 400000.0
+
+      - step: "Create the two-line deduction document"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "d1_deduction_two"
+        values:
+          award_id: "REC: d1_award_two.id"
+          date: 2026-08-05
+          journal_id: "REC: d1_journal.id"
+          receivable_account_id: "REC: d1_receivable_account.id"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: d1_schedule_two_a.id"
+                funding_id: "REC: d1_funding_two.id"
+                final_account_id: "REC: d1_discount_account.id"
+                name: "D1 Two-Line Deduction Line A"
+                uom_quantity: 1
+                price_unit: 300000.0
+            - - 0
+              - 0
+              - schedule_id: "REC: d1_schedule_two_b.id"
+                funding_id: "REC: d1_funding_two.id"
+                final_account_id: "REC: d1_discount_account.id"
+                name: "D1 Two-Line Deduction Line B"
+                uom_quantity: 1
+                price_unit: 100000.0
+
+      - step: "Assert Amount Total sums both lines"
+        action: "assert"
+        target: "d1_deduction_two"
+        asserts:
+          amount_total:
+            type: "value"
+            expected: 400000.0
+          amount_unallocated:
+            type: "value"
+            expected: 400000.0
+
+      - step: "Fully allocate the two-line deduction against the invoice"
+        action: "create"
+        model: "school_scholarship_deduction_allocation"
+        save_as: "d1_allocation_two"
+        values:
+          deduction_id: "REC: d1_deduction_two.id"
+          customer_invoice_id: "REC: d1_invoice_two.id"
+          amount_allocated: 400000.0
+
+      - step: "Assert Amount Unallocated reaches zero once fully allocated"
+        action: "assert"
+        target: "d1_deduction_two"
+        refresh: true
+        asserts:
+          amount_unallocated:
+            type: "value"
+            expected: 0.0
+
+      # ── Positive: two-source funding split produces two lines with
+      # different Analytic Accounts ──────────────────────────────────
+      - step: "Create the award backing the multi-source deduction"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "d1_award_multi"
+        values:
+          program_id: "REC: d1_program.id"
+          student_id: "REC: d1_student.id"
+          enrollment_id: "REC: d1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "D1 Multi-Source Benefit"
+                product_id: "REC: d1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: d1_funding_source_a.id"
+                percentage: 60.0
+            - - 0
+              - 0
+              - funding_source_id: "REC: d1_funding_source_b.id"
+                percentage: 40.0
+
+      - step: "Find the multi-source award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: d1_award_multi.id"]]
+        limit: 1
+        save_as: "d1_benefit_multi"
+
+      - step: "Find the multi-source award's 60% Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain:
+          [
+            ["award_id", "=", "REC: d1_award_multi.id"],
+            ["funding_source_id", "=", "REC: d1_funding_source_a.id"],
+          ]
+        limit: 1
+        save_as: "d1_funding_multi_a"
+
+      - step: "Find the multi-source award's 40% Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain:
+          [
+            ["award_id", "=", "REC: d1_award_multi.id"],
+            ["funding_source_id", "=", "REC: d1_funding_source_b.id"],
+          ]
+        limit: 1
+        save_as: "d1_funding_multi_b"
+
+      - step: "Create the Schedule line realizing the multi-source Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "d1_schedule_multi"
+        values:
+          benefit_id: "REC: d1_benefit_multi.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the multi-source deduction with one line per funding source"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "d1_deduction_multi"
+        values:
+          award_id: "REC: d1_award_multi.id"
+          date: 2026-08-05
+          journal_id: "REC: d1_journal.id"
+          receivable_account_id: "REC: d1_receivable_account.id"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: d1_schedule_multi.id"
+                funding_id: "REC: d1_funding_multi_a.id"
+                final_account_id: "REC: d1_discount_account.id"
+                name: "D1 Multi-Source Deduction Line A"
+                uom_quantity: 1
+                price_unit: 240000.0
+            - - 0
+              - 0
+              - schedule_id: "REC: d1_schedule_multi.id"
+                funding_id: "REC: d1_funding_multi_b.id"
+                final_account_id: "REC: d1_discount_account.id"
+                name: "D1 Multi-Source Deduction Line B"
+                uom_quantity: 1
+                price_unit: 160000.0
+
+      - step: "Find the multi-source deduction's line drawing from source A"
+        action: "search"
+        model: "school_scholarship_deduction_line"
+        domain:
+          [
+            ["deduction_id", "=", "REC: d1_deduction_multi.id"],
+            ["funding_id", "=", "REC: d1_funding_multi_a.id"],
+          ]
+        limit: 1
+        save_as: "d1_line_multi_a"
+
+      - step: "Find the multi-source deduction's line drawing from source B"
+        action: "search"
+        model: "school_scholarship_deduction_line"
+        domain:
+          [
+            ["deduction_id", "=", "REC: d1_deduction_multi.id"],
+            ["funding_id", "=", "REC: d1_funding_multi_b.id"],
+          ]
+        limit: 1
+        save_as: "d1_line_multi_b"
+
+      - step: "Assert the source-A line's amount and Analytic Account"
+        action: "assert"
+        target: "d1_line_multi_a"
+        asserts:
+          price_subtotal:
+            type: "value"
+            expected: 240000.0
+          analytic_account_id:
+            type: "m2o"
+            expected: "REC: d1_analytic_a"
+
+      - step: "Assert the source-B line's amount and different Analytic Account"
+        action: "assert"
+        target: "d1_line_multi_b"
+        asserts:
+          price_subtotal:
+            type: "value"
+            expected: 160000.0
+          analytic_account_id:
+            type: "m2o"
+            expected: "REC: d1_analytic_b"
+
+      # ── Onchange (form): selecting Schedule fills Description,
+      # Product, and Final Account on a Deduction line; adding
+      # Funding then fills Price Unit ──────────────────────────────
+      - step: "Open a new Deduction line form and select the Schedule"
+        action: "form"
+        model: "school_scholarship_deduction_line"
+        save: false
+        ops:
+          - set:
+              schedule_id: "REC: d1_schedule_two_a"
+          - assert:
+              name:
+                type: "value"
+                expected: "D1 Two-Line Benefit A"
+              product_id:
+                type: "m2o"
+                expected: "REC: d1_product"
+              final_account_id:
+                type: "value"
+                operator: "is_falsy"
+          - set:
+              funding_id: "REC: d1_funding_two"
+          - assert:
+              price_unit:
+                type: "value"
+                expected: 300000.0
+
+      # ── Onchange (form): adding an Allocation line defaults the
+      # header's own Receivable Account from that invoice ───────────
+      - step: "Open a new Deduction form and add an Allocation"
+        action: "form"
+        model: "school_scholarship_deduction"
+        save: false
+        ops:
+          - new:
+              field: "allocation_ids"
+              values:
+                customer_invoice_id: "REC: d1_invoice_two"
+                amount_allocated: 100000.0
+          - assert:
+              receivable_account_id:
+                type: "m2o"
+                expected: "REC: d1_receivable_account"
+
+  - name: "Deduction - Negative Paths"
+    steps:
+      # ── Shared fixture chain (suffix D2) ─────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "d2_grade_type"
+        values:
+          name: "D2 Grade Type"
+          code: "D2GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "d2_school"
+        values:
+          name: "D2 School"
+          code: "D2SC"
+          grade_type_id: "REC: d2_grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "d2_academic_year"
+        values:
+          name: "D2 Academic Year"
+          code: "D2AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "d2_academic_term"
+        values:
+          name: "D2 Term"
+          code: "D2TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: d2_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "d2_grade"
+        values:
+          name: "D2 Grade"
+          code: "D2GR"
+          type_id: "REC: d2_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "d2_grade_class"
+        values:
+          name: "D2 Class"
+          code: "D2CL"
+          school_id: "REC: d2_school.id"
+          grade_id: "REC: d2_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "d2_contact"
+        values:
+          name: "D2 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "d2_student"
+        values:
+          name: "D2 Student"
+          code: "D2ST"
+          contact_id: "REC: d2_contact.id"
+          school_id: "REC: d2_school.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "d2_enrollment"
+        values:
+          academic_year_id: "REC: d2_academic_year.id"
+          academic_term_id: "REC: d2_academic_term.id"
+          school_id: "REC: d2_school.id"
+          grade_id: "REC: d2_grade.id"
+          grade_class_id: "REC: d2_grade_class.id"
+          student_id: "REC: d2_student.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "d2_analytic"
+        values:
+          name: "D2 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "d2_funding_source"
+        values:
+          name: "D2 Funding Source"
+          code: "D2FS"
+          analytic_account_id: "REC: d2_analytic.id"
+
+      - step: "Create the product covered by the benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "d2_product"
+        values:
+          name: "D2 Product"
+          type: "service"
+
+      - step: "Create the sale journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "d2_journal"
+        values:
+          name: "D2 Journal"
+          code: "JD2"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Get the account.account.type Receivable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "account_type_receivable"
+
+      - step: "Create the receivable account used by the invoices"
+        action: "create"
+        model: "account.account"
+        save_as: "d2_receivable_account"
+        values:
+          name: "D2 Receivable Account"
+          code: "D2RA"
+          user_type_id: "REC: account_type_receivable.id"
+          reconcile: true
+
+      - step: "Create a second, different receivable account"
+        action: "create"
+        model: "account.account"
+        save_as: "d2_other_receivable_account"
+        values:
+          name: "D2 Other Receivable Account"
+          code: "D2ORA"
+          user_type_id: "REC: account_type_receivable.id"
+          reconcile: true
+
+      - step: "Create the discount account the deduction lines post to"
+        action: "create"
+        model: "account.account"
+        save_as: "d2_discount_account"
+        values:
+          name: "D2 Discount Account"
+          code: "D2DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the income account the invoice lines post to"
+        action: "create"
+        model: "account.account"
+        save_as: "d2_income_account"
+        values:
+          name: "D2 Income Account"
+          code: "D2IA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "d2_invoice_type"
+        values:
+          name: "D2 Invoice Type"
+          code: "/"
+          journal_id: "REC: d2_journal.id"
+          receivable_account_id: "REC: d2_receivable_account.id"
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "d2_type"
+        values:
+          name: "D2 Type"
+          code: "D2TY"
+          deduction_journal_id: "REC: d2_journal.id"
+          discount_account_id: "REC: d2_discount_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "d2_program"
+        values:
+          name: "D2 Program"
+          code: "D2PRG"
+          type_id: "REC: d2_type.id"
+          school_id: "REC: d2_school.id"
+          academic_year_id: "REC: d2_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: d2_funding_source.id"]]]
+          deduction_journal_id: "REC: d2_journal.id"
+          discount_account_id: "REC: d2_discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: d2_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 100000.0
+
+      - step: "Create the award backing the negative-path fixtures"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "d2_award"
+        values:
+          program_id: "REC: d2_program.id"
+          student_id: "REC: d2_student.id"
+          enrollment_id: "REC: d2_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "D2 Benefit"
+                product_id: "REC: d2_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: d2_funding_source.id"
+                percentage: 100.0
+
+      - step: "Find the award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: d2_award.id"]]
+        limit: 1
+        save_as: "d2_benefit"
+
+      - step: "Find the award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: d2_award.id"]]
+        limit: 1
+        save_as: "d2_funding"
+
+      - step: "Create the Schedule line realizing the Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "d2_schedule"
+        values:
+          benefit_id: "REC: d2_benefit.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create an open invoice with a 1000000 residual"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "d2_invoice"
+        values:
+          type_id: "REC: d2_invoice_type.id"
+          partner_id: "REC: d2_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: d2_journal.id"
+          receivable_account_id: "REC: d2_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "d2_invoice_line"
+        values:
+          customer_invoice_id: "REC: d2_invoice.id"
+          name: "D2 Invoice Line"
+          account_id: "REC: d2_income_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+
+      - step: "Confirm the invoice"
+        action: "call"
+        target: "d2_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Approve the invoice, opening it with a 1000000 residual"
+        action: "call"
+        target: "d2_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          amount_residual:
+            type: "value"
+            expected: 1000000.0
+
+      # ── Negative: allocation exceeding the invoice's own residual ──
+      - step: "Create a bare deduction to host the over-allocation attempt"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "d2_deduction_over"
+        values:
+          award_id: "REC: d2_award.id"
+          journal_id: "REC: d2_journal.id"
+          receivable_account_id: "REC: d2_receivable_account.id"
+
+      - step: "Reject an allocation exceeding the invoice's residual"
+        action: "create"
+        model: "school_scholarship_deduction_allocation"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "exceeds"
+        values:
+          deduction_id: "REC: d2_deduction_over.id"
+          customer_invoice_id: "REC: d2_invoice.id"
+          amount_allocated: 1200000.0
+
+      # ── Negative: the same invoice allocated twice on one document ─
+      - step: "Create a bare deduction to host the duplicate-invoice attempt"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "d2_deduction_dup"
+        values:
+          award_id: "REC: d2_award.id"
+          journal_id: "REC: d2_journal.id"
+          receivable_account_id: "REC: d2_receivable_account.id"
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: d2_invoice.id"
+                amount_allocated: 100000.0
+
+      - step: "Reject a second allocation line targeting the same invoice"
+        action: "create"
+        model: "school_scholarship_deduction_allocation"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "already allocated"
+        values:
+          deduction_id: "REC: d2_deduction_dup.id"
+          customer_invoice_id: "REC: d2_invoice.id"
+          amount_allocated: 50000.0
+
+      # ── Negative: Receivable Account does not match the invoice's ──
+      - step: "Create an invoice billed on the other receivable account"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "d2_invoice_other"
+        values:
+          type_id: "REC: d2_invoice_type.id"
+          partner_id: "REC: d2_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: d2_journal.id"
+          receivable_account_id: "REC: d2_other_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the other-account invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "d2_invoice_other_line"
+        values:
+          customer_invoice_id: "REC: d2_invoice_other.id"
+          name: "D2 Other Invoice Line"
+          account_id: "REC: d2_income_account.id"
+          uom_quantity: 1
+          price_unit: 400000.0
+
+      - step: "Confirm the other-account invoice"
+        action: "call"
+        target: "d2_invoice_other"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Approve the other-account invoice"
+        action: "call"
+        target: "d2_invoice_other"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create a deduction whose own Receivable Account does not match"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "d2_deduction_mismatch"
+        values:
+          award_id: "REC: d2_award.id"
+          journal_id: "REC: d2_journal.id"
+          # Deliberately the ORIGINAL receivable account, not the
+          # invoice's own -- this is the mismatch under test.
+          receivable_account_id: "REC: d2_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: d2_schedule.id"
+                funding_id: "REC: d2_funding.id"
+                final_account_id: "REC: d2_discount_account.id"
+                name: "D2 Mismatch Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: d2_invoice_other.id"
+                amount_allocated: 400000.0
+
+      - step: "Confirm the mismatched-account deduction"
+        action: "call"
+        target: "d2_deduction_mismatch"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Invalidate cache before approving the mismatched deduction"
+        action: "call"
+        target: "d2_deduction_mismatch"
+        method: "invalidate_cache"
+
+      - step: "Approving is rejected by the Receivable Account mismatch"
+        action: "call"
+        target: "d2_deduction_mismatch"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "Receivable Account"
+
+      # ── Negative: opening with a nonzero Amount Unallocated ────────
+      - step: "Create a deduction whose Amount Total is not fully allocated"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "d2_deduction_unallocated"
+        values:
+          award_id: "REC: d2_award.id"
+          journal_id: "REC: d2_journal.id"
+          receivable_account_id: "REC: d2_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: d2_schedule.id"
+                funding_id: "REC: d2_funding.id"
+                final_account_id: "REC: d2_discount_account.id"
+                name: "D2 Unallocated Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: d2_invoice.id"
+                amount_allocated: 300000.0
+
+      - step: "Confirm the under-allocated deduction"
+        action: "call"
+        target: "d2_deduction_unallocated"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Invalidate cache before approving the under-allocated deduction"
+        action: "call"
+        target: "d2_deduction_unallocated"
+        method: "invalidate_cache"
+
+      - step: "Approving is rejected by the nonzero Amount Unallocated"
+        action: "call"
+        target: "d2_deduction_unallocated"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "Amount Unallocated"
