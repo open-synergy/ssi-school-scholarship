@@ -286,13 +286,17 @@ scenarios:
             type: "value"
             expected: "confirm"
 
-      - step: "Refresh before approving (avoids stale policy cache)"
-        action: "assert"
+      # ``approve_ok`` shares its compute method (``_compute_policy``)
+      # with every other policy field, and that method is only
+      # re-triggered by @api.depends("policy_template_id"). Confirming
+      # already cached approve_ok=False (no approver existed yet), so
+      # it must be busted explicitly before Approve reads it -- an
+      # assert alone does not force recompute (test-traps.md pattern
+      # also used by ssi_school's enrollment tests).
+      - step: "Invalidate cache before approving (avoids stale policy cache)"
+        action: "call"
         target: "award_main"
-        asserts:
-          state:
-            type: "value"
-            expected: "confirm"
+        method: "invalidate_cache"
 
       - step: "Approve the award as admin"
         action: "call"
@@ -331,6 +335,7 @@ scenarios:
         save_as: "reason1"
         values:
           name: "AW1 Cancel Reason"
+          code: "AW1CR"
 
       - step: "Cancel the award via the wizard"
         action: "wizard"

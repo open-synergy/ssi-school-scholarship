@@ -261,6 +261,7 @@ class TestUiSchoolScholarshipAward(HttpSavepointCase):
         cls.env["base.cancel_reason"].create(
             {
                 "name": "TOUR Award Cancel Reason",
+                "code": "TOURAWCR",
             }
         )
 

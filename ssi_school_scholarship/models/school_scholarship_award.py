@@ -737,6 +737,14 @@ Solution: Add at least one Benefit line before confirming
     def _get_policy_field(self):
         """Register this model's policy fields for ``mixin.policy``.
 
+        ``open_ok`` (from ``mixin.transaction_open``) must be listed
+        here too: Odoo requires every field sharing the same
+        ``compute`` method (``_compute_policy``) to be assigned a
+        value on every call, and ``mixin.transaction_open`` itself
+        never registers it -- omitting it here raises
+        ``ValueError: Compute method failed to assign ...open_ok``
+        as soon as the field is read (e.g. rendering the form view).
+
         :return: the base policy fields plus this model's own
             ``generate_schedule_ok``, ``create_deduction_ok``, and
             ``revoke_ok``
@@ -751,6 +759,7 @@ Solution: Add at least one Benefit line before confirming
             "cancel_ok",
             "restart_ok",
             "manual_number_ok",
+            "open_ok",
             "generate_schedule_ok",
             "create_deduction_ok",
             "revoke_ok",
