@@ -26,6 +26,7 @@
         "security/ir_model_access/school_scholarship_deduction.xml",
         "security/ir_model_access/school_scholarship_deduction_line.xml",
         "security/ir_model_access/school_scholarship_deduction_allocation.xml",
+        "security/ir_model_access/create_due_scholarship_deduction.xml",
         "security/ir_rule/school_scholarship_deduction.xml",
         "ir_sequence/school_scholarship_deduction.xml",
         "sequence_template/school_scholarship_deduction.xml",
@@ -33,6 +34,8 @@
         "policy_template/school_scholarship_deduction.xml",
         "menu.xml",
         "views/school_scholarship_deduction.xml",
+        "views/school_scholarship_award.xml",
         "views/assets.xml",
+        "wizards/create_due_scholarship_deduction.xml",
     ],
 }

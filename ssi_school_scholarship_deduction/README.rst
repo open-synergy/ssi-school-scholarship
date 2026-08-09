@@ -23,6 +23,11 @@ Scholarship Deduction
 * `Approve Scholarship Deduction <docs/school_scholarship_deduction/05-approve.html>`_
 * `Cancel Scholarship Deduction <docs/school_scholarship_deduction/10-cancel.html>`_
 
+Scholarship Award
+-----------------------
+
+* `Create Due Deduction - Scholarship Award <docs/school_scholarship_award/07-create-due-deduction.html>`_
+
 
 Installation
 ============
