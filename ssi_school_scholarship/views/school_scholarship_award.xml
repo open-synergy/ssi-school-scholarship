@@ -133,6 +133,15 @@
                             <field name="price_subtotal" />
                             <field name="account_id" />
                             <field name="currency_id" invisible="1" />
+                            <!-- Description (name, from mixin.product_line)
+                                 is only ever auto-filled by
+                                 onchange_name() when Product is picked; it
+                                 is not user-facing here, but the field
+                                 still must be present in the view so the
+                                 web client tracks the onchange's result --
+                                 omitting it drops the value client-side and
+                                 the required-field check fails on save. -->
+                            <field name="name" invisible="1" />
                         </tree>
                     </field>
                 </page>

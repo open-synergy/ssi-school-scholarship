@@ -262,6 +262,13 @@ class TestUiSchoolScholarshipAward(HttpSavepointCase):
             {
                 "name": "TOUR Award Cancel Reason",
                 "code": "TOURAWCR",
+                # The cancel wizard's radio widget only lists reasons
+                # in ir.model.all_cancel_reason_ids, which merges
+                # model-specific links with every global_use=True
+                # reason. Without this, the tour's radio option never
+                # renders (0 matches on the trigger selector) since
+                # this reason is not linked to any specific model.
+                "global_use": True,
             }
         )
 

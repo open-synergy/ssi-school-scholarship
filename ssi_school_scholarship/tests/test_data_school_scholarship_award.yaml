@@ -511,6 +511,12 @@ scenarios:
           funding_source_ids: [[6, 0, ["REC: funding_source2.id"]]]
           deduction_journal_id: "REC: journal2.id"
           discount_account_id: "REC: discount_account2.id"
+          # school_scholarship_program.is_employee_benefit is a plain
+          # Boolean only defaulted from type_id via the Program's own
+          # onchange (form UI) -- create() never triggers it, so it
+          # must be set explicitly here for the Award onchange step
+          # below to have something true to copy.
+          is_employee_benefit: true
           scope_ids:
             - - 0
               - 0
