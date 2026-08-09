@@ -1023,24 +1023,19 @@ scenarios:
                 type: "m2o"
                 expected: "REC: d1_receivable_account"
 
-      # ── Onchange (form): adding an Allocation line WITHOUT yet
-      # picking its Customer Invoice leaves the header's own
-      # Receivable Account untouched -- the falsy-``invoice_account_id``
-      # branch of ``onchange_receivable_account_id`` ─────────────────
-      - step:
-          "Open a new Deduction form and add an Allocation with no invoice picked yet"
-        action: "form"
-        model: "school_scholarship_deduction"
-        save: false
-        ops:
-          - new:
-              field: "allocation_ids"
-              values:
-                amount_allocated: 100000.0
-          - assert:
-              receivable_account_id:
-                type: "value"
-                operator: "is_falsy"
+      # The falsy-``invoice_account_id`` branch of
+      # ``onchange_receivable_account_id`` (adding an Allocation row
+      # before its Customer Invoice is picked) cannot be exercised
+      # here: Odoo's own ``Form`` test helper validates every required
+      # field -- ``customer_invoice_id`` included -- the moment a
+      # ``new()`` one2many sub-record's context closes, regardless of
+      # this outer step's own ``save: false``, raising "customer_
+      # invoice_id is a required field" before the assertion ever
+      # runs. The real web client tolerates an incomplete row until
+      # the whole form is saved, which is exactly what the
+      # `..._school_scholarship_deduction_create` tour's own "Add an
+      # Allocation" step already does -- that UI-level interaction is
+      # this branch's only reachable test.
 
   - name: "Deduction - Negative Paths"
     steps:
@@ -1544,15 +1539,23 @@ scenarios:
           message_contains: "Amount Unallocated"
 
       # ── Negative: the invoice's own Receivable Account does not
-      # allow reconciliation ──────────────────────────────────────────
-      - step: "Create a receivable account that does not allow reconciliation"
+      # allow reconciliation. Odoo core itself forbids
+      # `reconcile: false` on any account whose type is
+      # receivable/payable ("You cannot have a receivable/payable
+      # account that is not reconcilable"), so this can only be
+      # reached by pointing the invoice's own `receivable_account_id`
+      # -- a plain, undomained Many2one to `account.account` on
+      # `customer_invoice`, not restricted to the receivable type --
+      # at an Income-type account instead, exactly like
+      # `d2_income_account`/`d2_discount_account` above. ──────────────
+      - step: "Create a non-receivable-type account that does not allow reconciliation"
         action: "create"
         model: "account.account"
         save_as: "d2_no_reconcile_account"
         values:
           name: "D2 Non-Reconcilable Account"
           code: "D2NRA"
-          user_type_id: "REC: account_type_receivable.id"
+          user_type_id: "REC: account_type_income.id"
           reconcile: false
 
       - step: "Create an invoice billed on the non-reconcilable account"
