@@ -18,6 +18,7 @@ class SchoolScholarshipLetter(models.Model):
     _name = "school_scholarship_letter"
     _inherit = [
         "mail.thread",
+        "mail.activity.mixin",
     ]
     _description = "School Scholarship Letter"
     _order = "date desc, id desc"
