@@ -95,11 +95,17 @@ odoo.define("ssi_school_scholarship.school_scholarship_program_tour", function (
             },
             {
                 // Gerbang: tunggu onchange(type_id) selesai mengisi field
-                // akun sebelum melanjutkan -- baru SESUDAH type_id
-                // terpilih field ini bisa berisi teks.
+                // akun sebelum melanjutkan. `.o_external_button` (tombol
+                // "buka record terkait") hanya dirender oleh widget
+                // many2one setelah field benar-benar berisi nilai --
+                // Sizzle membaca atribut `value=` pada <input> lewat
+                // `defaultValue` (nilai HTML awal), bukan `.value` JS
+                // yang diisi onchange, jadi `input:not([value=''])` tidak
+                // pernah cocok (lihat odoo-development-ui-test
+                // references/patterns.md §L).
                 content: "Deduction Journal is filled by the onchange",
                 trigger:
-                    ".o_field_many2one[name='deduction_journal_id'] input:not([value=''])",
+                    ".o_field_many2one[name='deduction_journal_id'] .o_external_button",
                 run: function () {
                     // Assertion only; do not trigger the default click.
                 },
