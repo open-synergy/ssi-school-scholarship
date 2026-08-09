@@ -1045,6 +1045,34 @@ scenarios:
                 type: "m2o"
                 expected: "REC: d1_receivable_account"
 
+      # ── Onchange (form): `onchange_receivable_account_id`'s ``and``
+      # condition has two operands, and this exercises the ``False``
+      # outcome coming from the SECOND one specifically -- Receivable
+      # Account still empty (first operand stays truthy, no
+      # short-circuit) but Allocation lines also empty (removing the
+      # only line fires the same ``@api.onchange("allocation_ids")``
+      # as adding one) ─────────────────────────────────────────────
+      - step:
+          "Removing the only Allocation leaves an empty Receivable Account untouched"
+        action: "form"
+        model: "school_scholarship_deduction"
+        save: false
+        ops:
+          - new:
+              field: "allocation_ids"
+              values:
+                customer_invoice_id: "REC: d1_invoice_two"
+                amount_allocated: 50000.0
+          - set:
+              receivable_account_id: false
+          - remove:
+              field: "allocation_ids"
+              index: 0
+          - assert:
+              receivable_account_id:
+                type: "value"
+                operator: "is_falsy"
+
       # The falsy-``invoice_account_id`` branch of
       # ``onchange_receivable_account_id`` (adding an Allocation row
       # before its Customer Invoice is picked) cannot be exercised
