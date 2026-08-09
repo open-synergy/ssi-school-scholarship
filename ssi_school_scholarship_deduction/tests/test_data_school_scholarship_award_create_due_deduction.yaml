@@ -1107,3 +1107,27 @@ scenarios:
         method: "action_create_due_deduction"
         expect_error:
           type: "UserError"
+
+      # ══════════════════════════════════════════════════════════════
+      # Sub-case E -- negative: opening the wizard on a Draft Award
+      # (never confirmed) is rejected by the create_deduction_ok
+      # policy, which only grants it in state Open.
+      # ══════════════════════════════════════════════════════════════
+      - step: "E: create a Draft award (never confirmed)"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "cdd_e_award"
+        values:
+          name: "CDD-E-AWARD-001"
+          program_id: "REC: cdd_program.id"
+          student_id: "REC: cdd_student.id"
+          enrollment_id: "REC: cdd_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+
+      - step: "E: opening the wizard on a Draft award is rejected"
+        action: "call"
+        target: "cdd_e_award"
+        method: "action_open_create_due_deduction_wizard"
+        expect_error:
+          type: "UserError"
