@@ -1589,6 +1589,10 @@ scenarios:
         method: "action_confirm"
         as_user: "base.user_admin"
         refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the non-reconcilable invoice"
         action: "call"
@@ -1686,6 +1690,10 @@ scenarios:
         method: "action_confirm"
         as_user: "base.user_admin"
         refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the other-partner invoice"
         action: "call"
@@ -1776,6 +1784,10 @@ scenarios:
         method: "action_confirm"
         as_user: "base.user_admin"
         refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the other-currency invoice"
         action: "call"
@@ -1868,6 +1880,10 @@ scenarios:
         method: "action_confirm"
         as_user: "base.user_admin"
         refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the shared invoice, giving it a 1000000 residual"
         action: "call"
