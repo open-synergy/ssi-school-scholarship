@@ -21,7 +21,7 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[ssi_school_scholarship](ssi_school_scholarship/) | 14.0.1.3.0 |  | School Scholarship
+[ssi_school_scholarship](ssi_school_scholarship/) | 14.0.1.4.0 |  | School Scholarship
 
 [//]: # (end addons)
 
