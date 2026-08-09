@@ -84,13 +84,21 @@ odoo.define(
                     in_modal: false,
                 },
                 {
-                    // Gate (odoo-development-ui-test
-                    // references/patterns.md §P): wait for the
-                    // Deduction onchange's RPC to fill Journal before
-                    // saving.
+                    // Gate: wait for the Deduction onchange's RPC to
+                    // fill Journal before saving. `.o_external_button`
+                    // (the "open related record" button) is only
+                    // rendered by the many2one widget once the field
+                    // actually holds a value -- Sizzle reads an
+                    // `input[value=...]` attribute selector via
+                    // `defaultValue` (the initial HTML value), not the
+                    // live `.value` JS property an `@api.onchange`
+                    // fills at runtime, so that selector never matches
+                    // (odoo-development-ui-test references/patterns.md
+                    // §L; same fix as
+                    // ssi_school_scholarship_program_tour.js commit
+                    // b73daad).
                     content: "Journal reflects the Deduction onchange before saving",
-                    trigger:
-                        ".o_field_many2one[name='journal_id'] input[value='TOUR Recognition Sale Journal']",
+                    trigger: ".o_field_many2one[name='journal_id'] .o_external_button",
                     run: function () {
                         // Assertion only; do not trigger the default click.
                     },

@@ -881,6 +881,10 @@ scenarios:
         method: "action_confirm"
         as_user: "base.user_admin"
         refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the first amortization Recognition"
         action: "call"
@@ -922,6 +926,10 @@ scenarios:
         method: "action_confirm"
         as_user: "base.user_admin"
         refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the second amortization Recognition"
         action: "call"
@@ -963,6 +971,10 @@ scenarios:
         method: "action_confirm"
         as_user: "base.user_admin"
         refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approving the third Recognition is rejected -- it exceeds the total"
         action: "call"
@@ -1091,6 +1103,10 @@ scenarios:
         method: "action_confirm"
         as_user: "base.user_admin"
         refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the multi-source Recognition"
         action: "call"
@@ -1449,6 +1465,10 @@ scenarios:
         method: "action_confirm"
         as_user: "base.user_admin"
         refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the invoice"
         action: "call"
