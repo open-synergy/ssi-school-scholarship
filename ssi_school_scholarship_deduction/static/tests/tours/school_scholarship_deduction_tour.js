@@ -137,29 +137,11 @@ odoo.define(
                     in_modal: false,
                 },
                 {
-                    // Commit the last edited cell -- never `press Tab`
-                    // (odoo-development-ui-test references/patterns.md
-                    // §C).
-                    content: "Commit the Line",
-                    trigger: ".o_selected_row .o_field_widget[name='uom_quantity']",
-                    run: "click",
-                },
-                {
-                    // Gate, not a cosmetic wait (odoo-development-ui-test
-                    // references/patterns.md §P): committing the row
-                    // above sends an async
-                    // `school_scholarship_deduction_line/onchange` RPC
-                    // (confirmed in the CI job's own werkzeug access
-                    // log, firing regardless of which field the commit
-                    // click lands on) that recomputes Price Unit and,
-                    // through it, this stored compute. Proceeding to the
-                    // Allocations tab before that RPC's response is
-                    // applied races the client's own re-render against
-                    // "Add an Allocation" touching a *different* one2many,
-                    // and the client's own concurrency guard pops the
-                    // generic "The record has been modified, your
-                    // changes will be discarded" dialog -- reproduced
-                    // twice via this tour's own CI DOM dumps. Price
+                    // Gate (odoo-development-ui-test
+                    // references/patterns.md §P): wait for the Funding
+                    // onchange's RPC to land -- confirmed in the CI
+                    // job's own werkzeug access log to fire on this
+                    // selection -- before touching the row again. Price
                     // Subtotal is a plain compute (no explicit
                     // `readonly`, so no inverse) and always renders as a
                     // static text node even mid-row-edit, unlike Price
@@ -171,6 +153,41 @@ odoo.define(
                         "Price Subtotal reflects the Funding onchange before continuing",
                     trigger:
                         ".o_selected_row .o_field_widget[name='price_subtotal']:contains(400,000.00)",
+                    run: function () {
+                        // Assertion only; do not trigger the default click.
+                    },
+                },
+                {
+                    // Commit the last edited cell -- never `press Tab`
+                    // (odoo-development-ui-test references/patterns.md
+                    // §C). Click a target genuinely OUTSIDE the Lines
+                    // one2many, not a sibling field within the same
+                    // `.o_selected_row`: the CI job's own DOM dump
+                    // proved clicking `uom_quantity` (a different field
+                    // in the SAME row) never deselects the row at all --
+                    // it was still `.o_selected_row` when the gate above
+                    // matched. `.o_statusbar_status` is a static,
+                    // non-interactive decoration present on every
+                    // transactional form's header and has no side
+                    // effects when clicked, unlike header many2one
+                    // fields (which would reopen their own autocomplete).
+                    content: "Commit the Line",
+                    trigger: ".o_statusbar_status",
+                    run: "click",
+                },
+                {
+                    // Gate: confirm the row has actually closed
+                    // EVERYWHERE on the form -- not just that the click
+                    // above landed -- before touching a *different*
+                    // one2many. A `.o_selected_row` left open anywhere
+                    // is exactly what raced "Add an Allocation" and
+                    // popped the generic "The record has been modified,
+                    // your changes will be discarded" dialog twice in
+                    // this tour's own CI runs (reproduced with the DOM
+                    // dump showing `allocation_ids` still empty and the
+                    // Warning dialog open at the same instant).
+                    content: "The Line row is no longer selected before switching tabs",
+                    trigger: ".o_form_view:not(:has(.o_selected_row))",
                     run: function () {
                         // Assertion only; do not trigger the default click.
                     },
