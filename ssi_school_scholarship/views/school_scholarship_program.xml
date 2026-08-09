@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="school_scholarship_program_view_search" model="ir.ui.view">
+    <field name="name">school_scholarship_program - search</field>
+    <field name="model">school_scholarship_program</field>
+    <field
+            name="inherit_id"
+            ref="ssi_master_data_mixin.mixin_master_data_view_search"
+        />
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="type_id" />
+                <field name="school_id" />
+                <field name="academic_year_id" />
+            </xpath>
+            <xpath expr="//search" position="inside">
+                <group expand="0" string="Group By">
+                    <filter
+                            name="group_by_school_id"
+                            string="School"
+                            context="{'group_by': 'school_id'}"
+                        />
+                    <filter
+                            name="group_by_academic_year_id"
+                            string="Academic Year"
+                            context="{'group_by': 'academic_year_id'}"
+                        />
+                    <filter
+                            name="group_by_funding_basis"
+                            string="Funding Basis"
+                            context="{'group_by': 'funding_basis'}"
+                        />
+                </group>
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="school_scholarship_program_view_tree" model="ir.ui.view">
+    <field name="name">school_scholarship_program - tree</field>
+    <field name="model">school_scholarship_program</field>
+    <field name="inherit_id" ref="ssi_master_data_mixin.mixin_master_data_view_tree" />
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='code']" position="before">
+                <field name="sequence" widget="handle" />
+            </xpath>
+            <xpath expr="//field[@name='code']" position="after">
+                <field name="school_id" />
+                <field name="academic_year_id" />
+                <field name="type_id" optional="hide" />
+                <field name="funding_basis" optional="hide" />
+                <field name="quota" optional="hide" />
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="school_scholarship_program_view_form" model="ir.ui.view">
+    <field name="name">school_scholarship_program - form</field>
+    <field name="model">school_scholarship_program</field>
+    <field name="inherit_id" ref="ssi_master_data_mixin.mixin_master_data_view_form" />
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='active']" position="after">
+                <field name="sequence" />
+                <field name="type_id" />
+                <field name="school_id" />
+                <field name="academic_year_id" />
+                <field name="funding_basis" />
+            </xpath>
+            <xpath expr="//notebook/page[@name='note']" position="before">
+                <page name="eligibility" string="Eligibility">
+                    <group name="eligibility_group" string="Eligibility">
+                        <field name="grade_ids" widget="many2many_tags" />
+                        <field name="funding_source_ids" widget="many2many_tags" />
+                        <field name="quota" />
+                        <field name="quota_used" />
+                        <field name="quota_available" />
+                        <field name="is_renewable" />
+                        <field name="max_renewal" />
+                    </group>
+                </page>
+                <page name="deduction" string="Deduction">
+                    <group name="deduction_group" string="Deduction Configuration">
+                        <field name="deduction_journal_id" />
+                        <field name="discount_account_id" />
+                        <field name="is_employee_benefit" />
+                        <field name="employee_benefit_account_id" />
+                        <field name="allow_asymmetric_recognition" />
+                    </group>
+                </page>
+                <page name="disbursement" string="Disbursement">
+                    <group
+                            name="disbursement_group"
+                            string="Disbursement Configuration"
+                        >
+                        <field name="disbursement_journal_id" />
+                        <field name="expense_account_id" />
+                        <field name="payable_account_id" />
+                    </group>
+                </page>
+                <page name="deferred_recognition" string="Deferred Recognition">
+                    <group
+                            name="deferred_recognition_group"
+                            string="Deferred Recognition Configuration"
+                        >
+                        <field name="deferred_discount_account_id" />
+                        <field name="deferred_expense_account_id" />
+                        <field name="recognition_journal_id" />
+                    </group>
+                </page>
+                <page name="description" string="Description">
+                    <field name="description" />
+                </page>
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="school_scholarship_program_action" model="ir.actions.act_window">
+    <field name="name">Scholarship Programs</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">school_scholarship_program</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem
+        id="school_scholarship_program_menu"
+        name="Scholarship Programs"
+        parent="menu_school_scholarship_configuration"
+        action="school_scholarship_program_action"
+        groups="school_scholarship_program_group"
+        sequence="30"
+    />
+
+</odoo>

@@ -1,0 +1,126 @@
+scenarios:
+  - name: "Funding Source - Create"
+    steps:
+      - step: "Create the analytic account to bind the funding source to"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_account"
+        values:
+          name: "Test Funding Source Analytic 1"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source"
+        values:
+          name: "Test Funding Source"
+          code: "TSCHF001"
+          analytic_account_id: "REC: analytic_account.id"
+
+      - step: "Assert the funding source was created"
+        action: "assert"
+        target: "funding_source"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Funding Source"
+          code:
+            type: "value"
+            expected: "TSCHF001"
+          amount_ceiling:
+            type: "value"
+            expected: 0.0
+
+  - name: "Funding Source - Edit Ceiling"
+    steps:
+      - step: "Create the analytic account to bind the funding source to"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_account"
+        values:
+          name: "Test Funding Source Analytic 2"
+
+      - step: "Create the funding source to edit"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source"
+        values:
+          name: "Funding Source To Edit"
+          code: "TSCHF002"
+          analytic_account_id: "REC: analytic_account.id"
+
+      - step: "Update the ceiling"
+        action: "write"
+        target: "funding_source"
+        values:
+          amount_ceiling: 5000000.0
+
+      - step: "Assert the ceiling was updated"
+        action: "assert"
+        target: "funding_source"
+        asserts:
+          amount_ceiling:
+            type: "value"
+            expected: 5000000.0
+
+  - name: "Funding Source - Delete"
+    steps:
+      - step: "Create the analytic account to bind the funding source to"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_account"
+        values:
+          name: "Test Funding Source Analytic 3"
+
+      - step: "Create the funding source to delete"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source"
+        values:
+          name: "Funding Source To Delete"
+          code: "TSCHF003"
+          analytic_account_id: "REC: analytic_account.id"
+
+      - step: "Delete the funding source"
+        action: "call"
+        target: "funding_source"
+        method: "unlink"
+
+      - step: "Verify the funding source no longer exists"
+        action: "search"
+        model: "school_scholarship_funding_source"
+        domain: [["code", "=", "TSCHF003"]]
+        save_as: "result"
+        expect_count: 0
+
+  - name: "Funding Source - Analytic Account Must Be Unique"
+    steps:
+      - step: "Create the analytic account to bind the first funding source to"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_account"
+        values:
+          name: "Test Funding Source Analytic 4"
+
+      - step: "Create the first funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source"
+        values:
+          name: "First Funding Source"
+          code: "TSCHF004"
+          analytic_account_id: "REC: analytic_account.id"
+
+      - step: "A second funding source on the same analytic account must be rejected"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "already used"
+        values:
+          name: "Second Funding Source"
+          code: "TSCHF005"
+          analytic_account_id: "REC: analytic_account.id"
