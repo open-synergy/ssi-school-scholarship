@@ -67,10 +67,11 @@ odoo.define("ssi_school_scholarship.school_scholarship_program_tour", function (
 
             // ── Flow 3 — Fill in the required fields: Name, Code,
             // Scholarship Type (selecting it triggers the onchange that
-            // fills the Deduction/Disbursement/Deferred Recognition tabs),
-            // School, Academic Year. Funding Basis keeps its "Need Based"
-            // default. Code is left as "/" so Flow 7 (Generate Code) has
-            // an effect.
+            // fills the Deduction/Disbursement/Deferred Recognition tabs
+            // in the background -- those tabs are reviewed later, in
+            // Flow 5, once they are actually open), School, Academic
+            // Year. Funding Basis keeps its "Need Based" default. Code is
+            // left as "/" so Flow 7 (Generate Code) has an effect.
             {
                 content: "Fill in the Name",
                 trigger: ".o_field_widget[name='name']",
@@ -92,23 +93,6 @@ odoo.define("ssi_school_scholarship.school_scholarship_program_tour", function (
                 trigger:
                     ".ui-autocomplete .ui-menu-item a:contains(TOUR Program Scholarship Type)",
                 in_modal: false,
-            },
-            {
-                // Gerbang: tunggu onchange(type_id) selesai mengisi field
-                // akun sebelum melanjutkan. `.o_external_button` (tombol
-                // "buka record terkait") hanya dirender oleh widget
-                // many2one setelah field benar-benar berisi nilai --
-                // Sizzle membaca atribut `value=` pada <input> lewat
-                // `defaultValue` (nilai HTML awal), bukan `.value` JS
-                // yang diisi onchange, jadi `input:not([value=''])` tidak
-                // pernah cocok (lihat odoo-development-ui-test
-                // references/patterns.md §L).
-                content: "Deduction Journal is filled by the onchange",
-                trigger:
-                    ".o_field_many2one[name='deduction_journal_id'] .o_external_button",
-                run: function () {
-                    // Assertion only; do not trigger the default click.
-                },
             },
             {
                 content: "Select the School",
@@ -150,6 +134,38 @@ odoo.define("ssi_school_scholarship.school_scholarship_program_tour", function (
                 trigger:
                     ".ui-autocomplete .ui-menu-item a:contains(TOUR Program Funding Source)",
                 in_modal: false,
+            },
+
+            // ── Flow 5 — Review the accounting fields defaulted from the
+            // Scholarship Type on the Deduction tab. Opening the tab is
+            // required before its fields can be asserted: they are
+            // rendered inside a Bootstrap `.tab-pane` that Odoo keeps
+            // `display:none` while a different tab (Eligibility, the
+            // notebook's first page and therefore the default active one)
+            // is selected, so `.o_external_button` never becomes
+            // `:visible` -- and jQuery/Sizzle never marks a hidden
+            // ancestor's descendant as visible -- until this tab is
+            // opened, no matter how long the onchange RPC (fired back in
+            // Flow 3 when the type was selected) has already completed.
+            {
+                content: "Open the Deduction tab",
+                trigger: ".o_notebook .nav-link:contains(Deduction)",
+            },
+            {
+                // Gerbang: `.o_external_button` (tombol "buka record
+                // terkait") hanya dirender oleh widget many2one setelah
+                // field benar-benar berisi nilai -- Sizzle membaca
+                // atribut `value=` pada <input> lewat `defaultValue`
+                // (nilai HTML awal), bukan `.value` JS yang diisi
+                // onchange, jadi `input:not([value=''])` tidak pernah
+                // cocok (lihat odoo-development-ui-test
+                // references/patterns.md §L).
+                content: "Deduction Journal is filled by the onchange",
+                trigger:
+                    ".o_field_many2one[name='deduction_journal_id'] .o_external_button",
+                run: function () {
+                    // Assertion only; do not trigger the default click.
+                },
             },
 
             // ── Flow 7 — Click Generate Code in the header to
