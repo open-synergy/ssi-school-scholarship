@@ -209,11 +209,13 @@ scenarios:
           benefit_ids:
             - - 0
               - 0
-              - product_id: "REC: product1.id"
+              - name: "AW1 Benefit Line 1"
+                product_id: "REC: product1.id"
                 price_unit: 300000.0
             - - 0
               - 0
-              - product_id: "REC: product1.id"
+              - name: "AW1 Benefit Line 2"
+                product_id: "REC: product1.id"
                 price_unit: 200000.0
           funding_ids:
             - - 0
@@ -248,7 +250,8 @@ scenarios:
           benefit_ids:
             - - 0
               - 0
-              - product_id: "REC: product1.id"
+              - name: "AW1 Main Benefit Line"
+                product_id: "REC: product1.id"
                 price_unit: 1000000.0
           funding_ids:
             - - 0
