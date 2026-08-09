@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="school_scholarship_deduction_action" model="ir.actions.act_window">
+    <field name="name">Scholarship Deductions</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">school_scholarship_deduction</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem
+        id="school_scholarship_deduction_menu"
+        name="Scholarship Deductions"
+        parent="ssi_school_scholarship.menu_school_scholarship"
+        action="school_scholarship_deduction_action"
+        groups="school_scholarship_deduction_viewer_group"
+        sequence="20"
+    />
+</odoo>

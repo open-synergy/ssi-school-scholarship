@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="school_scholarship_deduction_view_search" model="ir.ui.view">
+    <field name="name">school_scholarship_deduction - search</field>
+    <field name="model">school_scholarship_deduction</field>
+    <field
+            name="inherit_id"
+            ref="ssi_transaction_mixin.mixin_transaction_view_search"
+        />
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//search" position="inside">
+                <field name="award_id" />
+                <field name="student_id" />
+                <field name="partner_id" />
+                <group expand="0" string="Group By">
+                    <filter
+                            name="group_by_award_id"
+                            string="Award"
+                            context="{'group_by': 'award_id'}"
+                        />
+                </group>
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="school_scholarship_deduction_view_tree" model="ir.ui.view">
+    <field name="name">school_scholarship_deduction - tree</field>
+    <field name="model">school_scholarship_deduction</field>
+    <field name="mode">primary</field>
+    <field name="inherit_id" ref="ssi_transaction_mixin.mixin_transaction_view_tree" />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="date" />
+                <field name="award_id" />
+                <field name="student_id" />
+                <field name="partner_id" />
+                <field name="amount_total" widget="monetary" />
+                <field name="amount_allocated" widget="monetary" />
+                <field name="amount_unallocated" widget="monetary" />
+                <field name="reconciled" />
+                <field name="currency_id" invisible="1" />
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="school_scholarship_deduction_view_form" model="ir.ui.view">
+    <field name="name">school_scholarship_deduction - form</field>
+    <field name="model">school_scholarship_deduction</field>
+    <field name="mode">primary</field>
+    <field name="inherit_id" ref="ssi_transaction_mixin.mixin_transaction_view_form" />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="award_id" />
+                <field name="student_id" />
+                <field name="partner_id" />
+                <field name="journal_id" />
+                <field name="receivable_account_id" />
+            </xpath>
+            <xpath expr="//group[@name='header_right']" position="inside">
+                <field name="date" />
+                <field name="currency_id" invisible="1" />
+                <field name="company_currency_id" invisible="1" />
+                <field
+                        name="amount_total"
+                        widget="monetary"
+                        options="{'currency_field': 'currency_id'}"
+                    />
+                <field
+                        name="amount_allocated"
+                        widget="monetary"
+                        options="{'currency_field': 'currency_id'}"
+                    />
+                <field
+                        name="amount_unallocated"
+                        widget="monetary"
+                        options="{'currency_field': 'currency_id'}"
+                    />
+                <field name="reconciled" />
+                <field name="move_id" />
+                <field name="receivable_move_line_id" />
+            </xpath>
+            <xpath expr="//page[1]" position="before">
+                <page name="line" string="Lines">
+                    <field name="line_ids" colspan="4" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle" />
+                            <field
+                                    name="schedule_id"
+                                    domain="[('award_id', '=', parent.award_id)]"
+                                />
+                            <field name="benefit_id" />
+                            <field
+                                    name="funding_id"
+                                    domain="[('award_id', '=', parent.award_id)]"
+                                />
+                            <field name="funding_source_id" />
+                            <field name="product_id" />
+                            <field name="final_account_id" />
+                            <field name="account_id" />
+                            <field name="analytic_account_id" />
+                            <field name="uom_quantity" />
+                            <field name="price_unit" />
+                            <field name="price_subtotal" />
+                            <field name="currency_id" invisible="1" />
+                            <!-- Description (name, from mixin.product_line)
+                                 is only ever auto-filled by
+                                 onchange_name() when Schedule is picked;
+                                 it is not user-facing here, but the
+                                 field still must be present in the view
+                                 so the web client tracks the onchange's
+                                 result. Omitting it drops the value
+                                 client-side, and the required-field
+                                 check fails on save. -->
+                            <field name="name" invisible="1" />
+                        </tree>
+                    </field>
+                </page>
+                <page name="allocation" string="Allocations">
+                    <field name="allocation_ids" colspan="4" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="customer_invoice_id" />
+                            <field name="invoice_residual" />
+                            <field name="invoice_account_id" />
+                            <field name="amount_allocated" />
+                            <field name="partial_reconcile_id" />
+                            <field name="currency_id" invisible="1" />
+                        </tree>
+                    </field>
+                </page>
+                <page name="schedule" string="Realized Schedule">
+                    <field name="schedule_ids" colspan="4" nolabel="1">
+                        <tree create="false" edit="false" delete="false">
+                            <field name="benefit_id" />
+                            <field name="date" />
+                            <field name="amount_planned" />
+                            <field name="state" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </data>
+    </field>
+</record>
+</odoo>
