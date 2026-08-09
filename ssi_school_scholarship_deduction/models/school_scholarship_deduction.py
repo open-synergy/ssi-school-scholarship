@@ -297,10 +297,21 @@ class SchoolScholarshipDeduction(models.Model):
 
     @api.onchange("allocation_ids")
     def onchange_receivable_account_id(self):
-        """Default the Receivable Account from the first allocated invoice."""
-        self.receivable_account_id = False
-        if self.allocation_ids:
-            self.receivable_account_id = self.allocation_ids[0].invoice_account_id
+        """Default the Receivable Account from the first allocated invoice.
+
+        Only fills the field when it is still empty -- matching
+        ``01-create.md``'s own wording -- and only once the first
+        Allocation line's invoice is actually selected. Unconditionally
+        clearing it (the previous behaviour) fired on every
+        ``allocation_ids`` change, including a bare row-add before any
+        invoice is picked, blanking a value the user may have already
+        typed on the header and racing the newly-added row's own
+        onchange in the web client.
+        """
+        if not self.receivable_account_id and self.allocation_ids:
+            account_id = self.allocation_ids[0].invoice_account_id
+            if account_id:
+                self.receivable_account_id = account_id
 
     @ssi_decorator.pre_open_action()
     def _05_check_reconcilable(self):

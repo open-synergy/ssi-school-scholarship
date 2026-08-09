@@ -764,6 +764,10 @@ scenarios:
         method: "action_confirm"
         as_user: "base.user_admin"
         refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the two-line deduction's invoice, giving it a residual"
         action: "call"
@@ -1313,6 +1317,10 @@ scenarios:
         method: "action_confirm"
         as_user: "base.user_admin"
         refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the invoice, opening it with a 1000000 residual"
         action: "call"
@@ -1407,6 +1415,10 @@ scenarios:
         method: "action_confirm"
         as_user: "base.user_admin"
         refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the other-account invoice"
         action: "call"

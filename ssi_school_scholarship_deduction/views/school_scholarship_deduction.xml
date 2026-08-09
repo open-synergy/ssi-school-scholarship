@@ -85,6 +85,8 @@
                         options="{'currency_field': 'currency_id'}"
                     />
                 <field name="reconciled" />
+                <field name="move_id" />
+                <field name="receivable_move_line_id" />
             </xpath>
             <xpath expr="//page[1]" position="before">
                 <page name="line" string="Lines">
