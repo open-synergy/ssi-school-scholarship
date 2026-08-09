@@ -5,8 +5,8 @@
 from datetime import date as datetime_date
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
-from odoo.tools.float_utils import float_is_zero
+from odoo.exceptions import UserError, ValidationError
+from odoo.tools.float_utils import float_compare, float_is_zero
 
 from odoo.addons.ssi_decorator import ssi_decorator
 
@@ -26,6 +26,17 @@ class SchoolScholarshipDeduction(models.Model):
     document also flips every realized Schedule line of the linked
     Award from ``scheduled`` to ``realized``; cancelling it reverses
     both the reconciliation and that flip.
+
+    When ``recognition_date`` (the start of the period the deduction
+    actually pays for) falls after ``date`` (the accounting date of
+    this document itself), the deduction spans a fiscal year
+    boundary and ``recognition_method`` becomes ``deferred``: each
+    Line then debits a temporary Deferred Account instead of its own
+    Final Account, and a separate
+    ``school_scholarship_deduction_recognition`` document later moves
+    the amount from the Deferred Account to the Final Account, once
+    or several times, as the underlying service is actually
+    delivered.
     """
 
     _name = "school_scholarship_deduction"
@@ -265,6 +276,183 @@ class SchoolScholarshipDeduction(models.Model):
         help="Technical flag mirroring whether the receivable journal "
         "item has been fully reconciled.",
     )
+    recognition_method = fields.Selection(
+        string="Recognition Method",
+        selection=[
+            ("immediate", "Immediate"),
+            ("deferred", "Deferred"),
+        ],
+        compute="_compute_recognition_method",
+        store=True,
+        readonly=False,
+        help="``Deferred`` once Recognition Date falls after this "
+        "document's own Date -- meaning the service this deduction "
+        "pays for has not started yet. Defaults automatically but "
+        "may be overridden manually.",
+    )
+    recognition_date = fields.Date(
+        string="Recognition Date",
+        compute="_compute_recognition_date",
+        store=True,
+        readonly=False,
+        help="Start of the period the underlying service is actually "
+        "delivered -- the later of this document's own Date and the "
+        "Award's own Start Date. Defaults automatically but may be "
+        "overridden manually.",
+    )
+    deferred_account_id = fields.Many2one(
+        string="Deferred Account",
+        comodel_name="account.account",
+        ondelete="restrict",
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+        help="Temporary asset account each Line posts to instead of "
+        "its own Final Account while Recognition Method is "
+        "``Deferred``. Defaulted from the Award's own Deferred "
+        "Discount Account. Required while Recognition Method is "
+        "``Deferred``.",
+    )
+    recognition_journal_id = fields.Many2one(
+        string="Recognition Journal",
+        comodel_name="account.journal",
+        ondelete="restrict",
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+        help="Journal a Recognition document of this deduction posts "
+        "its entry to. Defaulted from the Award's own Recognition "
+        "Journal.",
+    )
+    recognition_ids = fields.One2many(
+        string="Recognitions",
+        comodel_name="school_scholarship_deduction_recognition",
+        inverse_name="deduction_id",
+        readonly=True,
+        help="Recognition documents that move this deduction's "
+        "deferred amount from the Deferred Account to each Line's "
+        "own Final Account.",
+    )
+    amount_recognized = fields.Monetary(
+        string="Amount Recognized",
+        currency_field="currency_id",
+        compute="_compute_amount_recognized",
+        store=True,
+        compute_sudo=True,
+        help="Sum of this deduction's own Recognition documents' "
+        "Amount, counting only those in Done status.",
+    )
+    amount_deferred = fields.Monetary(
+        string="Amount Deferred",
+        currency_field="currency_id",
+        compute="_compute_amount_deferred",
+        store=True,
+        compute_sudo=True,
+        help="Amount Total not yet moved out of the Deferred Account "
+        "by a Recognition document. Reaches zero once fully "
+        "recognized.",
+    )
+    recognition_state = fields.Selection(
+        string="Recognition Status",
+        selection=[
+            ("not_applicable", "Not Applicable"),
+            ("pending", "Pending"),
+            ("partial", "Partially Recognized"),
+            ("recognized", "Recognized"),
+        ],
+        compute="_compute_recognition_state",
+        store=True,
+        compute_sudo=True,
+        help="``Not Applicable`` while Recognition Method is "
+        "``Immediate``; otherwise ``Pending`` before any Recognition "
+        "is Done, ``Partially Recognized`` while Amount Recognized "
+        "is below Amount Total, and ``Recognized`` once it reaches "
+        "it.",
+    )
+
+    @api.depends("date", "recognition_date")
+    def _compute_recognition_method(self):
+        """Default Recognition Method from Date vs. Recognition Date.
+
+        :return: nothing; assigns ``recognition_method``
+        """
+        for record in self:
+            method = "immediate"
+            if (
+                record.date
+                and record.recognition_date
+                and record.recognition_date > record.date
+            ):
+                method = "deferred"
+            record.recognition_method = method
+
+    @api.depends("date", "award_id.date_start")
+    def _compute_recognition_date(self):
+        """Default Recognition Date from Date and the Award's Start Date.
+
+        :return: nothing; assigns ``recognition_date``
+        """
+        for record in self:
+            candidate = record.date
+            if (
+                record.award_id.date_start
+                and record.date
+                and record.award_id.date_start > record.date
+            ):
+                candidate = record.award_id.date_start
+            record.recognition_date = candidate
+
+    @api.depends("recognition_ids.amount", "recognition_ids.state")
+    def _compute_amount_recognized(self):
+        """Sum this deduction's own Done Recognition documents.
+
+        :return: nothing; assigns ``amount_recognized``
+        """
+        for record in self:
+            done_recognitions = record.recognition_ids.filtered(
+                lambda recognition: recognition.state == "done"
+            )
+            record.amount_recognized = sum(done_recognitions.mapped("amount"))
+
+    @api.depends("amount_total", "amount_recognized")
+    def _compute_amount_deferred(self):
+        """Compute the still-deferred portion of Amount Total.
+
+        :return: nothing; assigns ``amount_deferred``
+        """
+        for record in self:
+            record.amount_deferred = record.amount_total - record.amount_recognized
+
+    @api.depends("recognition_method", "amount_total", "amount_recognized")
+    def _compute_recognition_state(self):
+        """Derive the Recognition Status from method and amounts.
+
+        :return: nothing; assigns ``recognition_state``
+        """
+        for record in self:
+            state = "not_applicable"
+            if record.recognition_method == "deferred":
+                precision = record.company_currency_id.decimal_places
+                if float_is_zero(record.amount_recognized, precision_digits=precision):
+                    state = "pending"
+                elif (
+                    float_compare(
+                        record.amount_recognized,
+                        record.amount_total,
+                        precision_digits=precision,
+                    )
+                    >= 0
+                ):
+                    state = "recognized"
+                else:
+                    state = "partial"
+            record.recognition_state = state
 
     @api.depends("line_ids.price_subtotal")
     def _compute_amount_total(self):
@@ -329,6 +517,112 @@ class SchoolScholarshipDeduction(models.Model):
         if not self.allocation_ids:
             return
         self.receivable_account_id = self.allocation_ids[0].invoice_account_id
+
+    @api.onchange("award_id")
+    def onchange_deferred_account_id(self):
+        """Default Deferred Account from the selected Award.
+
+        :return: nothing
+        """
+        self.deferred_account_id = False
+        if self.award_id:
+            self.deferred_account_id = self.award_id.deferred_discount_account_id
+
+    @api.onchange("award_id")
+    def onchange_recognition_journal_id(self):
+        """Default Recognition Journal from the selected Award.
+
+        :return: nothing
+        """
+        self.recognition_journal_id = False
+        if self.award_id:
+            self.recognition_journal_id = self.award_id.recognition_journal_id
+
+    @api.constrains("recognition_method", "deferred_account_id")
+    def _check_deferred_account_required(self):
+        """Require Deferred Account while Recognition Method is deferred.
+
+        :raises ValidationError: when ``recognition_method`` is
+            ``deferred`` and ``deferred_account_id`` is empty.
+        """
+        for record in self:
+            if (
+                record.recognition_method == "deferred"
+                and not record.deferred_account_id
+            ):
+                error_message = """
+Document Type: %s
+Context: Configure deduction recognition
+Database ID: %s
+Problem: Deferred Account is empty while Recognition Method is Deferred
+Solution: Select a Deferred Account, or set Recognition Method back to Immediate
+""" % (
+                    record._description,
+                    record.id,
+                )
+                raise ValidationError(_(error_message))
+
+    @api.constrains("recognition_method", "allocation_ids")
+    def _check_recognition_symmetry(self):
+        """Reject deferring the deduction without deferring the revenue.
+
+        Deferring this deduction's own posting while the invoice it
+        is allocated against still credits an Income-type account
+        outright would inflate the current period's profit by the
+        deferred discount, without deferring the matching revenue --
+        unless the Award's own Program explicitly opts into that
+        asymmetry.
+
+        :raises ValidationError: when ``recognition_method`` is
+            ``deferred``, the Program's own
+            ``allow_asymmetric_recognition`` is falsy, and at least
+            one allocated invoice has a Line posting to an
+            Income-type account.
+        """
+        for record in self:
+            if record.recognition_method != "deferred":
+                continue
+            if record.award_id.program_id.allow_asymmetric_recognition:
+                continue
+            invoices = record.allocation_ids.mapped("customer_invoice_id")
+            income_lines = invoices.mapped("line_ids").filtered(
+                lambda line: line.account_id.user_type_id.internal_group == "income"
+            )
+            if income_lines:
+                error_message = """
+Document Type: %s
+Context: Configure deduction recognition
+Database ID: %s
+Problem: Deferred deduction but the allocated invoice recognizes revenue immediately
+Solution: Enable Allow Asymmetric Recognition on the Program, or keep Method Immediate
+""" % (
+                    record._description,
+                    record.id,
+                )
+                raise ValidationError(_(error_message))
+
+    @ssi_decorator.pre_cancel_action()
+    def _05_check_no_done_recognition(self):
+        """Reject cancelling a deduction with a Done Recognition.
+
+        :raises UserError: when at least one of this deduction's own
+            Recognition documents is in Done status.
+        """
+        self.ensure_one()
+        if self.recognition_ids.filtered(
+            lambda recognition: recognition.state == "done"
+        ):
+            error_message = """
+Document Type: %s
+Context: Cancel deduction
+Database ID: %s
+Problem: A Recognition document of this deduction is still in Done status
+Solution: Cancel every Done Recognition document of this deduction first
+""" % (
+                self._description,
+                self.id,
+            )
+            raise UserError(_(error_message))
 
     @ssi_decorator.pre_open_action()
     def _05_check_reconcilable(self):
