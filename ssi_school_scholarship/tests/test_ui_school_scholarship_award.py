@@ -304,7 +304,22 @@ class TestUiSchoolScholarshipAward(HttpSavepointCase):
             }
         )
         cls.tour_award_generate_schedule.action_confirm()
-        cls.tour_award_generate_schedule.action_approve_approval()
+        # ``approve_ok`` shares its compute method (``_compute_policy``)
+        # with every other policy field, and that method only
+        # re-triggers on ``@api.depends("policy_template_id")`` --
+        # confirming already cached approve_ok=False (no approver
+        # existed yet), so it must be busted explicitly before Approve
+        # reads it (odoo-development-unit-test, test-traps.md T-04,
+        # same fix already applied in
+        # test_data_school_scholarship_award.yaml). Approve is also run
+        # ``with_user(admin)``, not as ``cls.env``'s superuser: the
+        # approve policy's ``restrict_additional`` check tests
+        # ``env.user.id in document.active_approver_user_ids.ids``
+        # unconditionally (no superuser bypass), and only ``admin`` --
+        # the approval template's configured approver -- is ever in
+        # that list.
+        cls.tour_award_generate_schedule.invalidate_cache()
+        cls.tour_award_generate_schedule.with_user(admin).action_approve_approval()
 
         # Added only AFTER the award above already opened (and thus
         # already auto-generated its Schedule for Term A), so this
