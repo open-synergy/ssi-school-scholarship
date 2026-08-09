@@ -236,13 +236,19 @@ Solution: Enter a Percentage value between 0 (exclusive) and 100
             same ``product_category_id``.
         """
         for record in self:
+            if not record.product_id and not record.product_category_id:
+                # Neither target is set. ``_check_scope_basis_target``
+                # (triggered together, since ``program_id`` is always
+                # part of the written values) already rejects this
+                # state, so there is no target to check here.
+                continue
             if record.product_id:
                 domain = [
                     ("id", "!=", record.id),
                     ("program_id", "=", record.program_id.id),
                     ("product_id", "=", record.product_id.id),
                 ]
-            elif record.product_category_id:
+            else:
                 domain = [
                     ("id", "!=", record.id),
                     ("program_id", "=", record.program_id.id),
@@ -252,12 +258,6 @@ Solution: Enter a Percentage value between 0 (exclusive) and 100
                         record.product_category_id.id,
                     ),
                 ]
-            else:
-                # Neither target is set. ``_check_scope_basis_target``
-                # (triggered together, since ``program_id`` is always
-                # part of the written values) already rejects this
-                # state, so there is no target to check here.
-                continue
             duplicate_count = self.search_count(domain)
             if duplicate_count > 0:
                 error_message = """
