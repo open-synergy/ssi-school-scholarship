@@ -133,6 +133,14 @@ scenarios:
           funding_source_ids: [[6, 0, ["REC: funding_source_se.id"]]]
           deduction_journal_id: "REC: journal_se.id"
           discount_account_id: "REC: discount_account_se.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product_se.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
 
       - step: "Create the student contact"
         action: "create"
