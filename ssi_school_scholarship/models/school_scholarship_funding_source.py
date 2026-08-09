@@ -69,6 +69,80 @@ class SchoolScholarshipFundingSource(models.Model):
         help="Maximum amount this funding source may disburse in total, "
         "entered manually. Zero means there is no ceiling.",
     )
+    award_funding_ids = fields.One2many(
+        string="Award Fundings",
+        comodel_name="school_scholarship_award_funding",
+        inverse_name="funding_source_id",
+        help="Award funding lines drawing from this funding source.",
+    )
+    amount_committed = fields.Monetary(
+        string="Amount Committed",
+        currency_field="currency_id",
+        compute="_compute_amount_committed",
+        store=True,
+        compute_sudo=True,
+        help="Total amount committed against this funding source by "
+        "awards whose Funding line references it and whose state is "
+        "Open or Done.",
+    )
+    amount_realized = fields.Monetary(
+        string="Amount Realized",
+        currency_field="currency_id",
+        compute="_compute_amount_realized",
+        store=True,
+        compute_sudo=True,
+        help="Total amount already realized against this funding "
+        "source. Always zero for now: the schedule model this is "
+        "derived from is not part of this item's scope and is wired "
+        "up in a later item.",
+    )
+    amount_available = fields.Monetary(
+        string="Amount Available",
+        currency_field="currency_id",
+        compute="_compute_amount_available",
+        store=True,
+        compute_sudo=True,
+        help="Remaining amount this funding source may still commit "
+        "(Ceiling minus Amount Committed). Zero Ceiling means there "
+        "is no ceiling, but is not treated as unlimited here.",
+    )
+
+    @api.depends(
+        "award_funding_ids.amount_committed",
+        "award_funding_ids.award_id.state",
+    )
+    def _compute_amount_committed(self):
+        """Sum committed amounts of Open/Done awards on this source.
+
+        :return: nothing; assigns ``amount_committed``
+        """
+        for record in self:
+            lines = record.award_funding_ids.filtered(
+                lambda line: line.award_id.state in ("open", "done")
+            )
+            record.amount_committed = sum(lines.mapped("amount_committed"))
+
+    @api.depends()
+    def _compute_amount_realized(self):
+        """Return zero until the schedule model exists.
+
+        No real dependency: the per-period schedule model this
+        should be derived from is not part of this item's scope, so
+        the value is a fixed placeholder wired up in a later item.
+
+        :return: nothing; assigns ``amount_realized``
+        """
+        for record in self:
+            record.amount_realized = 0.0
+
+    @api.depends("amount_ceiling", "amount_committed")
+    def _compute_amount_available(self):
+        """Compute the still-uncommitted portion of the ceiling.
+
+        :return: nothing; assigns ``amount_available``
+        """
+        for record in self:
+            record.amount_available = record.amount_ceiling - record.amount_committed
 
     @api.constrains("analytic_account_id")
     def _check_analytic_account_id(self):
