@@ -139,23 +139,41 @@ odoo.define(
                 {
                     // Commit the last edited cell -- never `press Tab`
                     // (odoo-development-ui-test references/patterns.md
-                    // §C). Click `uom_quantity`, not `schedule_id`:
-                    // `schedule_id` is the onchange trigger for
-                    // `onchange_name`/`onchange_product_id`/
-                    // `onchange_final_account_id`/`onchange_price_unit`
-                    // on this line model, and re-clicking an
-                    // onchange-source field right before switching tabs
-                    // and adding a row elsewhere re-arms that cascade,
-                    // racing the Allocations tab's own row-add and
-                    // popping the generic "The record has been
-                    // modified, your changes will be discarded"
-                    // dialog -- confirmed via the CI job's own DOM dump
-                    // (odoo-development-ui-test references/patterns.md
-                    // §Jebakan 1). `uom_quantity` triggers no onchange
-                    // on this model, so committing through it is safe.
+                    // §C).
                     content: "Commit the Line",
                     trigger: ".o_selected_row .o_field_widget[name='uom_quantity']",
                     run: "click",
+                },
+                {
+                    // Gate, not a cosmetic wait (odoo-development-ui-test
+                    // references/patterns.md §P): committing the row
+                    // above sends an async
+                    // `school_scholarship_deduction_line/onchange` RPC
+                    // (confirmed in the CI job's own werkzeug access
+                    // log, firing regardless of which field the commit
+                    // click lands on) that recomputes Price Unit and,
+                    // through it, this stored compute. Proceeding to the
+                    // Allocations tab before that RPC's response is
+                    // applied races the client's own re-render against
+                    // "Add an Allocation" touching a *different* one2many,
+                    // and the client's own concurrency guard pops the
+                    // generic "The record has been modified, your
+                    // changes will be discarded" dialog -- reproduced
+                    // twice via this tour's own CI DOM dumps. Price
+                    // Subtotal is a plain compute (no explicit
+                    // `readonly`, so no inverse) and always renders as a
+                    // static text node even mid-row-edit, unlike Price
+                    // Unit's own `<input>` -- see the "m2o tak terbaca
+                    // di mode edit" trap in patterns.md §L for why an
+                    // editable widget's live value can never be the
+                    // gate itself.
+                    content:
+                        "Price Subtotal reflects the Funding onchange before continuing",
+                    trigger:
+                        ".o_selected_row .o_field_widget[name='price_subtotal']:contains(400,000.00)",
+                    run: function () {
+                        // Assertion only; do not trigger the default click.
+                    },
                 },
 
                 // ── Flow 5 — On the Allocations tab, add one line:
