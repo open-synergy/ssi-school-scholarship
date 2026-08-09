@@ -1064,7 +1064,14 @@ scenarios:
                 customer_invoice_id: "REC: d1_invoice_two"
                 amount_allocated: 50000.0
           - set:
-              receivable_account_id: false
+              # Odoo's own `Form.__setattr__` asserts a many2one is
+              # assigned a `BaseModel` instance of the field's own
+              # comodel -- a plain `false`/`null` fails that assertion
+              # outright (confirmed by the CI job's own traceback).
+              # `env['account.account']` is a real, empty
+              # `account.account` recordset, satisfying the type check
+              # while still clearing the field.
+              receivable_account_id: "EVAL: env['account.account']"
           - remove:
               field: "allocation_ids"
               index: 0
