@@ -13,6 +13,14 @@
                 type="text/javascript"
                 src="/ssi_school_scholarship/static/tests/tours/school_scholarship_type_tour.js"
             />
+        <script
+                type="text/javascript"
+                src="/ssi_school_scholarship/static/tests/tours/school_scholarship_funding_source_tour.js"
+            />
+        <script
+                type="text/javascript"
+                src="/ssi_school_scholarship/static/tests/tours/school_scholarship_program_tour.js"
+            />
     </xpath>
 </template>
 </odoo>

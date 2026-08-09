@@ -3,3 +3,5 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from . import school_scholarship_type  # noqa: F401
+from . import school_scholarship_funding_source  # noqa: F401
+from . import school_scholarship_program  # noqa: F401

@@ -1,0 +1,393 @@
+scenarios:
+  - name: "Program - Create"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Program Sale Journal 1"
+          code: "TPRGJ01"
+          type: "sale"
+
+      - step: "Create the discount account used by the scholarship type"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Program Discount Account 1"
+          code: "TPRGA01"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type"
+        values:
+          name: "Test Program Type 1"
+          code: "TPRGT01"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Create the grade type used by the school"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type"
+        values:
+          name: "Test Program Grade Type 1"
+          code: "TPRGGT01"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school"
+        values:
+          name: "Test Program School 1"
+          code: "TPRGS01"
+          grade_type_id: "REC: grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year"
+        values:
+          name: "Test Program Academic Year 1"
+          code: "TPRGY01"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_account"
+        values:
+          name: "Test Program Analytic 1"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source"
+        values:
+          name: "Test Program Funding Source 1"
+          code: "TPRGF01"
+          analytic_account_id: "REC: analytic_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program"
+        values:
+          name: "Test Scholarship Program"
+          code: "TPRG001"
+          type_id: "REC: type.id"
+          school_id: "REC: school.id"
+          academic_year_id: "REC: academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source.id"]]]
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Assert the scholarship program was created"
+        action: "assert"
+        target: "program"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Scholarship Program"
+          code:
+            type: "value"
+            expected: "TPRG001"
+          funding_basis:
+            type: "value"
+            expected: "need"
+
+  - name: "Program - Edit Name"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Program Sale Journal 2"
+          code: "TPRGJ02"
+          type: "sale"
+
+      - step: "Create the discount account used by the scholarship type"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Program Discount Account 2"
+          code: "TPRGA02"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type"
+        values:
+          name: "Test Program Type 2"
+          code: "TPRGT02"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Create the grade type used by the school"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type"
+        values:
+          name: "Test Program Grade Type 2"
+          code: "TPRGGT02"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school"
+        values:
+          name: "Test Program School 2"
+          code: "TPRGS02"
+          grade_type_id: "REC: grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year"
+        values:
+          name: "Test Program Academic Year 2"
+          code: "TPRGY02"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_account"
+        values:
+          name: "Test Program Analytic 2"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source"
+        values:
+          name: "Test Program Funding Source 2"
+          code: "TPRGF02"
+          analytic_account_id: "REC: analytic_account.id"
+
+      - step: "Create the scholarship program to edit"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program"
+        values:
+          name: "Original Program Name"
+          code: "TPRG002"
+          type_id: "REC: type.id"
+          school_id: "REC: school.id"
+          academic_year_id: "REC: academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source.id"]]]
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Update the program name"
+        action: "write"
+        target: "program"
+        values:
+          name: "Updated Program Name"
+
+      - step: "Assert the name was updated"
+        action: "assert"
+        target: "program"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Program Name"
+
+  - name: "Program - Delete"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Program Sale Journal 2b"
+          code: "TPRGJ02B"
+          type: "sale"
+
+      - step: "Create the discount account used by the scholarship type"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Program Discount Account 2b"
+          code: "TPRGA02B"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type"
+        values:
+          name: "Test Program Type 2b"
+          code: "TPRGT02B"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Create the grade type used by the school"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type"
+        values:
+          name: "Test Program Grade Type 2b"
+          code: "TPRGGT02B"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school"
+        values:
+          name: "Test Program School 2b"
+          code: "TPRGS02B"
+          grade_type_id: "REC: grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year"
+        values:
+          name: "Test Program Academic Year 2b"
+          code: "TPRGY02B"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_account"
+        values:
+          name: "Test Program Analytic 2b"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source"
+        values:
+          name: "Test Program Funding Source 2b"
+          code: "TPRGF02B"
+          analytic_account_id: "REC: analytic_account.id"
+
+      - step: "Create the scholarship program to delete"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program"
+        values:
+          name: "Program To Delete"
+          code: "TPRG002B"
+          type_id: "REC: type.id"
+          school_id: "REC: school.id"
+          academic_year_id: "REC: academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source.id"]]]
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Delete the scholarship program"
+        action: "call"
+        target: "program"
+        method: "unlink"
+
+      - step: "Verify the scholarship program no longer exists"
+        action: "search"
+        model: "school_scholarship_program"
+        domain: [["code", "=", "TPRG002B"]]
+        save_as: "result"
+        expect_count: 0
+
+  - name: "Program - Onchange Fills Account Fields From Type, Then Stays Editable"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Program Sale Journal 3"
+          code: "TPRGJ03"
+          type: "sale"
+
+      - step: "Create the discount account used by the scholarship type"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Program Discount Account 3"
+          code: "TPRGA03"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create a different discount account to switch to"
+        action: "create"
+        model: "account.account"
+        save_as: "other_discount_account"
+        values:
+          name: "Test Program Other Discount Account 3"
+          code: "TPRGA03B"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type, flagged as an employee benefit"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type"
+        values:
+          name: "Test Program Type 3"
+          code: "TPRGT03"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+          is_employee_benefit: true
+
+      - step: "Open a new program form and select the type"
+        action: "form"
+        model: "school_scholarship_program"
+        save: false
+        ops:
+          - set:
+              type_id: "REC: type"
+          - assert:
+              deduction_journal_id:
+                type: "m2o"
+                expected: "REC: sale_journal"
+              discount_account_id:
+                type: "m2o"
+                expected: "REC: discount_account"
+              is_employee_benefit:
+                type: "value"
+                expected: true
+          - set:
+              discount_account_id: "REC: other_discount_account"
+          - assert:
+              discount_account_id:
+                type: "m2o"
+                expected: "REC: other_discount_account"

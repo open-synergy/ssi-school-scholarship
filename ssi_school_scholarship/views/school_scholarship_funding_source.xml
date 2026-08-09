@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="school_scholarship_funding_source_view_search" model="ir.ui.view">
+    <field name="name">school_scholarship_funding_source - search</field>
+    <field name="model">school_scholarship_funding_source</field>
+    <field
+            name="inherit_id"
+            ref="ssi_master_data_mixin.mixin_master_data_view_search"
+        />
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="analytic_account_id" />
+                <field name="school_id" />
+                <field name="academic_year_id" />
+            </xpath>
+            <xpath expr="//search" position="inside">
+                <group expand="0" string="Group By">
+                    <filter
+                            name="group_by_school_id"
+                            string="School"
+                            context="{'group_by': 'school_id'}"
+                        />
+                    <filter
+                            name="group_by_academic_year_id"
+                            string="Academic Year"
+                            context="{'group_by': 'academic_year_id'}"
+                        />
+                </group>
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="school_scholarship_funding_source_view_tree" model="ir.ui.view">
+    <field name="name">school_scholarship_funding_source - tree</field>
+    <field name="model">school_scholarship_funding_source</field>
+    <field name="inherit_id" ref="ssi_master_data_mixin.mixin_master_data_view_tree" />
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='code']" position="after">
+                <field name="analytic_account_id" />
+                <field name="school_id" optional="hide" />
+                <field name="academic_year_id" optional="hide" />
+                <field name="amount_ceiling" widget="monetary" />
+                <field name="currency_id" invisible="1" />
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="school_scholarship_funding_source_view_form" model="ir.ui.view">
+    <field name="name">school_scholarship_funding_source - form</field>
+    <field name="model">school_scholarship_funding_source</field>
+    <field name="inherit_id" ref="ssi_master_data_mixin.mixin_master_data_view_form" />
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='active']" position="after">
+                <field name="analytic_account_id" />
+                <field name="school_id" />
+                <field name="academic_year_id" />
+                <field name="company_id" groups="base.group_multi_company" />
+                <field name="currency_id" groups="base.group_multi_currency" />
+                <field
+                        name="amount_ceiling"
+                        widget="monetary"
+                        options="{'currency_field': 'currency_id'}"
+                    />
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="school_scholarship_funding_source_action" model="ir.actions.act_window">
+    <field name="name">Scholarship Funding Sources</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">school_scholarship_funding_source</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem
+        id="school_scholarship_funding_source_menu"
+        name="Scholarship Funding Sources"
+        parent="menu_school_scholarship_configuration"
+        action="school_scholarship_funding_source_action"
+        groups="school_scholarship_funding_source_group"
+        sequence="20"
+    />
+
+</odoo>
