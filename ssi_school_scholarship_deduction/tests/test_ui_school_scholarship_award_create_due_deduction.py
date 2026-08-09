@@ -53,6 +53,12 @@ class TestUiSchoolScholarshipAwardCreateDueDeduction(HttpSavepointCase):
                 "date_start": "2026-07-01",
                 "date_end": "2026-12-31",
                 "year_id": tour_academic_year.id,
+                # Required before the enrollment using this term can
+                # ever reach "open" --
+                # school_enrollment._check_enrollment_window rejects
+                # opening an enrollment whose term is not itself open
+                # for enrollment.
+                "enrollment_state": "open",
             }
         )
         tour_grade = cls.env["school_grade"].create(

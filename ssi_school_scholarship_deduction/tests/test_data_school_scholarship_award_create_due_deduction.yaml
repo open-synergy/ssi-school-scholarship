@@ -40,6 +40,11 @@ scenarios:
           code: "CDDTM"
           date_start: 2026-07-01
           date_end: 2026-12-31
+          # Required before the enrollment using this term can ever
+          # reach "open" -- school_enrollment._check_enrollment_window
+          # rejects opening an enrollment whose term is not itself
+          # open for enrollment.
+          enrollment_state: "open"
           year_id: "REC: cdd_academic_year.id"
 
       - step: "Create the grade"
@@ -98,6 +103,10 @@ scenarios:
         target: "cdd_enrollment"
         method: "action_confirm"
         as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the enrollment as admin (opens it)"
         action: "call"
