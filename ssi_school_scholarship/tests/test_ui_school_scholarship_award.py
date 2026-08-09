@@ -262,6 +262,7 @@ class TestUiSchoolScholarshipAward(HttpSavepointCase):
                         0,
                         {
                             "product_id": cls.tour_product.id,
+                            "name": "TOUR Award Schedule Term A Fee",
                             "price_unit": 1000000.0,
                         },
                     )
@@ -320,6 +321,7 @@ class TestUiSchoolScholarshipAward(HttpSavepointCase):
                         0,
                         {
                             "product_id": cls.tour_product.id,
+                            "name": "TOUR Award Schedule Term B Fee",
                             "price_unit": 500000.0,
                         },
                     )

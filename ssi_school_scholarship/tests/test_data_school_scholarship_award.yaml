@@ -360,6 +360,7 @@ scenarios:
         action: "search"
         model: "school_scholarship_award_schedule"
         domain: [["award_id", "=", "REC: award_main.id"]]
+        save_as: "award_main_schedule"
         expect_count: 1
 
       - step: "Assert Amount Awarded now sums the generated Schedule"
