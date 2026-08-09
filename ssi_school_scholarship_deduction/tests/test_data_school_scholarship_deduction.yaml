@@ -1605,6 +1605,17 @@ scenarios:
             type: "value"
             expected: "open"
 
+      # Odoo core's own account.move.line._compute_amount_residual
+      # hardcodes residual to 0 for "lines from a non-reconcilable
+      # account" -- so d2_invoice_no_reconcile's own amount_residual
+      # is 0.0 regardless of its line's price_unit, and
+      # school_scholarship_deduction_allocation._check_amount_allocated
+      # (amount_allocated <= invoice_residual) would reject anything
+      # above 0.0 here. Allocating exactly 0.0 satisfies that
+      # constraint at creation time while still reaching the
+      # Receivable-Account-reconcile check first in
+      # _05_check_reconcilable's per-allocation loop, ahead of the
+      # amount-vs-residual check it would otherwise also fail.
       - step: "Create a deduction whose own Receivable Account cannot reconcile"
         action: "create"
         model: "school_scholarship_deduction"
@@ -1627,7 +1638,7 @@ scenarios:
             - - 0
               - 0
               - customer_invoice_id: "REC: d2_invoice_no_reconcile.id"
-                amount_allocated: 400000.0
+                amount_allocated: 0.0
 
       - step: "Confirm the non-reconcilable deduction"
         action: "call"
