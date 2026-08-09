@@ -116,6 +116,16 @@ class SchoolScholarshipDeductionLine(models.Model):
     currency_id = fields.Many2one(
         related="deduction_id.currency_id",
         compute_sudo=True,
+        # ``mixin.product_line_price`` declares this field
+        # ``required=True`` with its own stored default -- Odoo's field
+        # inheritance merges attributes across `_inherit`, so redefining
+        # the field here as a *non-stored* related field (no
+        # ``store=True``) without clearing ``required`` leaves it
+        # required=True with nothing to satisfy that requirement client
+        # side until the row is actually saved. The same reasoning, and
+        # the identical fix, already applies to ``account_id`` above and
+        # to the sibling override on ``school_scholarship_award_benefit``.
+        required=False,
     )
     company_id = fields.Many2one(
         related="deduction_id.company_id",
