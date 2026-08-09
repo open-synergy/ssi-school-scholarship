@@ -1,0 +1,315 @@
+scenarios:
+  - name: "Scholarship Type - Create"
+    steps:
+      - step: "Create the sale journal used as a valid Deduction Journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Scholarship Sale Journal 1"
+          code: "TSCHJ01"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create a non-reconcilable account used as a valid Discount Account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Scholarship Discount Account 1"
+          code: "TSCHA01"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "scholarship_type"
+        values:
+          name: "Test Scholarship Type"
+          code: "TSCH001"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Assert the scholarship type was created"
+        action: "assert"
+        target: "scholarship_type"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Scholarship Type"
+          code:
+            type: "value"
+            expected: "TSCH001"
+          is_employee_benefit:
+            type: "value"
+            expected: false
+
+  - name: "Scholarship Type - Edit"
+    steps:
+      - step: "Create the sale journal used as a valid Deduction Journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Scholarship Sale Journal 2"
+          code: "TSCHJ02"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create a non-reconcilable account used as a valid Discount Account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Scholarship Discount Account 2"
+          code: "TSCHA02"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type to edit"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "scholarship_type"
+        values:
+          name: "Original Scholarship Type Name"
+          code: "TSCH002"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Update the scholarship type name"
+        action: "write"
+        target: "scholarship_type"
+        values:
+          name: "Updated Scholarship Type Name"
+
+      - step: "Assert the name was updated"
+        action: "assert"
+        target: "scholarship_type"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Scholarship Type Name"
+
+  - name: "Scholarship Type - Delete"
+    steps:
+      - step: "Create the sale journal used as a valid Deduction Journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Scholarship Sale Journal 3"
+          code: "TSCHJ03"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create a non-reconcilable account used as a valid Discount Account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Scholarship Discount Account 3"
+          code: "TSCHA03"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type to delete"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "scholarship_type"
+        values:
+          name: "Scholarship Type To Delete"
+          code: "TSCH003"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+
+      - step: "Delete the scholarship type"
+        action: "call"
+        target: "scholarship_type"
+        method: "unlink"
+
+      - step: "Verify the scholarship type no longer exists"
+        action: "search"
+        model: "school_scholarship_type"
+        domain: [["code", "=", "TSCH003"]]
+        save_as: "result"
+        expect_count: 0
+
+  - name: "Scholarship Type - Discount Account Must Not Be Reconcilable"
+    steps:
+      - step: "Create the sale journal used as a valid Deduction Journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Scholarship Sale Journal 4"
+          code: "TSCHJ04"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create a reconcilable account"
+        action: "create"
+        model: "account.account"
+        save_as: "reconcilable_account"
+        values:
+          name: "Test Scholarship Reconcilable Discount Account"
+          code: "TSCHA04"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: true
+
+      - step: "Reconcilable Discount Account must be rejected"
+        action: "create"
+        model: "school_scholarship_type"
+        expect_error:
+          type: "UserError"
+          message_contains: "reconcilable"
+        values:
+          name: "Invalid Scholarship Type"
+          code: "TSCH004"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: reconcilable_account.id"
+
+  - name: "Scholarship Type - Payable Account Must Be Reconcilable"
+    steps:
+      - step: "Create the sale journal used as a valid Deduction Journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Scholarship Sale Journal 5"
+          code: "TSCHJ05"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create a non-reconcilable account used as a valid Discount Account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Scholarship Discount Account 5"
+          code: "TSCHA05"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create a non-reconcilable account for the Payable Account"
+        action: "create"
+        model: "account.account"
+        save_as: "non_reconcilable_payable_account"
+        values:
+          name: "Test Scholarship Non-Reconcilable Payable Account"
+          code: "TSCHA05P"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Non-reconcilable Payable Account must be rejected"
+        action: "create"
+        model: "school_scholarship_type"
+        expect_error:
+          type: "UserError"
+          message_contains: "reconcilable"
+        values:
+          name: "Invalid Scholarship Type"
+          code: "TSCH005"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+          payable_account_id: "REC: non_reconcilable_payable_account.id"
+
+  - name: "Scholarship Type - Deferred Discount Account Must Be Asset Type"
+    steps:
+      - step: "Create the sale journal used as a valid Deduction Journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sale_journal"
+        values:
+          name: "Test Scholarship Sale Journal 6"
+          code: "TSCHJ06"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create a non-reconcilable income-type account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Scholarship Discount Account 6"
+          code: "TSCHA06"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Income-type Deferred Discount Account must be rejected"
+        action: "create"
+        model: "school_scholarship_type"
+        expect_error:
+          type: "UserError"
+          message_contains: "asset"
+        values:
+          name: "Invalid Scholarship Type"
+          code: "TSCH006"
+          deduction_journal_id: "REC: sale_journal.id"
+          discount_account_id: "REC: discount_account.id"
+          deferred_discount_account_id: "REC: discount_account.id"
+
+  - name: "Scholarship Type - Deduction Journal Must Not Be Bank Or Cash"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create a non-reconcilable account used as a valid Discount Account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account"
+        values:
+          name: "Test Scholarship Discount Account 7"
+          code: "TSCHA07"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create a bank journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "bank_journal"
+        values:
+          name: "Test Scholarship Bank Journal"
+          code: "TSCHJ07"
+          type: "bank"
+
+      - step: "Bank Deduction Journal must be rejected"
+        action: "create"
+        model: "school_scholarship_type"
+        expect_error:
+          type: "UserError"
+          message_contains: "Cash or Bank"
+        values:
+          name: "Invalid Scholarship Type"
+          code: "TSCH007"
+          deduction_journal_id: "REC: bank_journal.id"
+          discount_account_id: "REC: discount_account.id"
