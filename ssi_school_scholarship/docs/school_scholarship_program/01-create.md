@@ -34,6 +34,9 @@
    - **Funding Basis**: Automatically defaulted to **Need Based**. Change it to **Merit
      Based**, **Hybrid**, or **Categorical** if this program grants scholarships on a
      different basis.
+   - **Sequence**: Automatically defaulted to **5**. Change it to control the display
+     order among Scholarship Programs within the same academic year — lower values
+     appear first.
 4. On the **Eligibility** tab, fill in:
    - **Grades**: Optionally select the grades eligible for this program. Leave empty to
      make every grade eligible.

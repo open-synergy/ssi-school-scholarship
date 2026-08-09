@@ -48,6 +48,9 @@
     <field name="mode">primary</field>
     <field name="arch" type="xml">
         <data>
+            <xpath expr="//field[@name='code']" position="before">
+                <field name="sequence" widget="handle" />
+            </xpath>
             <xpath expr="//field[@name='code']" position="after">
                 <field name="school_id" />
                 <field name="academic_year_id" />
@@ -67,6 +70,7 @@
     <field name="arch" type="xml">
         <data>
             <xpath expr="//field[@name='active']" position="after">
+                <field name="sequence" />
                 <field name="type_id" />
                 <field name="school_id" />
                 <field name="academic_year_id" />

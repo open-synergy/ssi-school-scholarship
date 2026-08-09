@@ -23,6 +23,13 @@ class SchoolScholarshipProgram(models.Model):
     _description = "School Scholarship Program"
     _order = "academic_year_id desc, sequence, id"
 
+    sequence = fields.Integer(
+        string="Sequence",
+        default=5,
+        required=True,
+        help="Display order of the scholarship program within the same "
+        "academic year. Lower values appear first in the list.",
+    )
     type_id = fields.Many2one(
         string="Scholarship Type",
         comodel_name="school_scholarship_type",
