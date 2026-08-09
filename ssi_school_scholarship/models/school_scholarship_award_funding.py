@@ -143,12 +143,16 @@ class SchoolScholarshipAwardFunding(models.Model):
         :raises ValidationError: when the sum of ``percentage`` across
             every funding line of the same award is not exactly 100.
         """
-        checked_awards = self.env["school_scholarship_award"]
+        # No falsy-value guard on ``award_id``: it is ``required``, so
+        # its NOT NULL column always holds a value before this
+        # ``@api.constrains`` method ever runs. No dedup-by-award
+        # guard either: every funding line created through this
+        # model's own O2M commands triggers this constrain
+        # individually (one record per call), so a same-award skip
+        # never has anything to skip -- re-summing per line is
+        # redundant but harmless, and never reachable to test.
         for record in self:
             award = record.award_id
-            if not award or award in checked_awards:
-                continue
-            checked_awards |= award
             total_percentage = sum(award.funding_ids.mapped("percentage"))
             precision = award.company_currency_id.decimal_places
             if float_compare(total_percentage, 100.0, precision_digits=precision) != 0:
@@ -172,9 +176,11 @@ Solution: Adjust the Percentage of the funding lines so they add up to 100
         :raises ValidationError: when another funding line of the
             same award already uses the same ``funding_source_id``.
         """
+        # No falsy-value guard: ``funding_source_id`` is ``required``,
+        # so its NOT NULL column always holds a value before this
+        # ``@api.constrains`` method ever runs (same reasoning as
+        # ``school_scholarship_funding_source._check_analytic_account_id``).
         for record in self:
-            if not record.funding_source_id:
-                continue
             duplicate_count = self.search_count(
                 [
                     ("id", "!=", record.id),

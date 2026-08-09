@@ -328,6 +328,45 @@ scenarios:
             type: "value"
             expected: 1
 
+      # ── amount_realized is a placeholder compute (@api.depends()
+      # with no dependency, wired up for real in the schedule item),
+      # so nothing in the normal create/confirm/approve flow above
+      # ever triggers it -- call it directly to verify the documented
+      # placeholder value.
+      - step: "Force-compute the award's Amount Realized placeholder"
+        action: "call"
+        target: "award_main"
+        method: "_compute_amount_realized"
+        asserts:
+          amount_realized:
+            type: "value"
+            expected: 0.0
+
+      - step: "Find the main award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: award_main.id"]]
+        limit: 1
+        save_as: "funding_main_line"
+
+      - step: "Force-compute the Funding line's Amount Realized placeholder"
+        action: "call"
+        target: "funding_main_line"
+        method: "_compute_amount_realized"
+        asserts:
+          amount_realized:
+            type: "value"
+            expected: 0.0
+
+      - step: "Force-compute the Funding Source's Amount Realized placeholder"
+        action: "call"
+        target: "funding_source1"
+        method: "_compute_amount_realized"
+        asserts:
+          amount_realized:
+            type: "value"
+            expected: 0.0
+
       # ── Cancel the now-Open award via the cancel reason wizard ──
       - step: "Create the cancellation reason"
         action: "create"
@@ -533,6 +572,56 @@ scenarios:
         domain: [["program_id", "=", "REC: program2.id"]]
         limit: 1
         save_as: "scope_line2"
+
+      - step: "Create the employee benefit account"
+        action: "create"
+        model: "account.account"
+        save_as: "employee_benefit_account2"
+        values:
+          name: "AW2 Employee Benefit Account"
+          code: "AW2EBA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      # ── Compute (employee benefit branch): a Benefit line on an
+      # award flagged Is Employee Benefit must post to the award's
+      # Employee Benefit Account, not its Discount/Expense Account --
+      # every other award fixture in this file has
+      # is_employee_benefit false, so this is the only place that
+      # branch of _compute_account_id is exercised.
+      - step: "Create an employee-benefit award with one Benefit line"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award_employee_benefit"
+        values:
+          program_id: "REC: program2.id"
+          student_id: "REC: student2.id"
+          enrollment_id: "REC: enrollment2.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          is_employee_benefit: true
+          employee_benefit_account_id: "REC: employee_benefit_account2.id"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "AW2 Employee Benefit Line"
+                product_id: "REC: product2.id"
+                price_unit: 250000.0
+
+      - step: "Find the employee-benefit award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: award_employee_benefit.id"]]
+        limit: 1
+        save_as: "employee_benefit_line"
+
+      - step: "Assert the Benefit line posts to the Employee Benefit Account"
+        action: "assert"
+        target: "employee_benefit_line"
+        asserts:
+          account_id:
+            type: "m2o"
+            expected: "REC: employee_benefit_account2"
 
       - step: "Create a bare award to host the Benefit onchange test"
         action: "create"
