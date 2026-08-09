@@ -194,7 +194,13 @@ scenarios:
             type: "value"
             expected: 0.0
 
-      # ── Positive (compute): two Benefit lines ───────────────────
+      # ── Positive (compute, empty condition): two Benefit lines, but
+      # Amount Awarded is derived from the Schedule now
+      # (odoo-school-scholarship#6), not from the Benefit lines
+      # themselves -- it stays zero until a Schedule is generated,
+      # which only happens once this award opens (see
+      # test_school_scholarship_award_schedule.py for the summation
+      # of multiple Schedule lines).
       - step: "Create an award with two Benefit lines"
         action: "create"
         model: "school_scholarship_award"
@@ -223,15 +229,48 @@ scenarios:
               - funding_source_id: "REC: funding_source1.id"
                 percentage: 100.0
 
-      - step: "Assert Amount Awarded sums both Benefit lines"
+      - step: "Assert Amount Awarded stays zero without a Schedule"
         action: "assert"
         target: "award_two"
         asserts:
           amount_awarded:
             type: "value"
-            expected: 500000.0
+            expected: 0.0
 
       # ── Positive: create, state transition, funding committed ──
+      # Amount Awarded is now derived from the Schedule
+      # (odoo-school-scholarship#6), so a Payment Term matching the
+      # Benefit line's Product is required for opening the award to
+      # generate a Schedule line the funding/quota assertions below
+      # can rely on.
+      - step: "Create the income account used by the payment term detail"
+        action: "create"
+        model: "account.account"
+        save_as: "income_account1"
+        values:
+          name: "AW1 Income Account"
+          code: "AW1IA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create a Payment Term matching the main award's Benefit"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "payment_term_main"
+        values:
+          enrollment_id: "REC: enrollment1.id"
+          name: "AW1 Main Payment Term"
+          date_invoice: 2026-08-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: product1.id"
+                name: "AW1 Main Payment Term Fee"
+                account_id: "REC: income_account1.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
       - step: "Create the main award with one Benefit and one Funding line"
         action: "create"
         model: "school_scholarship_award"
@@ -253,6 +292,7 @@ scenarios:
               - name: "AW1 Main Benefit Line"
                 product_id: "REC: product1.id"
                 price_unit: 1000000.0
+                percentage: 100.0
           funding_ids:
             - - 0
               - 0
@@ -274,7 +314,7 @@ scenarios:
             expected: "active"
           amount_awarded:
             type: "value"
-            expected: 1000000.0
+            expected: 0.0
 
       - step: "Confirm the award as admin"
         action: "call"
@@ -312,6 +352,28 @@ scenarios:
             operator: "not_equals"
             expected: "/"
 
+      # ── Opening the award auto-generates one Schedule line from the
+      # Payment Term above (odoo-school-scholarship#6), which is what
+      # Amount Awarded, and therefore the funding commitment below,
+      # is now derived from.
+      - step: "Assert opening generated one Schedule line"
+        action: "search"
+        model: "school_scholarship_award_schedule"
+        domain: [["award_id", "=", "REC: award_main.id"]]
+        save_as: "award_main_schedule"
+        expect_count: 1
+
+      - step: "Assert Amount Awarded now sums the generated Schedule"
+        action: "assert"
+        target: "award_main"
+        asserts:
+          amount_awarded:
+            type: "value"
+            expected: 1000000.0
+          amount_realized:
+            type: "value"
+            expected: 0.0
+
       - step: "Assert the funding source committed the award's amount"
         action: "assert"
         target: "funding_source1"
@@ -327,20 +389,6 @@ scenarios:
           quota_used:
             type: "value"
             expected: 1
-
-      # ── amount_realized is a placeholder compute (@api.depends()
-      # with no dependency, wired up for real in the schedule item),
-      # so nothing in the normal create/confirm/approve flow above
-      # ever triggers it -- call it directly to verify the documented
-      # placeholder value.
-      - step: "Force-compute the award's Amount Realized placeholder"
-        action: "call"
-        target: "award_main"
-        method: "_compute_amount_realized"
-        asserts:
-          amount_realized:
-            type: "value"
-            expected: 0.0
 
       - step: "Find the main award's Funding line"
         action: "search"

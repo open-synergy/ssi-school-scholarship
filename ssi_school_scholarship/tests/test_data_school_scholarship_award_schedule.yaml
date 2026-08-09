@@ -1,0 +1,1551 @@
+options:
+  auto_refresh: true
+scenarios:
+  - name: "Award Schedule - Generate From Payment Terms (Fee Reduction)"
+    steps:
+      # ── Shared fixture chain (suffix AS1) ────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "as1_grade_type"
+        values:
+          name: "AS1 Grade Type"
+          code: "AS1GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "as1_school"
+        values:
+          name: "AS1 School"
+          code: "AS1SC"
+          grade_type_id: "REC: as1_grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "as1_academic_year"
+        values:
+          name: "AS1 Academic Year"
+          code: "AS1AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "as1_academic_term"
+        values:
+          name: "AS1 Term"
+          code: "AS1TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: as1_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "as1_grade"
+        values:
+          name: "AS1 Grade"
+          code: "AS1GR"
+          type_id: "REC: as1_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "as1_grade_class"
+        values:
+          name: "AS1 Class"
+          code: "AS1CL"
+          school_id: "REC: as1_school.id"
+          grade_id: "REC: as1_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "as1_contact"
+        values:
+          name: "AS1 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "as1_student"
+        values:
+          name: "AS1 Student"
+          code: "AS1ST"
+          contact_id: "REC: as1_contact.id"
+          school_id: "REC: as1_school.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "as1_enrollment"
+        values:
+          academic_year_id: "REC: as1_academic_year.id"
+          academic_term_id: "REC: as1_academic_term.id"
+          school_id: "REC: as1_school.id"
+          grade_id: "REC: as1_grade.id"
+          grade_class_id: "REC: as1_grade_class.id"
+          student_id: "REC: as1_student.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "as1_analytic"
+        values:
+          name: "AS1 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "as1_funding_source"
+        values:
+          name: "AS1 Funding Source"
+          code: "AS1FS"
+          analytic_account_id: "REC: as1_analytic.id"
+
+      - step: "Create the product covered by the benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "as1_product"
+        values:
+          name: "AS1 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "as1_journal"
+        values:
+          name: "AS1 Journal"
+          code: "JAS1"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "as1_discount_account"
+        values:
+          name: "AS1 Discount Account"
+          code: "AS1DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the income account used by payment term details"
+        action: "create"
+        model: "account.account"
+        save_as: "as1_income_account"
+        values:
+          name: "AS1 Income Account"
+          code: "AS1IA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "as1_type"
+        values:
+          name: "AS1 Type"
+          code: "AS1TY"
+          deduction_journal_id: "REC: as1_journal.id"
+          discount_account_id: "REC: as1_discount_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "as1_program"
+        values:
+          name: "AS1 Program"
+          code: "AS1PRG"
+          type_id: "REC: as1_type.id"
+          school_id: "REC: as1_school.id"
+          academic_year_id: "REC: as1_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: as1_funding_source.id"]]]
+          deduction_journal_id: "REC: as1_journal.id"
+          discount_account_id: "REC: as1_discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: as1_product.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      # ── Six Payment Terms, one per month, each with one detail line
+      # matching AS1 Product at 1,000,000 -- the enrollment's billing
+      # cycle a semester award schedule must follow.
+      - step: "Create Payment Term 1 (July)"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "as1_term1"
+        values:
+          enrollment_id: "REC: as1_enrollment.id"
+          name: "AS1 Term July"
+          date_invoice: 2026-07-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: as1_product.id"
+                name: "AS1 Term July Fee"
+                account_id: "REC: as1_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create Payment Term 2 (August)"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "as1_term2"
+        values:
+          enrollment_id: "REC: as1_enrollment.id"
+          name: "AS1 Term August"
+          date_invoice: 2026-08-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: as1_product.id"
+                name: "AS1 Term August Fee"
+                account_id: "REC: as1_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create Payment Term 3 (September)"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "as1_term3"
+        values:
+          enrollment_id: "REC: as1_enrollment.id"
+          name: "AS1 Term September"
+          date_invoice: 2026-09-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: as1_product.id"
+                name: "AS1 Term September Fee"
+                account_id: "REC: as1_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create Payment Term 4 (October)"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "as1_term4"
+        values:
+          enrollment_id: "REC: as1_enrollment.id"
+          name: "AS1 Term October"
+          date_invoice: 2026-10-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: as1_product.id"
+                name: "AS1 Term October Fee"
+                account_id: "REC: as1_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create Payment Term 5 (November)"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "as1_term5"
+        values:
+          enrollment_id: "REC: as1_enrollment.id"
+          name: "AS1 Term November"
+          date_invoice: 2026-11-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: as1_product.id"
+                name: "AS1 Term November Fee"
+                account_id: "REC: as1_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create Payment Term 6 (December)"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "as1_term6"
+        values:
+          enrollment_id: "REC: as1_enrollment.id"
+          name: "AS1 Term December"
+          date_invoice: 2026-12-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: as1_product.id"
+                name: "AS1 Term December Fee"
+                account_id: "REC: as1_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create the semester award (40% Fee Reduction on AS1 Product)"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "as1_award"
+        values:
+          program_id: "REC: as1_program.id"
+          student_id: "REC: as1_student.id"
+          enrollment_id: "REC: as1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: as1_discount_account.id"
+          # Owned by admin so the ``as_user: base.user_admin`` steps
+          # below are not rejected by the internal_user_rule record
+          # rule (odoo-development-unit-test, test-traps.md T-05).
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "AS1 Benefit"
+                product_id: "REC: as1_product.id"
+                price_unit: 1000000.0
+                percentage: 40.0
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: as1_funding_source.id"
+                percentage: 100.0
+
+      - step: "Assert Amount Awarded is zero before any Schedule exists"
+        action: "assert"
+        target: "as1_award"
+        asserts:
+          amount_awarded:
+            type: "value"
+            expected: 0.0
+          schedule_count:
+            type: "value"
+            expected: 0
+
+      - step: "Confirm the award as admin"
+        action: "call"
+        target: "as1_award"
+        method: "action_confirm"
+        as_user: "REF: base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      # ``approve_ok`` shares its compute method with every other
+      # policy field, and confirming already cached approve_ok=False
+      # (no approver existed yet). The ``asserts:`` block on the
+      # Confirm step above forces a cache refresh (file-level
+      # ``options: {auto_refresh: true}``) before Approve reads it
+      # (odoo-development-unit-test, test-traps.md T-04 / coverage
+      # rule 28 -- new files rely on that option instead of a manual
+      # cache-busting call).
+      - step: "Approve the award as admin (opens it, auto-generating the Schedule)"
+        action: "call"
+        target: "as1_award"
+        method: "action_approve_approval"
+        as_user: "REF: base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert the six Payment Terms each got one Schedule line"
+        action: "search"
+        model: "school_scholarship_award_schedule"
+        domain: [["award_id", "=", "REC: as1_award.id"]]
+        save_as: "as1_all_schedules"
+        expect_count: 6
+
+      - step: "Assert Amount Awarded now sums the six Schedule lines"
+        action: "assert"
+        target: "as1_award"
+        asserts:
+          amount_awarded:
+            type: "value"
+            expected: 2400000.0
+          schedule_count:
+            type: "value"
+            expected: 6
+          realized_count:
+            type: "value"
+            expected: 0
+
+      - step: "Regenerate the Schedule (idempotent, no new lines)"
+        action: "call"
+        target: "as1_award"
+        method: "action_generate_schedule"
+
+      - step: "Assert regeneration did not add a seventh line"
+        action: "search"
+        model: "school_scholarship_award_schedule"
+        domain: [["award_id", "=", "REC: as1_award.id"]]
+        save_as: "as1_all_schedules_after_regenerate"
+        expect_count: 6
+
+      # ── Manual override survives both a no-op regenerate and a
+      # genuine recompute triggered by a Benefit line change.
+      - step: "Find the July Schedule line"
+        action: "search"
+        model: "school_scholarship_award_schedule"
+        domain:
+          [
+            ["award_id", "=", "REC: as1_award.id"],
+            ["payment_term_id", "=", "REC: as1_term1.id"],
+          ]
+        limit: 1
+        save_as: "as1_july_schedule"
+
+      - step: "Assert the generated line is Scheduled with the term's own name"
+        action: "assert"
+        target: "as1_july_schedule"
+        asserts:
+          state:
+            type: "value"
+            expected: "scheduled"
+          name:
+            type: "value"
+            expected: "AS1 Term July"
+          amount_planned:
+            type: "value"
+            expected: 400000.0
+
+      - step: "Manually override the July Schedule line's Amount Planned"
+        action: "write"
+        target: "as1_july_schedule"
+        values:
+          amount_planned: 250000.0
+
+      - step: "Assert the manual write flagged Amount Planned Manual"
+        action: "assert"
+        target: "as1_july_schedule"
+        asserts:
+          amount_planned:
+            type: "value"
+            expected: 250000.0
+          amount_planned_manual:
+            type: "value"
+            expected: true
+
+      - step: "Regenerate again -- the manual override is untouched"
+        action: "call"
+        target: "as1_award"
+        method: "action_generate_schedule"
+
+      - step: "Assert the manual override survived the no-op regenerate"
+        action: "assert"
+        target: "as1_july_schedule"
+        asserts:
+          amount_planned:
+            type: "value"
+            expected: 250000.0
+
+      - step: "Find the AS1 Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: as1_award.id"]]
+        limit: 1
+        save_as: "as1_benefit"
+
+      - step: "Change the Benefit line's Percentage (a real dependency change)"
+        action: "write"
+        target: "as1_benefit"
+        values:
+          percentage: 50.0
+
+      - step: "Assert the manually overridden line still ignores the new formula"
+        action: "assert"
+        target: "as1_july_schedule"
+        asserts:
+          amount_planned:
+            type: "value"
+            expected: 250000.0
+
+      - step: "Find the August Schedule line (never manually overridden)"
+        action: "search"
+        model: "school_scholarship_award_schedule"
+        domain:
+          [
+            ["award_id", "=", "REC: as1_award.id"],
+            ["payment_term_id", "=", "REC: as1_term2.id"],
+          ]
+        limit: 1
+        save_as: "as1_august_schedule"
+
+      - step: "Assert the non-overridden line recomputed to the new Percentage"
+        action: "assert"
+        target: "as1_august_schedule"
+        asserts:
+          amount_planned:
+            type: "value"
+            expected: 500000.0
+
+  - name: "Award Schedule - Base Amount And Amount Planned Compute"
+    steps:
+      # ── Shared fixture chain (suffix AS2) ────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "as2_grade_type"
+        values:
+          name: "AS2 Grade Type"
+          code: "AS2GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "as2_school"
+        values:
+          name: "AS2 School"
+          code: "AS2SC"
+          grade_type_id: "REC: as2_grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "as2_academic_year"
+        values:
+          name: "AS2 Academic Year"
+          code: "AS2AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "as2_academic_term"
+        values:
+          name: "AS2 Term"
+          code: "AS2TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: as2_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "as2_grade"
+        values:
+          name: "AS2 Grade"
+          code: "AS2GR"
+          type_id: "REC: as2_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "as2_grade_class"
+        values:
+          name: "AS2 Class"
+          code: "AS2CL"
+          school_id: "REC: as2_school.id"
+          grade_id: "REC: as2_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "as2_contact"
+        values:
+          name: "AS2 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "as2_student"
+        values:
+          name: "AS2 Student"
+          code: "AS2ST"
+          contact_id: "REC: as2_contact.id"
+          school_id: "REC: as2_school.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "as2_enrollment"
+        values:
+          academic_year_id: "REC: as2_academic_year.id"
+          academic_term_id: "REC: as2_academic_term.id"
+          school_id: "REC: as2_school.id"
+          grade_id: "REC: as2_grade.id"
+          grade_class_id: "REC: as2_grade_class.id"
+          student_id: "REC: as2_student.id"
+
+      - step: "Create the product category matched by the category-scoped Benefit"
+        action: "create"
+        model: "product.category"
+        save_as: "as2_category"
+        values:
+          name: "AS2 Category"
+
+      - step: "Create the in-scope product (its own category)"
+        action: "create"
+        model: "product.product"
+        save_as: "as2_product_in"
+        values:
+          name: "AS2 Product In"
+          type: "service"
+          categ_id: "REC: as2_category.id"
+
+      - step: "Create the out-of-scope product"
+        action: "create"
+        model: "product.product"
+        save_as: "as2_product_out"
+        values:
+          name: "AS2 Product Out"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "as2_journal"
+        values:
+          name: "AS2 Journal"
+          code: "JAS2"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "as2_discount_account"
+        values:
+          name: "AS2 Discount Account"
+          code: "AS2DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the income account used by payment term details"
+        action: "create"
+        model: "account.account"
+        save_as: "as2_income_account"
+        values:
+          name: "AS2 Income Account"
+          code: "AS2IA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "as2_type"
+        values:
+          name: "AS2 Type"
+          code: "AS2TY"
+          deduction_journal_id: "REC: as2_journal.id"
+          discount_account_id: "REC: as2_discount_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "as2_program"
+        values:
+          name: "AS2 Program"
+          code: "AS2PRG"
+          type_id: "REC: as2_type.id"
+          school_id: "REC: as2_school.id"
+          academic_year_id: "REC: as2_academic_year.id"
+          deduction_journal_id: "REC: as2_journal.id"
+          discount_account_id: "REC: as2_discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: as2_product_in.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      # ── Payment Term A: an in-scope detail line (1,000,000) mixed
+      # with an out-of-scope one (500,000) -- proves Product-basis
+      # matching excludes the latter.
+      - step: "Create Payment Term A"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "as2_term_a"
+        values:
+          enrollment_id: "REC: as2_enrollment.id"
+          name: "AS2 Term A"
+          date_invoice: 2026-08-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: as2_product_in.id"
+                name: "AS2 Term A In-Scope Fee"
+                account_id: "REC: as2_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+            - - 0
+              - 0
+              - product_id: "REC: as2_product_out.id"
+                name: "AS2 Term A Out-Of-Scope Fee"
+                account_id: "REC: as2_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 500000.0
+
+      # ── Payment Term B: a single detail line on the in-scope
+      # product, used for the Product-Category-basis match.
+      - step: "Create Payment Term B"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "as2_term_b"
+        values:
+          enrollment_id: "REC: as2_enrollment.id"
+          name: "AS2 Term B"
+          date_invoice: 2026-08-05
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: as2_product_in.id"
+                name: "AS2 Term B Fee"
+                account_id: "REC: as2_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 700000.0
+
+      - step: "Create a draft award to host the compute Benefit lines"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "as2_award"
+        values:
+          program_id: "REC: as2_program.id"
+          student_id: "REC: as2_student.id"
+          enrollment_id: "REC: as2_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "AS2 Benefit Percentage"
+                product_id: "REC: as2_product_in.id"
+                percentage: 40.0
+            - - 0
+              - 0
+              - name: "AS2 Benefit Category"
+                product_id: "REC: as2_product_in.id"
+                product_category_id: "REC: as2_category.id"
+                percentage: 40.0
+            - - 0
+              - 0
+              - name: "AS2 Benefit Fixed"
+                product_id: "REC: as2_product_in.id"
+                computation: "fixed"
+                amount_fixed: 350000.0
+            - - 0
+              - 0
+              - name: "AS2 Benefit Full"
+                product_id: "REC: as2_product_in.id"
+                computation: "full"
+            - - 0
+              - 0
+              - name: "AS2 Benefit Capped"
+                product_id: "REC: as2_product_in.id"
+                percentage: 40.0
+                max_amount_per_period: 300000.0
+            - - 0
+              - 0
+              - name: "AS2 Benefit Cash"
+                product_id: "REC: as2_product_in.id"
+                benefit_type: "cash"
+                periodicity: "monthly"
+
+      - step: "Find the Percentage Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain:
+          [
+            ["award_id", "=", "REC: as2_award.id"],
+            ["name", "=", "AS2 Benefit Percentage"],
+          ]
+        limit: 1
+        save_as: "as2_benefit_percentage"
+
+      - step: "Find the Category Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain:
+          [
+            ["award_id", "=", "REC: as2_award.id"],
+            ["name", "=", "AS2 Benefit Category"],
+          ]
+        limit: 1
+        save_as: "as2_benefit_category"
+
+      - step: "Find the Fixed Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain:
+          [["award_id", "=", "REC: as2_award.id"], ["name", "=", "AS2 Benefit Fixed"]]
+        limit: 1
+        save_as: "as2_benefit_fixed"
+
+      - step: "Find the Full Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain:
+          [["award_id", "=", "REC: as2_award.id"], ["name", "=", "AS2 Benefit Full"]]
+        limit: 1
+        save_as: "as2_benefit_full"
+
+      - step: "Find the Capped Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain:
+          [["award_id", "=", "REC: as2_award.id"], ["name", "=", "AS2 Benefit Capped"]]
+        limit: 1
+        save_as: "as2_benefit_capped"
+
+      - step: "Find the Cash Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain:
+          [["award_id", "=", "REC: as2_award.id"], ["name", "=", "AS2 Benefit Cash"]]
+        limit: 1
+        save_as: "as2_benefit_cash"
+
+      # ── Positive (compute, Product basis): excludes the
+      # out-of-scope detail line.
+      - step: "Create the Percentage schedule line against Term A"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "as2_schedule_percentage"
+        values:
+          benefit_id: "REC: as2_benefit_percentage.id"
+          payment_term_id: "REC: as2_term_a.id"
+          date: "REC: as2_term_a.date_invoice"
+
+      - step: "Assert Base Amount excludes the out-of-scope detail"
+        action: "assert"
+        target: "as2_schedule_percentage"
+        asserts:
+          base_amount:
+            type: "value"
+            expected: 1000000.0
+          amount_planned:
+            type: "value"
+            expected: 400000.0
+          name:
+            type: "value"
+            expected: "AS2 Term A"
+
+      # ── Positive (compute, Product Category basis).
+      - step: "Create the Category schedule line against Term B"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "as2_schedule_category"
+        values:
+          benefit_id: "REC: as2_benefit_category.id"
+          payment_term_id: "REC: as2_term_b.id"
+          date: "REC: as2_term_b.date_invoice"
+
+      - step: "Assert Base Amount matches by Product Category"
+        action: "assert"
+        target: "as2_schedule_category"
+        asserts:
+          base_amount:
+            type: "value"
+            expected: 700000.0
+
+      # ── Positive (compute, Fixed Amount computation).
+      - step: "Create the Fixed schedule line against Term A"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "as2_schedule_fixed"
+        values:
+          benefit_id: "REC: as2_benefit_fixed.id"
+          payment_term_id: "REC: as2_term_a.id"
+          date: "REC: as2_term_a.date_invoice"
+
+      - step: "Assert Amount Planned equals the Fixed Amount"
+        action: "assert"
+        target: "as2_schedule_fixed"
+        asserts:
+          amount_planned:
+            type: "value"
+            expected: 350000.0
+
+      # ── Positive (compute, Full Coverage computation).
+      - step: "Create the Full schedule line against Term A"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "as2_schedule_full"
+        values:
+          benefit_id: "REC: as2_benefit_full.id"
+          payment_term_id: "REC: as2_term_a.id"
+          date: "REC: as2_term_a.date_invoice"
+
+      - step: "Assert Amount Planned equals the full Base Amount"
+        action: "assert"
+        target: "as2_schedule_full"
+        asserts:
+          amount_planned:
+            type: "value"
+            expected: 1000000.0
+
+      # ── Positive (compute, Max Amount per Period cap).
+      - step: "Create the Capped schedule line against Term A"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "as2_schedule_capped"
+        values:
+          benefit_id: "REC: as2_benefit_capped.id"
+          payment_term_id: "REC: as2_term_a.id"
+          date: "REC: as2_term_a.date_invoice"
+
+      - step: "Assert Amount Planned is capped at Max Amount per Period"
+        action: "assert"
+        target: "as2_schedule_capped"
+        asserts:
+          amount_planned:
+            type: "value"
+            expected: 300000.0
+
+      # ── Positive (compute, empty condition): a Cash line with no
+      # Payment Term.
+      - step: "Create the Cash schedule line with no Payment Term"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "as2_schedule_cash"
+        values:
+          benefit_id: "REC: as2_benefit_cash.id"
+          date: 2026-08-01
+
+      - step: "Assert Base Amount is zero without a Payment Term"
+        action: "assert"
+        target: "as2_schedule_cash"
+        asserts:
+          base_amount:
+            type: "value"
+            expected: 0.0
+          name:
+            type: "value"
+            expected: "2026-08-01"
+
+      # ── Negative: Amount Planned cannot be negative.
+      - step: "Reject writing a negative Amount Planned"
+        action: "write"
+        target: "as2_schedule_percentage"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "negative"
+        values:
+          amount_planned: -1.0
+
+  - name: "Award Schedule - Cash Periodicity Generation"
+    steps:
+      # ── Shared fixture chain (suffix AS3) ────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "as3_grade_type"
+        values:
+          name: "AS3 Grade Type"
+          code: "AS3GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "as3_school"
+        values:
+          name: "AS3 School"
+          code: "AS3SC"
+          grade_type_id: "REC: as3_grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "as3_academic_year"
+        values:
+          name: "AS3 Academic Year"
+          code: "AS3AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "as3_academic_term"
+        values:
+          name: "AS3 Term"
+          code: "AS3TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: as3_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "as3_grade"
+        values:
+          name: "AS3 Grade"
+          code: "AS3GR"
+          type_id: "REC: as3_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "as3_grade_class"
+        values:
+          name: "AS3 Class"
+          code: "AS3CL"
+          school_id: "REC: as3_school.id"
+          grade_id: "REC: as3_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "as3_contact"
+        values:
+          name: "AS3 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "as3_student"
+        values:
+          name: "AS3 Student"
+          code: "AS3ST"
+          contact_id: "REC: as3_contact.id"
+          school_id: "REC: as3_school.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "as3_enrollment"
+        values:
+          academic_year_id: "REC: as3_academic_year.id"
+          academic_term_id: "REC: as3_academic_term.id"
+          school_id: "REC: as3_school.id"
+          grade_id: "REC: as3_grade.id"
+          grade_class_id: "REC: as3_grade_class.id"
+          student_id: "REC: as3_student.id"
+
+      - step: "Create the product covered by the Cash benefit lines"
+        action: "create"
+        model: "product.product"
+        save_as: "as3_product"
+        values:
+          name: "AS3 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "as3_journal"
+        values:
+          name: "AS3 Journal"
+          code: "JAS3"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "as3_discount_account"
+        values:
+          name: "AS3 Discount Account"
+          code: "AS3DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "as3_type"
+        values:
+          name: "AS3 Type"
+          code: "AS3TY"
+          deduction_journal_id: "REC: as3_journal.id"
+          discount_account_id: "REC: as3_discount_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "as3_program"
+        values:
+          name: "AS3 Program"
+          code: "AS3PRG"
+          type_id: "REC: as3_type.id"
+          school_id: "REC: as3_school.id"
+          academic_year_id: "REC: as3_academic_year.id"
+          deduction_journal_id: "REC: as3_journal.id"
+          discount_account_id: "REC: as3_discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: as3_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 50000.0
+
+      # ── A draft award with two Cash Benefit lines: One Time (a
+      # single period) and Monthly (a two-month range below yields
+      # two periods) -- neither carries a Payment Term, so this
+      # never touches ``_generate_fee_reduction_schedule``.
+      - step: "Create a draft award with two Cash Benefit lines"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "as3_award"
+        values:
+          program_id: "REC: as3_program.id"
+          student_id: "REC: as3_student.id"
+          enrollment_id: "REC: as3_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-08-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "AS3 Benefit One Time"
+                product_id: "REC: as3_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 100000.0
+                periodicity: "one_time"
+            - - 0
+              - 0
+              - name: "AS3 Benefit Monthly"
+                product_id: "REC: as3_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 50000.0
+                periodicity: "monthly"
+
+      - step: "Find the Monthly Cash Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain:
+          [["award_id", "=", "REC: as3_award.id"], ["name", "=", "AS3 Benefit Monthly"]]
+        limit: 1
+        save_as: "as3_benefit_monthly"
+
+      - step: "Find the One Time Cash Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain:
+          [
+            ["award_id", "=", "REC: as3_award.id"],
+            ["name", "=", "AS3 Benefit One Time"],
+          ]
+        limit: 1
+        save_as: "as3_benefit_one_time"
+
+      # Generation is normally gated to state Open, but this award is
+      # never confirmed/approved here -- ``bypass_policy_check``
+      # exercises the generator in isolation, the same escape hatch
+      # ``school_enrollment``'s own ``_create_due_invoice`` uses for
+      # its policy check.
+      - step: "Generate the Schedule directly (bypassing the Open-state policy)"
+        action: "call"
+        target: "as3_award"
+        method: "_generate_schedule"
+        context:
+          bypass_policy_check: true
+
+      - step: "Assert the One Time line got exactly one Schedule line"
+        action: "search"
+        model: "school_scholarship_award_schedule"
+        domain: [["benefit_id", "=", "REC: as3_benefit_one_time.id"]]
+        save_as: "as3_one_time_schedules"
+        expect_count: 1
+
+      - step: "Assert the Monthly line got one Schedule line per month"
+        action: "search"
+        model: "school_scholarship_award_schedule"
+        domain: [["benefit_id", "=", "REC: as3_benefit_monthly.id"]]
+        save_as: "as3_monthly_schedules"
+        expect_count: 2
+
+      - step: "Regenerate directly again (idempotent for Cash lines too)"
+        action: "call"
+        target: "as3_award"
+        method: "_generate_schedule"
+        context:
+          bypass_policy_check: true
+
+      - step: "Assert regeneration did not add a third Monthly line"
+        action: "search"
+        model: "school_scholarship_award_schedule"
+        domain: [["benefit_id", "=", "REC: as3_benefit_monthly.id"]]
+        save_as: "as3_monthly_schedules_after_regenerate"
+        expect_count: 2
+
+  - name: "Award Schedule - Negative Paths"
+    steps:
+      # ── Shared fixture chain (suffix AS4) ────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "as4_grade_type"
+        values:
+          name: "AS4 Grade Type"
+          code: "AS4GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "as4_school"
+        values:
+          name: "AS4 School"
+          code: "AS4SC"
+          grade_type_id: "REC: as4_grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "as4_academic_year"
+        values:
+          name: "AS4 Academic Year"
+          code: "AS4AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "as4_academic_term"
+        values:
+          name: "AS4 Term"
+          code: "AS4TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: as4_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "as4_grade"
+        values:
+          name: "AS4 Grade"
+          code: "AS4GR"
+          type_id: "REC: as4_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "as4_grade_class"
+        values:
+          name: "AS4 Class"
+          code: "AS4CL"
+          school_id: "REC: as4_school.id"
+          grade_id: "REC: as4_grade.id"
+
+      - step: "Create the first student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "as4_contact_a"
+        values:
+          name: "AS4 Contact A"
+
+      - step: "Create the first student"
+        action: "create"
+        model: "school_student"
+        save_as: "as4_student_a"
+        values:
+          name: "AS4 Student A"
+          code: "AS4STA"
+          contact_id: "REC: as4_contact_a.id"
+          school_id: "REC: as4_school.id"
+
+      - step: "Create the first enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "as4_enrollment_a"
+        values:
+          academic_year_id: "REC: as4_academic_year.id"
+          academic_term_id: "REC: as4_academic_term.id"
+          school_id: "REC: as4_school.id"
+          grade_id: "REC: as4_grade.id"
+          grade_class_id: "REC: as4_grade_class.id"
+          student_id: "REC: as4_student_a.id"
+
+      - step: "Create the second student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "as4_contact_b"
+        values:
+          name: "AS4 Contact B"
+
+      - step: "Create the second student"
+        action: "create"
+        model: "school_student"
+        save_as: "as4_student_b"
+        values:
+          name: "AS4 Student B"
+          code: "AS4STB"
+          contact_id: "REC: as4_contact_b.id"
+          school_id: "REC: as4_school.id"
+
+      - step: "Create the second enrollment (a different Student)"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "as4_enrollment_b"
+        values:
+          academic_year_id: "REC: as4_academic_year.id"
+          academic_term_id: "REC: as4_academic_term.id"
+          school_id: "REC: as4_school.id"
+          grade_id: "REC: as4_grade.id"
+          grade_class_id: "REC: as4_grade_class.id"
+          student_id: "REC: as4_student_b.id"
+
+      - step: "Create the product covered by the benefit lines"
+        action: "create"
+        model: "product.product"
+        save_as: "as4_product"
+        values:
+          name: "AS4 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "as4_journal"
+        values:
+          name: "AS4 Journal"
+          code: "JAS4"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "as4_discount_account"
+        values:
+          name: "AS4 Discount Account"
+          code: "AS4DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the income account used by payment term details"
+        action: "create"
+        model: "account.account"
+        save_as: "as4_income_account"
+        values:
+          name: "AS4 Income Account"
+          code: "AS4IA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "as4_type"
+        values:
+          name: "AS4 Type"
+          code: "AS4TY"
+          deduction_journal_id: "REC: as4_journal.id"
+          discount_account_id: "REC: as4_discount_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "as4_program"
+        values:
+          name: "AS4 Program"
+          code: "AS4PRG"
+          type_id: "REC: as4_type.id"
+          school_id: "REC: as4_school.id"
+          academic_year_id: "REC: as4_academic_year.id"
+          deduction_journal_id: "REC: as4_journal.id"
+          discount_account_id: "REC: as4_discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: as4_product.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Create Payment Term A on Enrollment A"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "as4_term_a"
+        values:
+          enrollment_id: "REC: as4_enrollment_a.id"
+          name: "AS4 Term A"
+          date_invoice: 2026-08-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: as4_product.id"
+                name: "AS4 Term A Fee"
+                account_id: "REC: as4_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create Payment Term B on Enrollment B"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "as4_term_b"
+        values:
+          enrollment_id: "REC: as4_enrollment_b.id"
+          name: "AS4 Term B"
+          date_invoice: 2026-08-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: as4_product.id"
+                name: "AS4 Term B Fee"
+                account_id: "REC: as4_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create a draft award on Enrollment A with a Fee Reduction Benefit"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "as4_award"
+        values:
+          program_id: "REC: as4_program.id"
+          student_id: "REC: as4_student_a.id"
+          enrollment_id: "REC: as4_enrollment_a.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "AS4 Benefit"
+                product_id: "REC: as4_product.id"
+                percentage: 40.0
+
+      - step: "Find the AS4 Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: as4_award.id"]]
+        limit: 1
+        save_as: "as4_benefit"
+
+      # ── Negative: Fee Reduction Benefit requires a Payment Term.
+      - step: "Reject a Fee Reduction schedule line with no Payment Term"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "require a Payment Term"
+        values:
+          benefit_id: "REC: as4_benefit.id"
+          date: 2026-08-01
+
+      # ── Negative: a schedule line whose Payment Term belongs to a
+      # different Enrollment than the award's own.
+      - step: "Reject a schedule line whose Payment Term is another Enrollment's"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "does not belong"
+        values:
+          benefit_id: "REC: as4_benefit.id"
+          payment_term_id: "REC: as4_term_b.id"
+          date: 2026-08-01
+
+      # ── Negative: two schedule lines pairing the same Benefit and
+      # Payment Term.
+      - step: "Create the first schedule line against Term A"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "as4_schedule"
+        values:
+          benefit_id: "REC: as4_benefit.id"
+          payment_term_id: "REC: as4_term_a.id"
+          date: 2026-08-01
+
+      - step: "Reject a second schedule line pairing the same Benefit and Term"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "already scheduled"
+        values:
+          benefit_id: "REC: as4_benefit.id"
+          payment_term_id: "REC: as4_term_a.id"
+          date: 2026-08-01
+
+      # ── Negative: a Cash Benefit's schedule line must not carry a
+      # Payment Term.
+      - step: "Create a Cash Benefit line on the same award"
+        action: "create"
+        model: "school_scholarship_award_benefit"
+        save_as: "as4_benefit_cash"
+        values:
+          award_id: "REC: as4_award.id"
+          name: "AS4 Cash Benefit"
+          product_id: "REC: as4_product.id"
+          benefit_type: "cash"
+
+      - step: "Reject a Cash schedule line that carries a Payment Term"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "must not carry a Payment Term"
+        values:
+          benefit_id: "REC: as4_benefit_cash.id"
+          payment_term_id: "REC: as4_term_a.id"
+          date: 2026-08-01
+
+      # ── Negative: generating the schedule of a Draft award is
+      # rejected by the ``generate_schedule_ok`` policy.
+      - step: "Reject generating the Schedule of a Draft award"
+        action: "call"
+        target: "as4_award"
+        method: "action_generate_schedule"
+        expect_error:
+          type: "UserError"
+          message_contains: "not allowed to generate schedule"
+
+      # ── Negative: cancelling an award with a Realized schedule
+      # line is rejected. The line is written straight to Realized
+      # as a fixture, since the deduction module that would normally
+      # realize it is out of this item's scope.
+      - step: "Write the schedule line straight to Realized (fixture only)"
+        action: "write"
+        target: "as4_schedule"
+        values:
+          state: "realized"
+
+      - step: "Assert the schedule line is now Realized"
+        action: "assert"
+        target: "as4_schedule"
+        asserts:
+          state:
+            type: "value"
+            expected: "realized"
+
+      - step: "Assert Amount Realized now sums the Realized line"
+        action: "assert"
+        target: "as4_award"
+        asserts:
+          amount_realized:
+            type: "value"
+            expected: 400000.0
+
+      - step: "Reject cancelling an award with a Realized schedule line"
+        action: "call"
+        target: "as4_award"
+        method: "action_cancel"
+        expect_error:
+          type: "UserError"
+          message_contains: "realized Schedule line"

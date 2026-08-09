@@ -106,6 +106,14 @@ class SchoolScholarshipAwardBenefit(models.Model):
         required=True,
         help="How often this line's benefit recurs.",
     )
+    schedule_ids = fields.One2many(
+        string="Schedule",
+        comodel_name="school_scholarship_award_schedule",
+        inverse_name="benefit_id",
+        help="Schedule lines realizing this benefit line, one per "
+        "matching Payment Term (Fee Reduction) or period "
+        "(Cash).",
+    )
     account_id = fields.Many2one(
         compute="_compute_account_id",
         store=True,

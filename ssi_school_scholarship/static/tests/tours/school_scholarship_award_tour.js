@@ -344,6 +344,63 @@ odoo.define("ssi_school_scholarship.school_scholarship_award_tour", function (re
         ])
     );
 
+    // IK: docs/school_scholarship_award/06-generate-schedule.md
+    tour.register(
+        "ssi_school_scholarship_school_scholarship_award_generate_schedule",
+        {
+            test: true,
+            url: "/web",
+        },
+        [].concat(openScholarshipAwardsList(), [
+            // Flow 2 — Open an On Progress award.
+            {
+                content: "Open the record",
+                trigger:
+                    ".o_data_row:contains(TOUR-AWARD-SCHEDULE-001) .o_data_cell:first",
+            },
+            {
+                content: "Form is open",
+                trigger: ".o_form_view",
+                extra_trigger: ".o_form_view.o_form_readonly",
+                run: function () {
+                    // Assertion only; do not trigger the default click.
+                },
+            },
+
+            // Flow 3 — Click the Generate Schedule button.
+            {
+                content: "Click the Generate Schedule button",
+                trigger: ".o_statusbar_buttons button[name='action_generate_schedule']",
+                extra_trigger: ".o_form_view",
+            },
+
+            // ── Post-Condition — a new Schedule line is created for
+            // TOUR AWARD SCHEDULE TERM B, the Payment Term added
+            // after this award already opened (and thus already
+            // auto-generated its Schedule for Term A). The Schedule
+            // tab must be opened before this row can be seen: it
+            // renders inside a Bootstrap tab-pane kept display:none
+            // while a different tab is active. Waiting directly for
+            // this row -- rather than a generic "form reloaded"
+            // signal -- is the only gate here that is guaranteed
+            // false until the button's RPC actually finishes
+            // (patterns.md §P): Term B cannot appear in any Schedule
+            // line before this button is clicked.
+            {
+                content: "Open the Schedule tab",
+                trigger: ".o_notebook .nav-link:contains(Schedule)",
+            },
+            {
+                content: "A Schedule line for the new Payment Term appears",
+                trigger:
+                    ".o_field_widget[name='schedule_ids'] .o_data_row:contains(TOUR AWARD SCHEDULE TERM B)",
+                run: function () {
+                    // Assertion only; do not trigger the default click.
+                },
+            },
+        ])
+    );
+
     // IK: docs/school_scholarship_award/10-cancel.md
     tour.register(
         "ssi_school_scholarship_school_scholarship_award_cancel",

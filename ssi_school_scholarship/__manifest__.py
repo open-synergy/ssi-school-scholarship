@@ -42,6 +42,7 @@
         "security/ir_model_access/school_scholarship_award.xml",
         "security/ir_model_access/school_scholarship_award_benefit.xml",
         "security/ir_model_access/school_scholarship_award_funding.xml",
+        "security/ir_model_access/school_scholarship_award_schedule.xml",
         "security/ir_model_access/school_scholarship_letter.xml",
         "security/ir_rule/school_scholarship_award.xml",
         "ir_sequence/school_scholarship_award.xml",
