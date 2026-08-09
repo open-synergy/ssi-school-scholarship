@@ -1,0 +1,278 @@
+options:
+  auto_refresh: true
+
+scenarios:
+  - name: "Enrollment - Scholarship Amount"
+    steps:
+      # ── Shared fixture chain (suffix SE) ─────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type_se"
+        values:
+          name: "SE Grade Type"
+          code: "SEGT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school_se"
+        values:
+          name: "SE School"
+          code: "SESC"
+          grade_type_id: "REC: grade_type_se.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year_se"
+        values:
+          name: "SE Academic Year"
+          code: "SEAY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term_se"
+        values:
+          name: "SE Term"
+          code: "SETM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year_se.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade_se"
+        values:
+          name: "SE Grade"
+          code: "SEGR"
+          type_id: "REC: grade_type_se.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class_se"
+        values:
+          name: "SE Class"
+          code: "SECL"
+          school_id: "REC: school_se.id"
+          grade_id: "REC: grade_se.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_se"
+        values:
+          name: "SE Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source_se"
+        values:
+          name: "SE Funding Source"
+          code: "SEFS"
+          analytic_account_id: "REC: analytic_se.id"
+
+      - step: "Create the product covered by the benefit lines"
+        action: "create"
+        model: "product.product"
+        save_as: "product_se"
+        values:
+          name: "SE Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal_se"
+        values:
+          name: "SE Journal"
+          code: "JSE"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account_se"
+        values:
+          name: "SE Discount Account"
+          code: "SEDA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type_se"
+        values:
+          name: "SE Type"
+          code: "SETY"
+          deduction_journal_id: "REC: journal_se.id"
+          discount_account_id: "REC: discount_account_se.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program_se"
+        values:
+          name: "SE Program"
+          code: "SEPRG"
+          type_id: "REC: type_se.id"
+          school_id: "REC: school_se.id"
+          academic_year_id: "REC: academic_year_se.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source_se.id"]]]
+          deduction_journal_id: "REC: journal_se.id"
+          discount_account_id: "REC: discount_account_se.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact_se"
+        values:
+          name: "SE Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "student_se"
+        values:
+          name: "SE Student"
+          code: "SEST"
+          contact_id: "REC: contact_se.id"
+          school_id: "REC: school_se.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment_se"
+        values:
+          academic_year_id: "REC: academic_year_se.id"
+          academic_term_id: "REC: academic_term_se.id"
+          school_id: "REC: school_se.id"
+          grade_id: "REC: grade_se.id"
+          grade_class_id: "REC: grade_class_se.id"
+          student_id: "REC: student_se.id"
+
+      # ── Positive (compute): two Open awards on the same enrollment,
+      # 400,000 and 600,000, must sum to 1,000,000. Each Benefit line
+      # is Cash/Fixed, so its Amount Planned equals its Fixed Amount
+      # directly and needs no Payment Term to realize a Schedule line.
+      - step: "Create the first award (400,000)"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award_se1"
+        values:
+          program_id: "REC: program_se.id"
+          student_id: "REC: student_se.id"
+          enrollment_id: "REC: enrollment_se.id"
+          date_start: 2026-08-07
+          date_end: 2027-08-09
+          # Owned by admin so the ``as_user: base.user_admin`` steps
+          # below are not rejected by the internal_user_rule record
+          # rule (odoo-development-unit-test test-traps.md T-05).
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "SE Benefit 1"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                product_id: "REC: product_se.id"
+
+      - step: "Confirm the first award as admin"
+        action: "call"
+        target: "award_se1"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the first award as admin"
+        action: "call"
+        target: "award_se1"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert the first award was awarded 400,000"
+        action: "assert"
+        target: "award_se1"
+        asserts:
+          amount_awarded:
+            type: "value"
+            expected: 400000.0
+
+      - step: "Create the second award (600,000)"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award_se2"
+        values:
+          program_id: "REC: program_se.id"
+          student_id: "REC: student_se.id"
+          enrollment_id: "REC: enrollment_se.id"
+          date_start: 2026-08-07
+          date_end: 2027-08-09
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "SE Benefit 2"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 600000.0
+                product_id: "REC: product_se.id"
+
+      - step: "Confirm the second award as admin"
+        action: "call"
+        target: "award_se2"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the second award as admin"
+        action: "call"
+        target: "award_se2"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert the second award was awarded 600,000"
+        action: "assert"
+        target: "award_se2"
+        asserts:
+          amount_awarded:
+            type: "value"
+            expected: 600000.0
+
+      - step: "Assert the enrollment sums both awards' committed amount"
+        action: "assert"
+        target: "enrollment_se"
+        asserts:
+          amount_scholarship:
+            type: "value"
+            expected: 1000000.0
+          scholarship_award_count:
+            type: "value"
+            expected: 2
