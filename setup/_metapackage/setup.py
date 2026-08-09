@@ -9,6 +9,7 @@ setuptools.setup(
     version=version,
     install_requires=[
         'odoo14-addon-ssi_school_scholarship',
+        'odoo14-addon-ssi_school_scholarship_deduction',
     ],
     classifiers=[
         'Programming Language :: Python',
