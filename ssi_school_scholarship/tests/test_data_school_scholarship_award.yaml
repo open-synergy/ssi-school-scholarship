@@ -565,13 +565,36 @@ scenarios:
                 computation: "fixed"
                 percentage: 0.0
                 amount_fixed: 250000.0
+            - - 0
+              - 0
+              - scope_basis: "product_category"
+                product_category_id: "REF: product.product_category_all"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 25.0
 
-      - step: "Find the created scope line"
+      - step: "Find the created Product-based scope line"
         action: "search"
         model: "school_scholarship_program_scope"
-        domain: [["program_id", "=", "REC: program2.id"]]
+        domain:
+          [["program_id", "=", "REC: program2.id"], ["scope_basis", "=", "product"]]
         limit: 1
         save_as: "scope_line2"
+
+      # ── Compute (Product Category branch): a scope line scoped by
+      # Product Category, not Product -- every other scope fixture in
+      # this file uses scope_basis "product", so this is the only
+      # place onchange_product_category_id's own branch is exercised.
+      - step: "Find the created Product-Category-based scope line"
+        action: "search"
+        model: "school_scholarship_program_scope"
+        domain:
+          [
+            ["program_id", "=", "REC: program2.id"],
+            ["scope_basis", "=", "product_category"],
+          ]
+        limit: 1
+        save_as: "scope_line2_category"
 
       - step: "Create the employee benefit account"
         action: "create"
@@ -676,6 +699,26 @@ scenarios:
               amount_fixed:
                 type: "value"
                 expected: 250000.0
+
+      # ── Onchange (form): set scope_id to a Product-Category-based
+      # scope → Product Category filled from that scope line (and
+      # Product left empty, unlike the Product-based case above).
+      - step: "Open a new Benefit line form and select a Product-Category Scope"
+        action: "form"
+        model: "school_scholarship_award_benefit"
+        save: false
+        ops:
+          - set:
+              award_id: "REC: award2"
+          - set:
+              scope_id: "REC: scope_line2_category"
+          - assert:
+              product_category_id:
+                type: "m2o"
+                expected: "REF: product.product_category_all"
+              product_id:
+                type: "value"
+                operator: "is_falsy"
 
   - name: "Award - Negative Paths"
     steps:
