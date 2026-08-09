@@ -1,0 +1,1535 @@
+options:
+  auto_refresh: true
+scenarios:
+  - name: "Recognition - Compute, Open, Full, Amortization, Multi-Source, Cancel Guard"
+    steps:
+      # ── Shared fixture chain (prefix R1) ─────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "r1_grade_type"
+        values:
+          name: "R1 Grade Type"
+          code: "R1GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "r1_school"
+        values:
+          name: "R1 School"
+          code: "R1SC"
+          grade_type_id: "REC: r1_grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "r1_academic_year"
+        values:
+          name: "R1 Academic Year"
+          code: "R1AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "r1_academic_term"
+        values:
+          name: "R1 Term"
+          code: "R1TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: r1_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "r1_grade"
+        values:
+          name: "R1 Grade"
+          code: "R1GR"
+          type_id: "REC: r1_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "r1_grade_class"
+        values:
+          name: "R1 Class"
+          code: "R1CL"
+          school_id: "REC: r1_school.id"
+          grade_id: "REC: r1_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "r1_contact"
+        values:
+          name: "R1 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "r1_student"
+        values:
+          name: "R1 Student"
+          code: "R1ST"
+          contact_id: "REC: r1_contact.id"
+          school_id: "REC: r1_school.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "r1_enrollment"
+        values:
+          academic_year_id: "REC: r1_academic_year.id"
+          academic_term_id: "REC: r1_academic_term.id"
+          school_id: "REC: r1_school.id"
+          grade_id: "REC: r1_grade.id"
+          grade_class_id: "REC: r1_grade_class.id"
+          student_id: "REC: r1_student.id"
+
+      - step: "Create the analytic account for funding source A"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "r1_analytic_a"
+        values:
+          name: "R1 Analytic A"
+
+      - step: "Create the analytic account for funding source B"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "r1_analytic_b"
+        values:
+          name: "R1 Analytic B"
+
+      - step: "Create funding source A"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "r1_funding_source_a"
+        values:
+          name: "R1 Funding Source A"
+          code: "R1FSA"
+          analytic_account_id: "REC: r1_analytic_a.id"
+
+      - step: "Create funding source B"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "r1_funding_source_b"
+        values:
+          name: "R1 Funding Source B"
+          code: "R1FSB"
+          analytic_account_id: "REC: r1_analytic_b.id"
+
+      - step: "Create the product covered by the benefit lines"
+        action: "create"
+        model: "product.product"
+        save_as: "r1_product"
+        values:
+          name: "R1 Product"
+          type: "service"
+
+      - step: "Create the sale journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "r1_journal"
+        values:
+          name: "R1 Journal"
+          code: "JR1"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "r1_account_type_income"
+
+      - step: "Get the account.account.type Receivable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "r1_account_type_receivable"
+
+      - step: "Get the account.account.type Current Assets reference"
+        action: "ref"
+        xml_id: "account.data_account_type_current_assets"
+        save_as: "r1_account_type_asset"
+
+      - step: "Create the receivable account shared by the invoice and deduction"
+        action: "create"
+        model: "account.account"
+        save_as: "r1_receivable_account"
+        values:
+          name: "R1 Receivable Account"
+          code: "R1RA"
+          user_type_id: "REC: r1_account_type_receivable.id"
+          reconcile: true
+
+      - step: "Create the discount (final) account the deduction lines post to"
+        action: "create"
+        model: "account.account"
+        save_as: "r1_discount_account"
+        values:
+          name: "R1 Discount Account"
+          code: "R1DA"
+          user_type_id: "REC: r1_account_type_income.id"
+          reconcile: false
+
+      - step: "Create the income account the invoice line posts to"
+        action: "create"
+        model: "account.account"
+        save_as: "r1_income_account"
+        values:
+          name: "R1 Income Account"
+          code: "R1IA"
+          user_type_id: "REC: r1_account_type_income.id"
+          reconcile: false
+
+      - step: "Create the deferred account the deferred deduction lines post to"
+        action: "create"
+        model: "account.account"
+        save_as: "r1_deferred_account"
+        values:
+          name: "R1 Deferred Account"
+          code: "R1FA"
+          user_type_id: "REC: r1_account_type_asset.id"
+          reconcile: false
+
+      - step: "Create the customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "r1_invoice_type"
+        values:
+          name: "R1 Invoice Type"
+          code: "/"
+          journal_id: "REC: r1_journal.id"
+          receivable_account_id: "REC: r1_receivable_account.id"
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "r1_type"
+        values:
+          name: "R1 Type"
+          code: "R1TY"
+          deduction_journal_id: "REC: r1_journal.id"
+          discount_account_id: "REC: r1_discount_account.id"
+
+      - step: "Create the scholarship program (asymmetric recognition allowed)"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "r1_program"
+        values:
+          name: "R1 Program"
+          code: "R1PRG"
+          type_id: "REC: r1_type.id"
+          school_id: "REC: r1_school.id"
+          academic_year_id: "REC: r1_academic_year.id"
+          funding_source_ids:
+            [[6, 0, ["REC: r1_funding_source_a.id", "REC: r1_funding_source_b.id"]]]
+          deduction_journal_id: "REC: r1_journal.id"
+          discount_account_id: "REC: r1_discount_account.id"
+          allow_asymmetric_recognition: true
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: r1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 100000.0
+
+      # ── Positive (compute) + Positive (open, deferred debit) +
+      # Negative (cancel with a Done Recognition) ────────────────────
+      - step: "Create the award backing the compute/open/cancel-guard chain"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "r1_award"
+        values:
+          program_id: "REC: r1_program.id"
+          student_id: "REC: r1_student.id"
+          enrollment_id: "REC: r1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          deferred_discount_account_id: "REC: r1_deferred_account.id"
+          recognition_journal_id: "REC: r1_journal.id"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "R1 Benefit"
+                product_id: "REC: r1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 5000000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: r1_funding_source_a.id"
+                percentage: 100.0
+
+      # ── Onchange (form): selecting Award on a new Deduction fills
+      # Deferred Account and Recognition Journal from the Award's own
+      # Deferred Discount Account and Recognition Journal ────────────
+      - step: "Open a new Deduction form and select the Award"
+        action: "form"
+        model: "school_scholarship_deduction"
+        save: false
+        ops:
+          - set:
+              award_id: "REC: r1_award"
+          - assert:
+              deferred_account_id:
+                type: "m2o"
+                expected: "REC: r1_deferred_account"
+              recognition_journal_id:
+                type: "m2o"
+                expected: "REC: r1_journal"
+
+      - step: "Find the award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: r1_award.id"]]
+        limit: 1
+        save_as: "r1_benefit"
+
+      - step: "Find the award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: r1_award.id"]]
+        limit: 1
+        save_as: "r1_funding"
+
+      - step: "Create the Schedule line realizing the Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "r1_schedule"
+        values:
+          benefit_id: "REC: r1_benefit.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the invoice the deduction is allocated against"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "r1_invoice"
+        values:
+          type_id: "REC: r1_invoice_type.id"
+          partner_id: "REC: r1_contact.id"
+          date: 2026-03-01
+          date_due: 2026-03-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: r1_journal.id"
+          receivable_account_id: "REC: r1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "r1_invoice_line"
+        values:
+          customer_invoice_id: "REC: r1_invoice.id"
+          name: "R1 Invoice Line"
+          account_id: "REC: r1_income_account.id"
+          uom_quantity: 1
+          price_unit: 5000000.0
+
+      - step: "Confirm the invoice"
+        action: "call"
+        target: "r1_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the invoice and post its journal entry"
+        action: "call"
+        target: "r1_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          amount_residual:
+            type: "value"
+            expected: 5000000.0
+
+      - step: "Create the deferred deduction, Date before the Award's Start Date"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "r1_deduction"
+        values:
+          award_id: "REC: r1_award.id"
+          date: 2026-03-01
+          journal_id: "REC: r1_journal.id"
+          receivable_account_id: "REC: r1_receivable_account.id"
+          deferred_account_id: "REC: r1_deferred_account.id"
+          recognition_journal_id: "REC: r1_journal.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: r1_schedule.id"
+                funding_id: "REC: r1_funding.id"
+                final_account_id: "REC: r1_discount_account.id"
+                name: "R1 Deduction Line"
+                uom_quantity: 1
+                price_unit: 5000000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: r1_invoice.id"
+                amount_allocated: 5000000.0
+
+      - step: "Assert Recognition Method and Date computed automatically"
+        action: "assert"
+        target: "r1_deduction"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          recognition_method:
+            type: "value"
+            expected: "deferred"
+          recognition_date:
+            type: "value"
+            expected: 2026-07-01
+          recognition_state:
+            type: "value"
+            expected: "pending"
+
+      - step: "Find the deduction's own single line"
+        action: "search"
+        model: "school_scholarship_deduction_line"
+        domain: [["deduction_id", "=", "REC: r1_deduction.id"]]
+        limit: 1
+        save_as: "r1_line"
+
+      - step: "Assert the line posts to the Deferred Account, not the Final Account"
+        action: "assert"
+        target: "r1_line"
+        asserts:
+          account_id:
+            type: "m2o"
+            expected: "REC: r1_deferred_account"
+          final_account_id:
+            type: "m2o"
+            expected: "REC: r1_discount_account"
+
+      - step: "Confirm the deferred deduction"
+        action: "call"
+        target: "r1_deduction"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the deferred deduction, opening it"
+        action: "call"
+        target: "r1_deduction"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          move_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Assert the deduction's own move debits the Deferred Account"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["move_id", "=", "REC: r1_deduction.move_id.id"],
+            ["account_id", "=", "REC: r1_deferred_account.id"],
+          ]
+        limit: 1
+        save_as: "r1_deferred_ml"
+
+      - step: "Assert the Deferred Account move line debits the full amount"
+        action: "assert"
+        target: "r1_deferred_ml"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          debit:
+            type: "value"
+            expected: 5000000.0
+
+      # ── Onchange (form): selecting Deduction on a new Recognition
+      # fills Journal and Amount -- exercised here, before any
+      # Recognition consumes r1_deduction's own Amount Deferred ─────
+      - step: "Open a new Recognition form and select the Deduction"
+        action: "form"
+        model: "school_scholarship_deduction_recognition"
+        save: false
+        ops:
+          - set:
+              deduction_id: "REC: r1_deduction"
+          - assert:
+              journal_id:
+                type: "m2o"
+                expected: "REC: r1_journal"
+              amount:
+                type: "value"
+                expected: 5000000.0
+
+      - step: "Create a partial Recognition against the opened deduction"
+        action: "create"
+        model: "school_scholarship_deduction_recognition"
+        save_as: "r1_recognition_partial"
+        values:
+          deduction_id: "REC: r1_deduction.id"
+          date: 2026-08-01
+          journal_id: "REC: r1_journal.id"
+          amount: 2000000.0
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm the partial Recognition"
+        action: "call"
+        target: "r1_recognition_partial"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the partial Recognition"
+        action: "call"
+        target: "r1_recognition_partial"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          move_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Assert the deduction reflects the partial Recognition"
+        action: "assert"
+        target: "r1_deduction"
+        refresh: true
+        asserts:
+          amount_deferred:
+            type: "value"
+            expected: 3000000.0
+          recognition_state:
+            type: "value"
+            expected: "partial"
+
+      - step: "Create the cancellation reason"
+        action: "create"
+        model: "base.cancel_reason"
+        save_as: "r1_reason"
+        values:
+          name: "R1 Cancel Reason"
+          code: "R1CR"
+
+      - step: "Cancelling the deduction is rejected by the Done Recognition"
+        action: "wizard"
+        model: "base.select_cancel_reason"
+        target: "r1_deduction"
+        as_user: "base.user_admin"
+        values:
+          cancel_reason_id: "REC: r1_reason.id"
+        method: "action_confirm"
+        expect_error:
+          type: "UserError"
+          message_contains: "Recognition"
+
+      # ── Positive (compute, empty condition) ─────────────────────────
+      - step: "Create the award for the immediate-recognition case"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "r1_award_immediate"
+        values:
+          program_id: "REC: r1_program.id"
+          student_id: "REC: r1_student.id"
+          enrollment_id: "REC: r1_enrollment.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "R1 Immediate Benefit"
+                product_id: "REC: r1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 100000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: r1_funding_source_a.id"
+                percentage: 100.0
+
+      - step: "Create a deduction whose Date is after the Award's own Start Date"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "r1_deduction_immediate"
+        values:
+          award_id: "REC: r1_award_immediate.id"
+          date: 2026-08-01
+          journal_id: "REC: r1_journal.id"
+          receivable_account_id: "REC: r1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Assert Recognition Method is Immediate and Status is Not Applicable"
+        action: "assert"
+        target: "r1_deduction_immediate"
+        asserts:
+          recognition_method:
+            type: "value"
+            expected: "immediate"
+          recognition_state:
+            type: "value"
+            expected: "not_applicable"
+
+      # ── Positive: full recognition (transition state) + journal
+      # balance + Negative: recognition Date before Deduction Date ──
+      - step: "Create the award backing the full-recognition chain"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "r1_award_full"
+        values:
+          program_id: "REC: r1_program.id"
+          student_id: "REC: r1_student.id"
+          enrollment_id: "REC: r1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          deferred_discount_account_id: "REC: r1_deferred_account.id"
+          recognition_journal_id: "REC: r1_journal.id"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "R1 Full Benefit"
+                product_id: "REC: r1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 5000000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: r1_funding_source_a.id"
+                percentage: 100.0
+
+      - step: "Find the full-chain award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: r1_award_full.id"]]
+        limit: 1
+        save_as: "r1_benefit_full"
+
+      - step: "Find the full-chain award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: r1_award_full.id"]]
+        limit: 1
+        save_as: "r1_funding_full"
+
+      - step: "Create the Schedule line realizing the full-chain Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "r1_schedule_full"
+        values:
+          benefit_id: "REC: r1_benefit_full.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step:
+          "Create a deferred deduction, never opened, for the full-recognition chain"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "r1_deduction_full"
+        values:
+          award_id: "REC: r1_award_full.id"
+          date: 2026-03-01
+          journal_id: "REC: r1_journal.id"
+          receivable_account_id: "REC: r1_receivable_account.id"
+          deferred_account_id: "REC: r1_deferred_account.id"
+          recognition_journal_id: "REC: r1_journal.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: r1_schedule_full.id"
+                funding_id: "REC: r1_funding_full.id"
+                final_account_id: "REC: r1_discount_account.id"
+                name: "R1 Full Deduction Line"
+                uom_quantity: 1
+                price_unit: 5000000.0
+
+      - step: "Reject a Recognition dated before the Deduction's own Date"
+        action: "create"
+        model: "school_scholarship_deduction_recognition"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "earlier"
+        values:
+          deduction_id: "REC: r1_deduction_full.id"
+          date: 2026-02-01
+          journal_id: "REC: r1_journal.id"
+          amount: 1000000.0
+          user_id: "REF: base.user_admin"
+
+      - step: "Create the full Recognition"
+        action: "create"
+        model: "school_scholarship_deduction_recognition"
+        save_as: "r1_recognition_full"
+        values:
+          deduction_id: "REC: r1_deduction_full.id"
+          date: 2026-08-01
+          journal_id: "REC: r1_journal.id"
+          amount: 5000000.0
+          user_id: "REF: base.user_admin"
+
+      - step: "Assert the Ratio is fully computed"
+        action: "assert"
+        target: "r1_recognition_full"
+        asserts:
+          ratio:
+            type: "value"
+            expected: 1.0
+
+      - step: "Confirm the full Recognition"
+        action: "call"
+        target: "r1_recognition_full"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the full Recognition"
+        action: "call"
+        target: "r1_recognition_full"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          move_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Assert the deduction is fully recognized"
+        action: "assert"
+        target: "r1_deduction_full"
+        refresh: true
+        asserts:
+          amount_deferred:
+            type: "value"
+            expected: 0.0
+          recognition_state:
+            type: "value"
+            expected: "recognized"
+
+      - step: "Find the Recognition move's debit line on the Final Account"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["move_id", "=", "REC: r1_recognition_full.move_id.id"],
+            ["account_id", "=", "REC: r1_discount_account.id"],
+          ]
+        limit: 1
+        save_as: "r1_full_debit_ml"
+
+      - step: "Find the Recognition move's credit line on the Deferred Account"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["move_id", "=", "REC: r1_recognition_full.move_id.id"],
+            ["account_id", "=", "REC: r1_deferred_account.id"],
+          ]
+        limit: 1
+        save_as: "r1_full_credit_ml"
+
+      - step:
+          "Assert the Recognition move balances Final Account debit and Deferred credit"
+        action: "assert"
+        target: "r1_full_debit_ml"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          debit:
+            type: "value"
+            expected: 5000000.0
+
+      - step: "Assert the Deferred Account side of the same move"
+        action: "assert"
+        target: "r1_full_credit_ml"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          credit:
+            type: "value"
+            expected: 5000000.0
+
+      # ── Positive (amortization) + Negative (exceeding the total) ──
+      - step: "Create the award backing the amortization chain"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "r1_award_amort"
+        values:
+          program_id: "REC: r1_program.id"
+          student_id: "REC: r1_student.id"
+          enrollment_id: "REC: r1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          deferred_discount_account_id: "REC: r1_deferred_account.id"
+          recognition_journal_id: "REC: r1_journal.id"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "R1 Amortization Benefit"
+                product_id: "REC: r1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 5000000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: r1_funding_source_a.id"
+                percentage: 100.0
+
+      - step: "Find the amortization award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: r1_award_amort.id"]]
+        limit: 1
+        save_as: "r1_benefit_amort"
+
+      - step: "Find the amortization award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: r1_award_amort.id"]]
+        limit: 1
+        save_as: "r1_funding_amort"
+
+      - step: "Create the Schedule line realizing the amortization Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "r1_schedule_amort"
+        values:
+          benefit_id: "REC: r1_benefit_amort.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create a deferred deduction, never opened, for the amortization chain"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "r1_deduction_amort"
+        values:
+          award_id: "REC: r1_award_amort.id"
+          date: 2026-03-01
+          journal_id: "REC: r1_journal.id"
+          receivable_account_id: "REC: r1_receivable_account.id"
+          deferred_account_id: "REC: r1_deferred_account.id"
+          recognition_journal_id: "REC: r1_journal.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: r1_schedule_amort.id"
+                funding_id: "REC: r1_funding_amort.id"
+                final_account_id: "REC: r1_discount_account.id"
+                name: "R1 Amortization Deduction Line"
+                uom_quantity: 1
+                price_unit: 5000000.0
+
+      - step: "Create the first amortization Recognition (2500000)"
+        action: "create"
+        model: "school_scholarship_deduction_recognition"
+        save_as: "r1_recognition_amort_1"
+        values:
+          deduction_id: "REC: r1_deduction_amort.id"
+          date: 2026-08-01
+          journal_id: "REC: r1_journal.id"
+          amount: 2500000.0
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm the first amortization Recognition"
+        action: "call"
+        target: "r1_recognition_amort_1"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Approve the first amortization Recognition"
+        action: "call"
+        target: "r1_recognition_amort_1"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+      - step: "Assert the deduction is Partially Recognized after the first Recognition"
+        action: "assert"
+        target: "r1_deduction_amort"
+        refresh: true
+        asserts:
+          recognition_state:
+            type: "value"
+            expected: "partial"
+          amount_deferred:
+            type: "value"
+            expected: 2500000.0
+
+      - step: "Create the second amortization Recognition (2500000)"
+        action: "create"
+        model: "school_scholarship_deduction_recognition"
+        save_as: "r1_recognition_amort_2"
+        values:
+          deduction_id: "REC: r1_deduction_amort.id"
+          date: 2026-09-01
+          journal_id: "REC: r1_journal.id"
+          amount: 2500000.0
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm the second amortization Recognition"
+        action: "call"
+        target: "r1_recognition_amort_2"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Approve the second amortization Recognition"
+        action: "call"
+        target: "r1_recognition_amort_2"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+      - step: "Assert the deduction is fully Recognized after the second Recognition"
+        action: "assert"
+        target: "r1_deduction_amort"
+        refresh: true
+        asserts:
+          recognition_state:
+            type: "value"
+            expected: "recognized"
+          amount_deferred:
+            type: "value"
+            expected: 0.0
+
+      - step: "Create a third, excess Recognition (1000000)"
+        action: "create"
+        model: "school_scholarship_deduction_recognition"
+        save_as: "r1_recognition_amort_3"
+        values:
+          deduction_id: "REC: r1_deduction_amort.id"
+          date: 2026-10-01
+          journal_id: "REC: r1_journal.id"
+          amount: 1000000.0
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm the third, excess Recognition"
+        action: "call"
+        target: "r1_recognition_amort_3"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Approving the third Recognition is rejected -- it exceeds the total"
+        action: "call"
+        target: "r1_recognition_amort_3"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "exceeds"
+
+      # ── Positive: two-source funding split produces two Recognition
+      # Lines with different Analytic Accounts ────────────────────────
+      - step: "Create the award backing the multi-source deduction"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "r1_award_multi"
+        values:
+          program_id: "REC: r1_program.id"
+          student_id: "REC: r1_student.id"
+          enrollment_id: "REC: r1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          deferred_discount_account_id: "REC: r1_deferred_account.id"
+          recognition_journal_id: "REC: r1_journal.id"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "R1 Multi-Source Benefit"
+                product_id: "REC: r1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: r1_funding_source_a.id"
+                percentage: 60.0
+            - - 0
+              - 0
+              - funding_source_id: "REC: r1_funding_source_b.id"
+                percentage: 40.0
+
+      - step: "Find the multi-source award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: r1_award_multi.id"]]
+        limit: 1
+        save_as: "r1_benefit_multi"
+
+      - step: "Find the multi-source award's 60% Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain:
+          [
+            ["award_id", "=", "REC: r1_award_multi.id"],
+            ["funding_source_id", "=", "REC: r1_funding_source_a.id"],
+          ]
+        limit: 1
+        save_as: "r1_funding_multi_a"
+
+      - step: "Find the multi-source award's 40% Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain:
+          [
+            ["award_id", "=", "REC: r1_award_multi.id"],
+            ["funding_source_id", "=", "REC: r1_funding_source_b.id"],
+          ]
+        limit: 1
+        save_as: "r1_funding_multi_b"
+
+      - step: "Create the Schedule line realizing the multi-source Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "r1_schedule_multi"
+        values:
+          benefit_id: "REC: r1_benefit_multi.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create a deferred deduction with one line per funding source"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "r1_deduction_multi"
+        values:
+          award_id: "REC: r1_award_multi.id"
+          date: 2026-03-01
+          journal_id: "REC: r1_journal.id"
+          receivable_account_id: "REC: r1_receivable_account.id"
+          deferred_account_id: "REC: r1_deferred_account.id"
+          recognition_journal_id: "REC: r1_journal.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: r1_schedule_multi.id"
+                funding_id: "REC: r1_funding_multi_a.id"
+                final_account_id: "REC: r1_discount_account.id"
+                name: "R1 Multi-Source Deduction Line A"
+                uom_quantity: 1
+                price_unit: 240000.0
+            - - 0
+              - 0
+              - schedule_id: "REC: r1_schedule_multi.id"
+                funding_id: "REC: r1_funding_multi_b.id"
+                final_account_id: "REC: r1_discount_account.id"
+                name: "R1 Multi-Source Deduction Line B"
+                uom_quantity: 1
+                price_unit: 160000.0
+
+      - step: "Create the full Recognition for the multi-source deduction"
+        action: "create"
+        model: "school_scholarship_deduction_recognition"
+        save_as: "r1_recognition_multi"
+        values:
+          deduction_id: "REC: r1_deduction_multi.id"
+          date: 2026-08-01
+          journal_id: "REC: r1_journal.id"
+          amount: 400000.0
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm the multi-source Recognition"
+        action: "call"
+        target: "r1_recognition_multi"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Approve the multi-source Recognition"
+        action: "call"
+        target: "r1_recognition_multi"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+      - step: "Find the multi-source Recognition Line drawing from source A"
+        action: "search"
+        model: "school_scholarship_deduction_recognition_line"
+        domain:
+          [
+            ["recognition_id", "=", "REC: r1_recognition_multi.id"],
+            ["analytic_account_id", "=", "REC: r1_analytic_a.id"],
+          ]
+        limit: 1
+        save_as: "r1_recognition_line_multi_a"
+
+      - step: "Find the multi-source Recognition Line drawing from source B"
+        action: "search"
+        model: "school_scholarship_deduction_recognition_line"
+        domain:
+          [
+            ["recognition_id", "=", "REC: r1_recognition_multi.id"],
+            ["analytic_account_id", "=", "REC: r1_analytic_b.id"],
+          ]
+        limit: 1
+        save_as: "r1_recognition_line_multi_b"
+
+      - step: "Assert the source-A Recognition Line's own amount"
+        action: "assert"
+        target: "r1_recognition_line_multi_a"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          amount:
+            type: "value"
+            expected: 240000.0
+
+      - step: "Assert the source-B Recognition Line's own amount"
+        action: "assert"
+        target: "r1_recognition_line_multi_b"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          amount:
+            type: "value"
+            expected: 160000.0
+
+  - name: "Recognition - Asymmetric Recognition Guard"
+    steps:
+      # ── Shared fixture chain (prefix R2) ─────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "r2_grade_type"
+        values:
+          name: "R2 Grade Type"
+          code: "R2GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "r2_school"
+        values:
+          name: "R2 School"
+          code: "R2SC"
+          grade_type_id: "REC: r2_grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "r2_academic_year"
+        values:
+          name: "R2 Academic Year"
+          code: "R2AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "r2_academic_term"
+        values:
+          name: "R2 Term"
+          code: "R2TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: r2_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "r2_grade"
+        values:
+          name: "R2 Grade"
+          code: "R2GR"
+          type_id: "REC: r2_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "r2_grade_class"
+        values:
+          name: "R2 Class"
+          code: "R2CL"
+          school_id: "REC: r2_school.id"
+          grade_id: "REC: r2_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "r2_contact"
+        values:
+          name: "R2 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "r2_student"
+        values:
+          name: "R2 Student"
+          code: "R2ST"
+          contact_id: "REC: r2_contact.id"
+          school_id: "REC: r2_school.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "r2_enrollment"
+        values:
+          academic_year_id: "REC: r2_academic_year.id"
+          academic_term_id: "REC: r2_academic_term.id"
+          school_id: "REC: r2_school.id"
+          grade_id: "REC: r2_grade.id"
+          grade_class_id: "REC: r2_grade_class.id"
+          student_id: "REC: r2_student.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "r2_analytic"
+        values:
+          name: "R2 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "r2_funding_source"
+        values:
+          name: "R2 Funding Source"
+          code: "R2FS"
+          analytic_account_id: "REC: r2_analytic.id"
+
+      - step: "Create the product covered by the benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "r2_product"
+        values:
+          name: "R2 Product"
+          type: "service"
+
+      - step: "Create the sale journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "r2_journal"
+        values:
+          name: "R2 Journal"
+          code: "JR2"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "r2_account_type_income"
+
+      - step: "Get the account.account.type Receivable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "r2_account_type_receivable"
+
+      - step: "Get the account.account.type Current Assets reference"
+        action: "ref"
+        xml_id: "account.data_account_type_current_assets"
+        save_as: "r2_account_type_asset"
+
+      - step: "Create the receivable account"
+        action: "create"
+        model: "account.account"
+        save_as: "r2_receivable_account"
+        values:
+          name: "R2 Receivable Account"
+          code: "R2RA"
+          user_type_id: "REC: r2_account_type_receivable.id"
+          reconcile: true
+
+      - step: "Create the discount (final) account"
+        action: "create"
+        model: "account.account"
+        save_as: "r2_discount_account"
+        values:
+          name: "R2 Discount Account"
+          code: "R2DA"
+          user_type_id: "REC: r2_account_type_income.id"
+          reconcile: false
+
+      - step: "Create the income account the invoice line posts to"
+        action: "create"
+        model: "account.account"
+        save_as: "r2_income_account"
+        values:
+          name: "R2 Income Account"
+          code: "R2IA"
+          user_type_id: "REC: r2_account_type_income.id"
+          reconcile: false
+
+      - step: "Create the deferred account"
+        action: "create"
+        model: "account.account"
+        save_as: "r2_deferred_account"
+        values:
+          name: "R2 Deferred Account"
+          code: "R2FA"
+          user_type_id: "REC: r2_account_type_asset.id"
+          reconcile: false
+
+      - step: "Create the customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "r2_invoice_type"
+        values:
+          name: "R2 Invoice Type"
+          code: "/"
+          journal_id: "REC: r2_journal.id"
+          receivable_account_id: "REC: r2_receivable_account.id"
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "r2_type"
+        values:
+          name: "R2 Type"
+          code: "R2TY"
+          deduction_journal_id: "REC: r2_journal.id"
+          discount_account_id: "REC: r2_discount_account.id"
+
+      - step: "Create the scholarship program (asymmetric recognition NOT allowed)"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "r2_program"
+        values:
+          name: "R2 Program"
+          code: "R2PRG"
+          type_id: "REC: r2_type.id"
+          school_id: "REC: r2_school.id"
+          academic_year_id: "REC: r2_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: r2_funding_source.id"]]]
+          deduction_journal_id: "REC: r2_journal.id"
+          discount_account_id: "REC: r2_discount_account.id"
+          allow_asymmetric_recognition: false
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: r2_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 100000.0
+
+      - step: "Create the award backing the guard chain"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "r2_award"
+        values:
+          program_id: "REC: r2_program.id"
+          student_id: "REC: r2_student.id"
+          enrollment_id: "REC: r2_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          deferred_discount_account_id: "REC: r2_deferred_account.id"
+          recognition_journal_id: "REC: r2_journal.id"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "R2 Benefit"
+                product_id: "REC: r2_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: r2_funding_source.id"
+                percentage: 100.0
+
+      - step: "Find the guard chain award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: r2_award.id"]]
+        limit: 1
+        save_as: "r2_benefit"
+
+      - step: "Find the guard chain award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: r2_award.id"]]
+        limit: 1
+        save_as: "r2_funding"
+
+      - step: "Create the Schedule line realizing the guard chain Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "r2_schedule"
+        values:
+          benefit_id: "REC: r2_benefit.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create an open invoice that credits an Income account"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "r2_invoice"
+        values:
+          type_id: "REC: r2_invoice_type.id"
+          partner_id: "REC: r2_contact.id"
+          date: 2026-03-01
+          date_due: 2026-03-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: r2_journal.id"
+          receivable_account_id: "REC: r2_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the invoice, crediting the Income account"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "r2_invoice_line"
+        values:
+          customer_invoice_id: "REC: r2_invoice.id"
+          name: "R2 Invoice Line"
+          account_id: "REC: r2_income_account.id"
+          uom_quantity: 1
+          price_unit: 400000.0
+
+      - step: "Confirm the invoice"
+        action: "call"
+        target: "r2_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Approve the invoice"
+        action: "call"
+        target: "r2_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Reject deferring the deduction while the invoice still credits Income"
+        action: "create"
+        model: "school_scholarship_deduction"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "immediately"
+        values:
+          award_id: "REC: r2_award.id"
+          date: 2026-03-01
+          journal_id: "REC: r2_journal.id"
+          receivable_account_id: "REC: r2_receivable_account.id"
+          deferred_account_id: "REC: r2_deferred_account.id"
+          recognition_journal_id: "REC: r2_journal.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: r2_schedule.id"
+                funding_id: "REC: r2_funding.id"
+                final_account_id: "REC: r2_discount_account.id"
+                name: "R2 Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: r2_invoice.id"
+                amount_allocated: 400000.0
+
+      - step: "Enable Allow Asymmetric Recognition on the Program"
+        action: "write"
+        target: "r2_program"
+        values:
+          allow_asymmetric_recognition: true
+
+      - step: "The same deduction is now accepted with the asymmetry allowed"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "r2_deduction_ok"
+        values:
+          award_id: "REC: r2_award.id"
+          date: 2026-03-01
+          journal_id: "REC: r2_journal.id"
+          receivable_account_id: "REC: r2_receivable_account.id"
+          deferred_account_id: "REC: r2_deferred_account.id"
+          recognition_journal_id: "REC: r2_journal.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: r2_schedule.id"
+                funding_id: "REC: r2_funding.id"
+                final_account_id: "REC: r2_discount_account.id"
+                name: "R2 Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: r2_invoice.id"
+                amount_allocated: 400000.0
+
+      - step: "Assert the asymmetric deduction saved as Deferred"
+        action: "assert"
+        target: "r2_deduction_ok"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          recognition_method:
+            type: "value"
+            expected: "deferred"

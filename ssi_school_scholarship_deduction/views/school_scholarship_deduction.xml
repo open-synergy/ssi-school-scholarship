@@ -36,6 +36,13 @@
     <field name="inherit_id" ref="ssi_transaction_mixin.mixin_transaction_view_tree" />
     <field name="arch" type="xml">
         <data>
+            <xpath expr="//header" position="inside">
+                <button
+                        name="%(create_due_scholarship_recognition_action)d"
+                        type="action"
+                        string="Create Due Recognition"
+                    />
+            </xpath>
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="date" />
                 <field name="award_id" />
@@ -45,6 +52,9 @@
                 <field name="amount_allocated" widget="monetary" />
                 <field name="amount_unallocated" widget="monetary" />
                 <field name="reconciled" />
+                <field name="recognition_method" />
+                <field name="recognition_state" />
+                <field name="amount_deferred" widget="monetary" />
                 <field name="currency_id" invisible="1" />
             </xpath>
         </data>
@@ -64,6 +74,19 @@
                 <field name="partner_id" />
                 <field name="journal_id" />
                 <field name="receivable_account_id" />
+                <field name="recognition_method" />
+                <field
+                        name="recognition_date"
+                        attrs="{'invisible': [('recognition_method', '=', 'immediate')]}"
+                    />
+                <field
+                        name="deferred_account_id"
+                        attrs="{'invisible': [('recognition_method', '=', 'immediate')]}"
+                    />
+                <field
+                        name="recognition_journal_id"
+                        attrs="{'invisible': [('recognition_method', '=', 'immediate')]}"
+                    />
             </xpath>
             <xpath expr="//group[@name='header_right']" position="inside">
                 <field name="date" />
@@ -87,8 +110,39 @@
                 <field name="reconciled" />
                 <field name="move_id" />
                 <field name="receivable_move_line_id" />
+                <field
+                        name="amount_recognized"
+                        widget="monetary"
+                        options="{'currency_field': 'currency_id'}"
+                        attrs="{'invisible': [('recognition_method', '=', 'immediate')]}"
+                    />
+                <field
+                        name="amount_deferred"
+                        widget="monetary"
+                        options="{'currency_field': 'currency_id'}"
+                        attrs="{'invisible': [('recognition_method', '=', 'immediate')]}"
+                    />
+                <field
+                        name="recognition_state"
+                        attrs="{'invisible': [('recognition_method', '=', 'immediate')]}"
+                    />
             </xpath>
             <xpath expr="//page[1]" position="before">
+                <page
+                        name="recognition"
+                        string="Recognitions"
+                        attrs="{'invisible': [('recognition_method', '=', 'immediate')]}"
+                    >
+                    <field name="recognition_ids" colspan="4" nolabel="1">
+                        <tree create="false" edit="false" delete="false">
+                            <field name="name" />
+                            <field name="date" />
+                            <field name="amount" widget="monetary" />
+                            <field name="state" />
+                            <field name="currency_id" invisible="1" />
+                        </tree>
+                    </field>
+                </page>
                 <page name="line" string="Lines">
                     <field name="line_ids" colspan="4" nolabel="1">
                         <tree editable="bottom">

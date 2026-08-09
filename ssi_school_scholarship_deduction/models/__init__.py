@@ -8,3 +8,5 @@ from . import school_scholarship_award  # noqa: F401
 from . import school_scholarship_deduction  # noqa: F401
 from . import school_scholarship_deduction_line  # noqa: F401
 from . import school_scholarship_deduction_allocation  # noqa: F401
+from . import school_scholarship_deduction_recognition  # noqa: F401
+from . import school_scholarship_deduction_recognition_line  # noqa: F401

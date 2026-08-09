@@ -76,10 +76,10 @@ class SchoolScholarshipDeductionLine(models.Model):
         required=True,
         ondelete="restrict",
         help="Final accounting destination of this line, copied from "
-        "the Benefit line's own Account. In this item, ``account_id`` "
-        "always equals this field; a later, deferred-recognition item "
-        "may point ``account_id`` at a different, temporary account "
-        "instead while keeping this field as the eventual target.",
+        "the Benefit line's own Account. Always the eventual target, "
+        "even while the parent document's Recognition Method is "
+        "``Deferred`` and ``account_id`` posts to the Deferred "
+        "Account instead.",
     )
     account_id = fields.Many2one(
         compute="_compute_account_id",
@@ -92,8 +92,10 @@ class SchoolScholarshipDeductionLine(models.Model):
         # constraint makes every ``create()`` fail before this
         # compute ever runs.
         required=False,
-        help="Accounting account this line posts to. Always equal to "
-        "Final Account in this item.",
+        help="Accounting account this line posts to. Equal to Final "
+        "Account, unless the parent document's Recognition Method is "
+        "``Deferred``, in which case it is the parent's own Deferred "
+        "Account instead.",
     )
     move_line_id = fields.Many2one(
         string="Journal Item",
@@ -141,14 +143,21 @@ class SchoolScholarshipDeductionLine(models.Model):
         compute_sudo=True,
     )
 
-    @api.depends("final_account_id")
+    @api.depends(
+        "final_account_id",
+        "deduction_id.recognition_method",
+        "deduction_id.deferred_account_id",
+    )
     def _compute_account_id(self):
-        """Copy Final Account into the posting account.
+        """Copy Final Account, or Deferred Account while deferred.
 
         :return: nothing; assigns ``account_id``
         """
         for record in self:
-            record.account_id = record.final_account_id
+            account = record.final_account_id
+            if record.deduction_id.recognition_method == "deferred":
+                account = record.deduction_id.deferred_account_id
+            record.account_id = account
 
     @api.onchange("schedule_id")
     def onchange_name(self):
