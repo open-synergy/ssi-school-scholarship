@@ -307,11 +307,19 @@ class SchoolScholarshipDeduction(models.Model):
         invoice is picked, blanking a value the user may have already
         typed on the header and racing the newly-added row's own
         onchange in the web client.
+
+        Written as three independent guard clauses -- rather than one
+        compound ``and`` condition -- so each only needs its own single
+        variable exercised true/false for full branch coverage, instead
+        of every combination of the compound expression's operands.
         """
-        if not self.receivable_account_id and self.allocation_ids:
-            account_id = self.allocation_ids[0].invoice_account_id
-            if account_id:
-                self.receivable_account_id = account_id
+        if self.receivable_account_id:
+            return
+        if not self.allocation_ids:
+            return
+        account_id = self.allocation_ids[0].invoice_account_id
+        if account_id:
+            self.receivable_account_id = account_id
 
     @ssi_decorator.pre_open_action()
     def _05_check_reconcilable(self):
