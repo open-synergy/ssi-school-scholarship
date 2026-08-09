@@ -1,0 +1,971 @@
+scenarios:
+  - name: "Award - Create, Compute, Workflow, And Cancel"
+    steps:
+      # ── Shared fixture chain (suffix AW1) ────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type1"
+        values:
+          name: "AW1 Grade Type"
+          code: "AW1GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school1"
+        values:
+          name: "AW1 School"
+          code: "AW1SC"
+          grade_type_id: "REC: grade_type1.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year1"
+        values:
+          name: "AW1 Academic Year"
+          code: "AW1AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term1"
+        values:
+          name: "AW1 Term"
+          code: "AW1TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year1.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade1"
+        values:
+          name: "AW1 Grade"
+          code: "AW1GR"
+          type_id: "REC: grade_type1.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class1"
+        values:
+          name: "AW1 Class"
+          code: "AW1CL"
+          school_id: "REC: school1.id"
+          grade_id: "REC: grade1.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact1"
+        values:
+          name: "AW1 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "student1"
+        values:
+          name: "AW1 Student"
+          code: "AW1ST"
+          contact_id: "REC: contact1.id"
+          school_id: "REC: school1.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment1"
+        values:
+          academic_year_id: "REC: academic_year1.id"
+          academic_term_id: "REC: academic_term1.id"
+          school_id: "REC: school1.id"
+          grade_id: "REC: grade1.id"
+          grade_class_id: "REC: grade_class1.id"
+          student_id: "REC: student1.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic1"
+        values:
+          name: "AW1 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source1"
+        values:
+          name: "AW1 Funding Source"
+          code: "AW1FS"
+          analytic_account_id: "REC: analytic1.id"
+
+      - step: "Create the product covered by the benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "product1"
+        values:
+          name: "AW1 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal1"
+        values:
+          name: "AW1 Journal"
+          code: "JAW1"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account1"
+        values:
+          name: "AW1 Discount Account"
+          code: "AW1DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type1"
+        values:
+          name: "AW1 Type"
+          code: "AW1TY"
+          deduction_journal_id: "REC: journal1.id"
+          discount_account_id: "REC: discount_account1.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program1"
+        values:
+          name: "AW1 Program"
+          code: "AW1PRG"
+          type_id: "REC: type1.id"
+          school_id: "REC: school1.id"
+          academic_year_id: "REC: academic_year1.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source1.id"]]]
+          deduction_journal_id: "REC: journal1.id"
+          discount_account_id: "REC: discount_account1.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product1.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      # ── Positive (compute, empty condition): no Benefit line ────
+      - step: "Create an award with no Benefit line"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award_zero"
+        values:
+          program_id: "REC: program1.id"
+          student_id: "REC: student1.id"
+          enrollment_id: "REC: enrollment1.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account1.id"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source1.id"
+                percentage: 100.0
+
+      - step: "Assert Amount Awarded is zero without any Benefit line"
+        action: "assert"
+        target: "award_zero"
+        asserts:
+          amount_awarded:
+            type: "value"
+            expected: 0.0
+
+      # ── Positive (compute): two Benefit lines ───────────────────
+      - step: "Create an award with two Benefit lines"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award_two"
+        values:
+          program_id: "REC: program1.id"
+          student_id: "REC: student1.id"
+          enrollment_id: "REC: enrollment1.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account1.id"
+          benefit_ids:
+            - - 0
+              - 0
+              - product_id: "REC: product1.id"
+                price_unit: 300000.0
+            - - 0
+              - 0
+              - product_id: "REC: product1.id"
+                price_unit: 200000.0
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source1.id"
+                percentage: 100.0
+
+      - step: "Assert Amount Awarded sums both Benefit lines"
+        action: "assert"
+        target: "award_two"
+        asserts:
+          amount_awarded:
+            type: "value"
+            expected: 500000.0
+
+      # ── Positive: create, state transition, funding committed ──
+      - step: "Create the main award with one Benefit and one Funding line"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award_main"
+        values:
+          program_id: "REC: program1.id"
+          student_id: "REC: student1.id"
+          enrollment_id: "REC: enrollment1.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account1.id"
+          # Owned by admin so the ``as_user: base.user_admin`` steps
+          # below are not rejected by the internal_user_rule record
+          # rule (test-traps.md T-05).
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - product_id: "REC: product1.id"
+                price_unit: 1000000.0
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source1.id"
+                percentage: 100.0
+
+      - step: "Assert the award was created in Draft, Active"
+        action: "assert"
+        target: "award_main"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          compliance_state:
+            type: "value"
+            expected: "active"
+          amount_awarded:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "Confirm the award as admin"
+        action: "call"
+        target: "award_main"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Refresh before approving (avoids stale policy cache)"
+        action: "assert"
+        target: "award_main"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the award as admin"
+        action: "call"
+        target: "award_main"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          name:
+            type: "value"
+            operator: "not_equals"
+            expected: "/"
+
+      - step: "Assert the funding source committed the award's amount"
+        action: "assert"
+        target: "funding_source1"
+        asserts:
+          amount_committed:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "Assert the program's quota used increased by one"
+        action: "assert"
+        target: "program1"
+        asserts:
+          quota_used:
+            type: "value"
+            expected: 1
+
+      # ── Cancel the now-Open award via the cancel reason wizard ──
+      - step: "Create the cancellation reason"
+        action: "create"
+        model: "base.cancel_reason"
+        save_as: "reason1"
+        values:
+          name: "AW1 Cancel Reason"
+
+      - step: "Cancel the award via the wizard"
+        action: "wizard"
+        model: "base.select_cancel_reason"
+        target: "award_main"
+        as_user: "base.user_admin"
+        values:
+          cancel_reason_id: "REC: reason1.id"
+        method: "action_confirm"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+  - name: "Award - Onchange Program And Scope"
+    steps:
+      # ── Shared fixture chain (suffix AW2) ────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type2"
+        values:
+          name: "AW2 Grade Type"
+          code: "AW2GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school2"
+        values:
+          name: "AW2 School"
+          code: "AW2SC"
+          grade_type_id: "REC: grade_type2.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year2"
+        values:
+          name: "AW2 Academic Year"
+          code: "AW2AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term2"
+        values:
+          name: "AW2 Term"
+          code: "AW2TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year2.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade2"
+        values:
+          name: "AW2 Grade"
+          code: "AW2GR"
+          type_id: "REC: grade_type2.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class2"
+        values:
+          name: "AW2 Class"
+          code: "AW2CL"
+          school_id: "REC: school2.id"
+          grade_id: "REC: grade2.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact2"
+        values:
+          name: "AW2 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "student2"
+        values:
+          name: "AW2 Student"
+          code: "AW2ST"
+          contact_id: "REC: contact2.id"
+          school_id: "REC: school2.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment2"
+        values:
+          academic_year_id: "REC: academic_year2.id"
+          academic_term_id: "REC: academic_term2.id"
+          school_id: "REC: school2.id"
+          grade_id: "REC: grade2.id"
+          grade_class_id: "REC: grade_class2.id"
+          student_id: "REC: student2.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic2"
+        values:
+          name: "AW2 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source2"
+        values:
+          name: "AW2 Funding Source"
+          code: "AW2FS"
+          analytic_account_id: "REC: analytic2.id"
+
+      - step: "Create the product covered by the scope line"
+        action: "create"
+        model: "product.product"
+        save_as: "product2"
+        values:
+          name: "AW2 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal2"
+        values:
+          name: "AW2 Journal"
+          code: "JAW2"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account2"
+        values:
+          name: "AW2 Discount Account"
+          code: "AW2DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type, flagged as employee benefit"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type2"
+        values:
+          name: "AW2 Type"
+          code: "AW2TY"
+          deduction_journal_id: "REC: journal2.id"
+          discount_account_id: "REC: discount_account2.id"
+          is_employee_benefit: true
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program2"
+        values:
+          name: "AW2 Program"
+          code: "AW2PRG"
+          type_id: "REC: type2.id"
+          school_id: "REC: school2.id"
+          academic_year_id: "REC: academic_year2.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source2.id"]]]
+          deduction_journal_id: "REC: journal2.id"
+          discount_account_id: "REC: discount_account2.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product2.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 250000.0
+
+      - step: "Find the created scope line"
+        action: "search"
+        model: "school_scholarship_program_scope"
+        domain: [["program_id", "=", "REC: program2.id"]]
+        limit: 1
+        save_as: "scope_line2"
+
+      - step: "Create a bare award to host the Benefit onchange test"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award2"
+        values:
+          program_id: "REC: program2.id"
+          student_id: "REC: student2.id"
+          enrollment_id: "REC: enrollment2.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+
+      # ── Onchange (form): set program_id → nine account fields and
+      # is_employee_benefit filled from the program.
+      - step: "Open a new award form and select the Program"
+        action: "form"
+        model: "school_scholarship_award"
+        save: false
+        ops:
+          - set:
+              program_id: "REC: program2"
+          - assert:
+              deduction_journal_id:
+                type: "m2o"
+                expected: "REC: journal2"
+              discount_account_id:
+                type: "m2o"
+                expected: "REC: discount_account2"
+              is_employee_benefit:
+                type: "value"
+                expected: true
+
+      # ── Onchange (form): set scope_id on a Benefit line → Benefit
+      # Type, Computation, and Percentage/Fixed Amount filled from
+      # that scope line.
+      - step: "Open a new Benefit line form and select the Scope"
+        action: "form"
+        model: "school_scholarship_award_benefit"
+        save: false
+        ops:
+          - set:
+              award_id: "REC: award2"
+          - set:
+              scope_id: "REC: scope_line2"
+          - assert:
+              benefit_type:
+                type: "value"
+                expected: "cash"
+              computation:
+                type: "value"
+                expected: "fixed"
+              amount_fixed:
+                type: "value"
+                expected: 250000.0
+
+  - name: "Award - Negative Paths"
+    steps:
+      # ── Shared fixture chain (suffix AW3) ────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type3"
+        values:
+          name: "AW3 Grade Type"
+          code: "AW3GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school3"
+        values:
+          name: "AW3 School"
+          code: "AW3SC"
+          grade_type_id: "REC: grade_type3.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year3"
+        values:
+          name: "AW3 Academic Year"
+          code: "AW3AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term3"
+        values:
+          name: "AW3 Term"
+          code: "AW3TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year3.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade3"
+        values:
+          name: "AW3 Grade"
+          code: "AW3GR"
+          type_id: "REC: grade_type3.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class3"
+        values:
+          name: "AW3 Class"
+          code: "AW3CL"
+          school_id: "REC: school3.id"
+          grade_id: "REC: grade3.id"
+
+      - step: "Create the first student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact3a"
+        values:
+          name: "AW3 Contact A"
+
+      - step: "Create the first student"
+        action: "create"
+        model: "school_student"
+        save_as: "student3a"
+        values:
+          name: "AW3 Student A"
+          code: "AW3STA"
+          contact_id: "REC: contact3a.id"
+          school_id: "REC: school3.id"
+
+      - step: "Create the first enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment3a"
+        values:
+          academic_year_id: "REC: academic_year3.id"
+          academic_term_id: "REC: academic_term3.id"
+          school_id: "REC: school3.id"
+          grade_id: "REC: grade3.id"
+          grade_class_id: "REC: grade_class3.id"
+          student_id: "REC: student3a.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic3"
+        values:
+          name: "AW3 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source3"
+        values:
+          name: "AW3 Funding Source"
+          code: "AW3FS"
+          analytic_account_id: "REC: analytic3.id"
+
+      - step: "Create the product covered by the scope line"
+        action: "create"
+        model: "product.product"
+        save_as: "product3"
+        values:
+          name: "AW3 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal3"
+        values:
+          name: "AW3 Journal"
+          code: "JAW3"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account3"
+        values:
+          name: "AW3 Discount Account"
+          code: "AW3DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type3"
+        values:
+          name: "AW3 Type"
+          code: "AW3TY"
+          deduction_journal_id: "REC: journal3.id"
+          discount_account_id: "REC: discount_account3.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program3"
+        values:
+          name: "AW3 Program"
+          code: "AW3PRG"
+          type_id: "REC: type3.id"
+          school_id: "REC: school3.id"
+          academic_year_id: "REC: academic_year3.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source3.id"]]]
+          deduction_journal_id: "REC: journal3.id"
+          discount_account_id: "REC: discount_account3.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product3.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      # ── Negative: Confirm without a Benefit line ─────────────────
+      - step: "Create an award with Funding but no Benefit line"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award_g"
+        values:
+          program_id: "REC: program3.id"
+          student_id: "REC: student3a.id"
+          enrollment_id: "REC: enrollment3a.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account3.id"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source3.id"
+                percentage: 100.0
+
+      - step: "Confirming without a Benefit line is rejected"
+        action: "call"
+        target: "award_g"
+        method: "action_confirm"
+        expect_error:
+          type: "UserError"
+          message_contains: "Benefit line"
+
+      # ── Negative: Funding percentage does not add up to 100 ──────
+      - step: "Reject an award whose Funding percentage totals 80"
+        action: "create"
+        model: "school_scholarship_award"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "100"
+        values:
+          program_id: "REC: program3.id"
+          student_id: "REC: student3a.id"
+          enrollment_id: "REC: enrollment3a.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account3.id"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source3.id"
+                percentage: 80.0
+
+      # ── Negative: two Funding lines share the same source ────────
+      - step: "Reject an award with two Funding lines of the same source"
+        action: "create"
+        model: "school_scholarship_award"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "already used"
+        values:
+          program_id: "REC: program3.id"
+          student_id: "REC: student3a.id"
+          enrollment_id: "REC: enrollment3a.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account3.id"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source3.id"
+                percentage: 50.0
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source3.id"
+                percentage: 50.0
+
+      # ── Negative: End Date earlier than Start Date ────────────────
+      - step: "Reject an award whose End Date is before its Start Date"
+        action: "create"
+        model: "school_scholarship_award"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "earlier"
+        values:
+          program_id: "REC: program3.id"
+          student_id: "REC: student3a.id"
+          enrollment_id: "REC: enrollment3a.id"
+          date_start: 2026-12-31
+          date_end: 2026-07-01
+          discount_account_id: "REC: discount_account3.id"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source3.id"
+                percentage: 100.0
+
+      # ── Negative: Enrollment belongs to a different Student ──────
+      - step: "Create a second student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact3b"
+        values:
+          name: "AW3 Contact B"
+
+      - step: "Create a second student"
+        action: "create"
+        model: "school_student"
+        save_as: "student3b"
+        values:
+          name: "AW3 Student B"
+          code: "AW3STB"
+          contact_id: "REC: contact3b.id"
+          school_id: "REC: school3.id"
+
+      - step: "Create the second student's enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment3b"
+        values:
+          academic_year_id: "REC: academic_year3.id"
+          academic_term_id: "REC: academic_term3.id"
+          school_id: "REC: school3.id"
+          grade_id: "REC: grade3.id"
+          grade_class_id: "REC: grade_class3.id"
+          student_id: "REC: student3b.id"
+
+      - step: "Reject an award mixing Student A with Student B's enrollment"
+        action: "create"
+        model: "school_scholarship_award"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "does not belong"
+        values:
+          program_id: "REC: program3.id"
+          student_id: "REC: student3a.id"
+          enrollment_id: "REC: enrollment3b.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account3.id"
+
+      # ── Negative: Award currency does not match Enrollment currency ─
+      - step: "Find a currency different from the company currency"
+        action: "search"
+        model: "res.currency"
+        # ``active_test: false`` -- most non-company currencies are
+        # inactive by default, and the default search would otherwise
+        # filter them all out, leaving no candidate to pick.
+        context:
+          active_test: false
+        domain: [["id", "!=", "REC: company.currency_id.id"]]
+        limit: 1
+        save_as: "other_currency3"
+
+      - step: "Create an enrollment billed in the other currency"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment3c"
+        values:
+          academic_year_id: "REC: academic_year3.id"
+          academic_term_id: "REC: academic_term3.id"
+          school_id: "REC: school3.id"
+          grade_id: "REC: grade3.id"
+          grade_class_id: "REC: grade_class3.id"
+          student_id: "REC: student3a.id"
+          currency_id: "REC: other_currency3.id"
+
+      - step: "Reject an award whose currency does not match the enrollment"
+        action: "create"
+        model: "school_scholarship_award"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "currency"
+        values:
+          program_id: "REC: program3.id"
+          student_id: "REC: student3a.id"
+          enrollment_id: "REC: enrollment3c.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account3.id"
+
+      # ── Negative: Renewal Sequence exceeds Program Max Renewal ───
+      - step: "Cap the program's renewal chain at one renewal"
+        action: "write"
+        target: "program3"
+        values:
+          is_renewable: true
+          max_renewal: 1
+
+      - step: "Create the original award (Renewal Sequence 0)"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award_n1"
+        values:
+          program_id: "REC: program3.id"
+          student_id: "REC: student3a.id"
+          enrollment_id: "REC: enrollment3a.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+
+      - step: "Create the first renewal (Renewal Sequence 1, allowed)"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award_n2"
+        values:
+          program_id: "REC: program3.id"
+          student_id: "REC: student3a.id"
+          enrollment_id: "REC: enrollment3a.id"
+          date_start: 2027-07-01
+          date_end: 2027-12-31
+          renewal_of_award_id: "REC: award_n1.id"
+
+      - step: "Assert the first renewal's Renewal Sequence is 1"
+        action: "assert"
+        target: "award_n2"
+        asserts:
+          renewal_sequence:
+            type: "value"
+            expected: 1
+
+      - step: "Reject a second renewal (Renewal Sequence 2 exceeds Max Renewal 1)"
+        action: "create"
+        model: "school_scholarship_award"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "Renewal Sequence"
+        values:
+          program_id: "REC: program3.id"
+          student_id: "REC: student3a.id"
+          enrollment_id: "REC: enrollment3a.id"
+          date_start: 2028-07-01
+          date_end: 2028-12-31
+          renewal_of_award_id: "REC: award_n2.id"

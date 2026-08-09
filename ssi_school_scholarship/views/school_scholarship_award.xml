@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="school_scholarship_award_view_search" model="ir.ui.view">
+    <field name="name">school_scholarship_award - search</field>
+    <field name="model">school_scholarship_award</field>
+    <field
+            name="inherit_id"
+            ref="ssi_transaction_mixin.mixin_transaction_view_search"
+        />
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//search" position="inside">
+                <field name="student_id" />
+                <field name="program_id" />
+                <field name="school_id" />
+                <field name="academic_year_id" />
+                <field name="compliance_state" />
+                <group expand="0" string="Group By">
+                    <filter
+                            name="group_by_program_id"
+                            string="Program"
+                            context="{'group_by': 'program_id'}"
+                        />
+                    <filter
+                            name="group_by_school_id"
+                            string="School"
+                            context="{'group_by': 'school_id'}"
+                        />
+                    <filter
+                            name="group_by_compliance_state"
+                            string="Compliance State"
+                            context="{'group_by': 'compliance_state'}"
+                        />
+                </group>
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="school_scholarship_award_view_tree" model="ir.ui.view">
+    <field name="name">school_scholarship_award - tree</field>
+    <field name="model">school_scholarship_award</field>
+    <field name="mode">primary</field>
+    <field name="inherit_id" ref="ssi_transaction_mixin.mixin_transaction_view_tree" />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="date" />
+                <field name="student_id" />
+                <field name="program_id" />
+                <field name="school_id" />
+                <field name="date_start" />
+                <field name="date_end" />
+                <field name="amount_awarded" widget="monetary" />
+                <field name="compliance_state" />
+                <field name="company_currency_id" invisible="1" />
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="school_scholarship_award_view_form" model="ir.ui.view">
+    <field name="name">school_scholarship_award - form</field>
+    <field name="model">school_scholarship_award</field>
+    <field name="mode">primary</field>
+    <field name="inherit_id" ref="ssi_transaction_mixin.mixin_transaction_view_form" />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="program_id" />
+                <field name="type_id" />
+                <field name="student_id" />
+                <field
+                        name="enrollment_id"
+                        domain="[('student_id', '=', student_id)]"
+                    />
+                <field name="school_id" />
+                <field name="grade_id" />
+                <field name="academic_year_id" />
+                <field name="date_start" />
+                <field name="date_end" />
+                <field name="is_employee_benefit" />
+            </xpath>
+            <xpath expr="//group[@name='header_right']" position="inside">
+                <field name="date" />
+                <field name="compliance_state" />
+                <field name="company_currency_id" invisible="1" />
+                <field
+                        name="amount_awarded"
+                        widget="monetary"
+                        options="{'currency_field': 'company_currency_id'}"
+                    />
+                <field
+                        name="amount_realized"
+                        widget="monetary"
+                        options="{'currency_field': 'company_currency_id'}"
+                    />
+                <field
+                        name="amount_remaining"
+                        widget="monetary"
+                        options="{'currency_field': 'company_currency_id'}"
+                    />
+            </xpath>
+            <xpath expr="//page[1]" position="before">
+                <page name="benefit" string="Benefit">
+                    <field name="benefit_ids" colspan="4" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle" />
+                            <field
+                                    name="scope_id"
+                                    domain="[('program_id', '=', parent.program_id)]"
+                                />
+                            <field name="benefit_type" />
+                            <field name="product_id" />
+                            <field name="product_category_id" />
+                            <field name="computation" />
+                            <field
+                                    name="percentage"
+                                    attrs="{'invisible': [('computation', '!=', 'percentage')]}"
+                                />
+                            <field
+                                    name="amount_fixed"
+                                    attrs="{'invisible': [('computation', '!=', 'fixed')]}"
+                                />
+                            <field name="max_amount_per_period" />
+                            <field name="periodicity" />
+                            <field name="uom_quantity" />
+                            <field name="price_unit" />
+                            <field name="price_subtotal" />
+                            <field name="account_id" />
+                            <field name="currency_id" invisible="1" />
+                        </tree>
+                    </field>
+                </page>
+                <page name="funding" string="Funding">
+                    <field name="funding_ids" colspan="4" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle" />
+                            <field
+                                    name="allowed_funding_source_ids"
+                                    invisible="1"
+                                />
+                            <field
+                                    name="funding_source_id"
+                                    domain="[('id', 'in', allowed_funding_source_ids)]"
+                                />
+                            <field name="analytic_account_id" />
+                            <field name="percentage" />
+                            <field name="amount_committed" />
+                            <field name="amount_realized" />
+                            <field name="currency_id" invisible="1" />
+                        </tree>
+                    </field>
+                </page>
+                <page name="letter" string="Letters">
+                    <field name="letter_ids" colspan="4" nolabel="1">
+                        <tree create="true" edit="true" delete="true">
+                            <field name="date" />
+                            <field name="letter_type" />
+                            <field name="date_signed" />
+                            <field name="signed_by" />
+                        </tree>
+                    </field>
+                </page>
+                <page name="compliance_renewal" string="Compliance &amp; Renewal">
+                    <group name="compliance_renewal_group" colspan="4" col="2">
+                        <field name="compliance_state" />
+                        <field name="renewal_of_award_id" />
+                        <field name="renewal_sequence" />
+                    </group>
+                    <field name="renewal_award_ids" colspan="4" nolabel="1">
+                        <tree create="false" edit="false" delete="false">
+                            <field name="name" />
+                            <field name="date" />
+                            <field name="state" />
+                        </tree>
+                    </field>
+                </page>
+                <page name="deduction" string="Deduction">
+                    <group name="deduction_group" string="Deduction Configuration">
+                        <field name="deduction_journal_id" />
+                        <field name="discount_account_id" />
+                        <field name="employee_benefit_account_id" />
+                    </group>
+                </page>
+                <page name="disbursement" string="Disbursement">
+                    <group
+                            name="disbursement_group"
+                            string="Disbursement Configuration"
+                        >
+                        <field name="disbursement_journal_id" />
+                        <field name="expense_account_id" />
+                        <field name="payable_account_id" />
+                    </group>
+                </page>
+                <page name="deferred_recognition" string="Deferred Recognition">
+                    <group
+                            name="deferred_recognition_group"
+                            string="Deferred Recognition Configuration"
+                        >
+                        <field name="deferred_discount_account_id" />
+                        <field name="deferred_expense_account_id" />
+                        <field name="recognition_journal_id" />
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//group[@name='policy_2']" position="inside">
+                <field name="generate_schedule_ok" />
+                <field name="create_deduction_ok" />
+                <field name="revoke_ok" />
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="school_scholarship_award_action" model="ir.actions.act_window">
+    <field name="name">Scholarship Awards</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">school_scholarship_award</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem
+        id="school_scholarship_award_menu"
+        name="Scholarship Awards"
+        parent="menu_school_scholarship"
+        action="school_scholarship_award_action"
+        groups="school_scholarship_award_viewer_group"
+        sequence="10"
+    />
+
+</odoo>

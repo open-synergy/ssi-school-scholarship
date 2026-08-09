@@ -7,3 +7,7 @@ from . import school_scholarship_funding_source  # noqa: F401
 from . import school_scholarship_program_scope  # noqa: F401
 from . import school_scholarship_criteria  # noqa: F401
 from . import school_scholarship_program  # noqa: F401
+from . import school_scholarship_award_benefit  # noqa: F401
+from . import school_scholarship_award_funding  # noqa: F401
+from . import school_scholarship_letter  # noqa: F401
+from . import school_scholarship_award  # noqa: F401

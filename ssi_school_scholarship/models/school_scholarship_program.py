@@ -202,9 +202,8 @@ class SchoolScholarshipProgram(models.Model):
         compute="_compute_quota_used",
         store=False,
         compute_sudo=True,
-        help="Number of awards already granted under this program. "
-        "Always zero for now: the award model this is derived from "
-        "does not exist yet and is wired up in a later item.",
+        help="Number of awards already granted under this program, "
+        "counting awards whose state is Open or Done.",
     )
     quota_available = fields.Integer(
         string="Quota Available",
@@ -231,6 +230,12 @@ class SchoolScholarshipProgram(models.Model):
         help="Eligibility criteria checklist used by the committee "
         "when deciding whether to award this program to an "
         "applicant.",
+    )
+    award_ids = fields.One2many(
+        string="Awards",
+        comodel_name="school_scholarship_award",
+        inverse_name="program_id",
+        help="Awards granted under this program.",
     )
 
     @api.constrains("scope_ids")
@@ -277,19 +282,19 @@ Solution: Add at least one Scope line
         records._check_scope_ids()
         return records
 
-    @api.depends()
+    @api.depends("award_ids.state")
     def _compute_quota_used(self):
-        """Return zero until the award model exists.
-
-        No real dependency: the ``school_scholarship_award_funding``
-        model this should be derived from is not part of this item's
-        scope, so the value is a fixed placeholder wired up in a
-        later item.
+        """Count the Open/Done awards granted under this program.
 
         :return: nothing; assigns ``quota_used``
         """
         for record in self:
-            record.quota_used = 0
+            record.quota_used = self.env["school_scholarship_award"].search_count(
+                [
+                    ("program_id", "=", record.id),
+                    ("state", "in", ["open", "done"]),
+                ]
+            )
 
     @api.depends()
     def _compute_quota_available(self):

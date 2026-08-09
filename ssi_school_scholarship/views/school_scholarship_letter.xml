@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="school_scholarship_letter_view_search" model="ir.ui.view">
+    <field name="name">school_scholarship_letter - search</field>
+    <field name="model">school_scholarship_letter</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="award_id" />
+            <field name="letter_type" />
+            <field name="signed_by" />
+        </search>
+    </field>
+</record>
+
+<record id="school_scholarship_letter_view_tree" model="ir.ui.view">
+    <field name="name">school_scholarship_letter - tree</field>
+    <field name="model">school_scholarship_letter</field>
+    <field name="arch" type="xml">
+        <tree>
+            <field name="award_id" />
+            <field name="date" />
+            <field name="letter_type" />
+            <field name="date_signed" />
+            <field name="signed_by" />
+        </tree>
+    </field>
+</record>
+
+<record id="school_scholarship_letter_view_form" model="ir.ui.view">
+    <field name="name">school_scholarship_letter - form</field>
+    <field name="model">school_scholarship_letter</field>
+    <field name="arch" type="xml">
+        <form>
+            <sheet>
+                <group name="main_group" colspan="4" col="2">
+                    <field name="award_id" />
+                    <field name="letter_type" />
+                    <field name="date" />
+                    <field name="date_signed" />
+                    <field name="signed_by" />
+                </group>
+                <notebook>
+                    <page name="note" string="Note">
+                        <field name="note" colspan="4" nolabel="1" />
+                    </page>
+                </notebook>
+            </sheet>
+            <div class="oe_chatter">
+                <field name="message_follower_ids" groups="base.group_user" />
+                <field name="activity_ids" />
+                <field name="message_ids" />
+            </div>
+        </form>
+    </field>
+</record>
+</odoo>

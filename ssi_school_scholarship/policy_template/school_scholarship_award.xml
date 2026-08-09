@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="policy_template_school_scholarship_award" model="policy.template">
+    <field name="name">Standard</field>
+    <field name="model_id" ref="model_school_scholarship_award" />
+    <field
+            name="state_field_id"
+            search="[('model_id.model','=','school_scholarship_award'),('name','=','state')]"
+        />
+    <field name="sequence" eval="100" />
+    <field name="python_code">result=True</field>
+</record>
+
+<!-- Confirm -->
+<record
+        id="policy_template_school_scholarship_award_confirm"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_school_scholarship_award" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','school_scholarship_award'),('name','=','confirm_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','school_scholarship_award'),('value','=','draft')]"
+        />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+            name="group_ids"
+            eval="[(6,0,[ref('school_scholarship_award_user_group')])]"
+        />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!-- Generate Schedule -->
+<record
+        id="policy_template_school_scholarship_award_generate_schedule"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_school_scholarship_award" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','school_scholarship_award'),('name','=','generate_schedule_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','school_scholarship_award'),('value','=','open')]"
+        />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+            name="group_ids"
+            eval="[(6,0,[ref('school_scholarship_award_user_group')])]"
+        />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!-- Create Deduction -->
+<record
+        id="policy_template_school_scholarship_award_create_deduction"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_school_scholarship_award" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','school_scholarship_award'),('name','=','create_deduction_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','school_scholarship_award'),('value','=','open')]"
+        />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+            name="group_ids"
+            eval="[(6,0,[ref('school_scholarship_award_user_group')])]"
+        />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!-- Revoke -->
+<record
+        id="policy_template_school_scholarship_award_revoke"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_school_scholarship_award" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','school_scholarship_award'),('name','=','revoke_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','school_scholarship_award'),('value','=','open')]"
+        />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+            name="group_ids"
+            eval="[(6,0,[ref('school_scholarship_award_validator_group')])]"
+        />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!-- Done -->
+<record id="policy_template_school_scholarship_award_done" model="policy.template_detail">
+    <field name="template_id" ref="policy_template_school_scholarship_award" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','school_scholarship_award'),('name','=','done_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','school_scholarship_award'),('value','=','open')]"
+        />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+            name="group_ids"
+            eval="[(6,0,[ref('school_scholarship_award_user_group')])]"
+        />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!-- Cancel -->
+<record
+        id="policy_template_school_scholarship_award_cancel"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_school_scholarship_award" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','school_scholarship_award'),('name','=','cancel_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','school_scholarship_award'),('value','in',['draft','confirm','open'])]"
+        />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+            name="group_ids"
+            eval="[(6,0,[ref('school_scholarship_award_validator_group')])]"
+        />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!-- Restart -->
+<record
+        id="policy_template_school_scholarship_award_restart"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_school_scholarship_award" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','school_scholarship_award'),('name','=','restart_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','school_scholarship_award'),('value','in',['cancel','reject'])]"
+        />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+            name="group_ids"
+            eval="[(6,0,[ref('school_scholarship_award_validator_group')])]"
+        />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!-- Reject -->
+<record id="policy_template_school_scholarship_award_reject" model="policy.template_detail">
+    <field name="template_id" ref="policy_template_school_scholarship_award" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','school_scholarship_award'),('name','=','reject_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','school_scholarship_award'),('value','=','confirm')]"
+        />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id in document.active_approver_user_ids.ids:
+    result = True</field>
+</record>
+
+<!-- Approve -->
+<record
+        id="policy_template_school_scholarship_award_approve"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_school_scholarship_award" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','school_scholarship_award'),('name','=','approve_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','school_scholarship_award'),('value','=','confirm')]"
+        />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id in document.active_approver_user_ids.ids:
+    result = True</field>
+</record>
+
+<!-- Manual Number -->
+<record
+        id="policy_template_school_scholarship_award_manual_number"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_school_scholarship_award" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','school_scholarship_award'),('name','=','manual_number_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','school_scholarship_award'),('value','=','draft')]"
+        />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+            name="group_ids"
+            eval="[(6,0,[ref('school_scholarship_award_validator_group')])]"
+        />
+    <field name="restrict_additional" eval="0" />
+</record>
+</odoo>

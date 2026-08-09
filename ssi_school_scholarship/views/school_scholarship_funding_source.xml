@@ -48,6 +48,8 @@
                 <field name="school_id" optional="hide" />
                 <field name="academic_year_id" optional="hide" />
                 <field name="amount_ceiling" widget="monetary" />
+                <field name="amount_committed" widget="monetary" />
+                <field name="amount_available" widget="monetary" />
                 <field name="currency_id" invisible="1" />
             </xpath>
         </data>
@@ -69,6 +71,21 @@
                 <field name="currency_id" groups="base.group_multi_currency" />
                 <field
                         name="amount_ceiling"
+                        widget="monetary"
+                        options="{'currency_field': 'currency_id'}"
+                    />
+                <field
+                        name="amount_committed"
+                        widget="monetary"
+                        options="{'currency_field': 'currency_id'}"
+                    />
+                <field
+                        name="amount_realized"
+                        widget="monetary"
+                        options="{'currency_field': 'currency_id'}"
+                    />
+                <field
+                        name="amount_available"
                         widget="monetary"
                         options="{'currency_field': 'currency_id'}"
                     />

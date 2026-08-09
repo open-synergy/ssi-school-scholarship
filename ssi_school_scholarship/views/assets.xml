@@ -21,6 +21,10 @@
                 type="text/javascript"
                 src="/ssi_school_scholarship/static/tests/tours/school_scholarship_program_tour.js"
             />
+        <script
+                type="text/javascript"
+                src="/ssi_school_scholarship/static/tests/tours/school_scholarship_award_tour.js"
+            />
     </xpath>
 </template>
 </odoo>

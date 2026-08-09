@@ -29,6 +29,14 @@ Scholarship Program
 
 * `Create Scholarship Program <docs/school_scholarship_program/01-create.html>`_
 
+Scholarship Award
+-------------------
+
+* `Create Scholarship Award <docs/school_scholarship_award/01-create.html>`_
+* `Confirm Scholarship Award <docs/school_scholarship_award/04-confirm.html>`_
+* `Approve Scholarship Award <docs/school_scholarship_award/05-approve.html>`_
+* `Cancel Scholarship Award <docs/school_scholarship_award/10-cancel.html>`_
+
 
 Installation
 ============
