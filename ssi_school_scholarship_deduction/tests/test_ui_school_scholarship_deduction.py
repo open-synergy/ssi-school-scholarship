@@ -259,14 +259,22 @@ class TestUiSchoolScholarshipDeduction(HttpSavepointCase):
         def _make_open_invoice(name, amount):
             """Build and open a customer invoice with one line.
 
-            :param name: identifying name used only in the invoice
-                line's own label
+            :param name: this invoice's own document number, set
+                explicitly here rather than left at the "/" default --
+                ``mixin.sequence._create_sequence`` only replaces the
+                name with an auto-generated sequence when it is still
+                exactly the template's initial string ("/"), so setting
+                it up front makes it permanent and lets the "create"
+                tour find this exact invoice by name through the
+                ``customer_invoice_id`` many2one's autocomplete. Also
+                used as a prefix for the invoice line's own label.
             :param amount: the invoice line's Price Unit, also the
                 resulting invoice's own residual once opened
             :return: the opened ``customer_invoice`` record
             """
             invoice = cls.env["customer_invoice"].create(
                 {
+                    "name": name,
                     "type_id": tour_invoice_type.id,
                     "partner_id": tour_contact.id,
                     "date": "2026-08-01",
