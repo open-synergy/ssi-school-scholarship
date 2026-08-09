@@ -2,6 +2,8 @@
 # Copyright 2026 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from unittest import mock
+
 from odoo_yaml_test import YamlTransactionCase
 
 from odoo.exceptions import UserError
@@ -258,3 +260,41 @@ class TestSchoolScholarshipDeductionRecognition(YamlTransactionCase):
         )
         with self.assertRaises(UserError):
             wizard.action_create_due_recognition()
+
+    def test_get_due_deduction_ids_no_upper_bound(self):
+        """``_get_due_deduction_ids`` with a falsy date has no upper bound.
+
+        Reachable whenever a user clears the wizard's own required
+        ``date`` field mid-edit, firing ``onchange_deduction_ids``
+        with an empty value -- the search then falls back to every
+        Pending deduction regardless of its own Recognition Date.
+
+        Pure Python -- trigger P1 (L-01: ``_get_due_deduction_ids``
+        return value; ``action: call`` in the YAML DSL discards it),
+        odoo-development-unit-test references/python-escape-hatch.md.
+        """
+        wizard = self.env["create_due_scholarship_recognition"].create(
+            {"date": "2026-01-01"}
+        )
+        result_bounded = wizard._get_due_deduction_ids("2026-01-01")
+        result_unbounded = wizard._get_due_deduction_ids(False)
+        self.assertGreaterEqual(len(result_unbounded), len(result_bounded))
+
+    def test_insert_form_element_view_element_disabled(self):
+        """``_insert_form_element`` skips the statusbar reconfiguration
+        when ``_automatically_insert_view_element`` is falsy.
+
+        That attribute is a hardcoded ``True`` class constant on this
+        model, so no business flow can ever reach the ``False``
+        branch on this concrete model -- exercised directly with
+        ``mock.patch.object`` instead, mirroring the identical test on
+        ``school_scholarship_deduction`` (P6: mock/patch; L-15,
+        odoo-development-unit-test references/python-escape-hatch.md).
+        """
+        recognition = self.env["school_scholarship_deduction_recognition"]
+        view_arch = "<form><header/></form>"
+        with mock.patch.object(
+            type(recognition), "_automatically_insert_view_element", False
+        ):
+            result = recognition._insert_form_element(view_arch)
+        self.assertEqual(result, view_arch)

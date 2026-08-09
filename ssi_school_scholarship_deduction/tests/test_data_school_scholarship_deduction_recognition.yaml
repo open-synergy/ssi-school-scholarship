@@ -1163,6 +1163,81 @@ scenarios:
             type: "value"
             expected: 160000.0
 
+      # ── Positive: cancelling a Done Recognition deletes its own
+      # Move and Recognition Lines ─────────────────────────────────
+      - step: "Cancel the multi-source Recognition via the wizard"
+        action: "wizard"
+        model: "base.select_cancel_reason"
+        target: "r1_recognition_multi"
+        as_user: "base.user_admin"
+        values:
+          cancel_reason_id: "REC: r1_reason.id"
+        method: "action_confirm"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Assert cancelling deleted the Recognition's own Move"
+        action: "assert"
+        target: "r1_recognition_multi"
+        refresh: true
+        asserts:
+          move_id:
+            type: "value"
+            operator: "is_falsy"
+          recognition_line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      # ── Negative: recognizing a bare (line-less) deduction never
+      # crashes -- Odoo core itself rejects posting a Move with no
+      # lines, instead of an unguarded IndexError ────────────────────
+      - step: "Create a bare deduction with no Lines at all"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "r1_deduction_bare"
+        values:
+          award_id: "REC: r1_award.id"
+          date: 2026-03-01
+          journal_id: "REC: r1_journal.id"
+          receivable_account_id: "REC: r1_receivable_account.id"
+          deferred_account_id: "REC: r1_deferred_account.id"
+          recognition_journal_id: "REC: r1_journal.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Create a zero-amount Recognition for the bare deduction"
+        action: "create"
+        model: "school_scholarship_deduction_recognition"
+        save_as: "r1_recognition_bare"
+        values:
+          deduction_id: "REC: r1_deduction_bare.id"
+          date: 2026-08-01
+          journal_id: "REC: r1_journal.id"
+          amount: 0.0
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm the zero-amount Recognition"
+        action: "call"
+        target: "r1_recognition_bare"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approving the bare Recognition is rejected by Odoo core itself"
+        action: "call"
+        target: "r1_recognition_bare"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "add a line before posting"
+
   - name: "Recognition - Asymmetric Recognition Guard"
     steps:
       # ── Shared fixture chain (prefix R2) ─────────────────────────
@@ -1480,6 +1555,65 @@ scenarios:
           state:
             type: "value"
             expected: "open"
+
+      - step: "Reject a deferred deduction with no Deferred Account"
+        action: "create"
+        model: "school_scholarship_deduction"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "Deferred Account"
+        values:
+          award_id: "REC: r2_award.id"
+          date: 2026-03-01
+          journal_id: "REC: r2_journal.id"
+          receivable_account_id: "REC: r2_receivable_account.id"
+          recognition_journal_id: "REC: r2_journal.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: r2_schedule.id"
+                funding_id: "REC: r2_funding.id"
+                final_account_id: "REC: r2_discount_account.id"
+                name: "R2 No Deferred Account Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+
+      - step:
+          "A deferred deduction with no allocation saves even while asymmetry is
+          disallowed"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "r2_deduction_unallocated"
+        values:
+          award_id: "REC: r2_award.id"
+          date: 2026-03-01
+          journal_id: "REC: r2_journal.id"
+          receivable_account_id: "REC: r2_receivable_account.id"
+          deferred_account_id: "REC: r2_deferred_account.id"
+          recognition_journal_id: "REC: r2_journal.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: r2_schedule.id"
+                funding_id: "REC: r2_funding.id"
+                final_account_id: "REC: r2_discount_account.id"
+                name: "R2 Unallocated Deferred Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+
+      - step:
+          "Assert the unallocated deferred deduction saved without tripping the guard"
+        action: "assert"
+        target: "r2_deduction_unallocated"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          recognition_method:
+            type: "value"
+            expected: "deferred"
 
       - step: "Reject deferring the deduction while the invoice still credits Income"
         action: "create"
