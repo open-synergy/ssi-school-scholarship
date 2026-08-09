@@ -5,10 +5,7 @@
 <odoo>
 <record id="school_scholarship_type_group" model="res.groups">
     <field name="name">Scholarship Type</field>
-    <field
-            name="category_id"
-            ref="school_scholarship_configurator_module_category"
-        />
+    <field name="category_id" ref="school_scholarship_configurator_module_category" />
     <field
             name="users"
             eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"

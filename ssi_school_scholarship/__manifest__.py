@@ -5,7 +5,9 @@
     "name": "School Scholarship",
     "version": "14.0.1.0.0",
     "website": "https://simetri-sinergi.id",
-    "author": "OpenSynergy Indonesia, PT. Simetri Sinergi Indonesia",
+    # pylint: disable=line-too-long
+    "author": "PT. Simetri Sinergi Indonesia, OpenSynergy Indonesia, Odoo Community Association (OCA)",  # noqa: B950
+    # pylint: enable=line-too-long
     "contributors": [
         "Andhitia Rama <andhitia.r@gmail.com>",
     ],

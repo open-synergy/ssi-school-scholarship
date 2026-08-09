@@ -2,9 +2,7 @@
 // Copyright 2026 PT. Simetri Sinergi Indonesia
 // License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-odoo.define("ssi_school_scholarship.school_scholarship_type_tour", function (
-    require
-) {
+odoo.define("ssi_school_scholarship.school_scholarship_type_tour", function (require) {
     "use strict";
 
     var tour = require("web_tour.tour");
@@ -121,8 +119,7 @@ odoo.define("ssi_school_scholarship.school_scholarship_type_tour", function (
             },
             {
                 content: "Record is saved by Generate Code",
-                trigger:
-                    ".o_control_panel .breadcrumb-item.active:not(:contains(New))",
+                trigger: ".o_control_panel .breadcrumb-item.active:not(:contains(New))",
                 run: function () {
                     // Assertion only; do not trigger the default click action.
                 },

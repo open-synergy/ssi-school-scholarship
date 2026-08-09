@@ -52,9 +52,7 @@ class TestUiSchoolScholarshipType(HttpSavepointCase):
         cls.code_sequence_template = cls.env["sequence.template"].create(
             {
                 "name": "TOUR Scholarship Type Sequence Template",
-                "model_id": cls.env["ir.model"]._get_id(
-                    "school_scholarship_type"
-                ),
+                "model_id": cls.env["ir.model"]._get_id("school_scholarship_type"),
                 "sequence_field_id": cls.env["ir.model.fields"]
                 ._get("school_scholarship_type", "code")
                 .id,

@@ -73,8 +73,7 @@ class SchoolScholarshipType(models.Model):
         string="Expense Account",
         comodel_name="account.account",
         ondelete="restrict",
-        help="Expense account the cash scholarship disbursement is booked "
-        "to.",
+        help="Expense account the cash scholarship disbursement is booked " "to.",
     )
     payable_account_id = fields.Many2one(
         string="Payable Account",
@@ -129,10 +128,7 @@ class SchoolScholarshipType(models.Model):
             ``True``.
         """
         for record in self:
-            if (
-                record.discount_account_id
-                and record.discount_account_id.reconcile
-            ):
+            if record.discount_account_id and record.discount_account_id.reconcile:
                 error_message = """
 Document Type: %s
 Context: Configure discount account
@@ -159,10 +155,7 @@ Reconciliation on the selected account
             ``reconcile`` is ``False``.
         """
         for record in self:
-            if (
-                record.payable_account_id
-                and not record.payable_account_id.reconcile
-            ):
+            if record.payable_account_id and not record.payable_account_id.reconcile:
                 error_message = """
 Document Type: %s
 Context: Configure payable account
@@ -195,10 +188,7 @@ Solution: Enable Allow Reconciliation on the selected account
                 ("deferred_expense_account_id", "Deferred Expense"),
             ):
                 account = record[field_name]
-                if (
-                    account
-                    and account.user_type_id.internal_group != "asset"
-                ):
+                if account and account.user_type_id.internal_group != "asset":
                     error_message = """
 Document Type: %s
 Context: Configure %s Account
