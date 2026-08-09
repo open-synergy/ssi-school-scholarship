@@ -206,6 +206,19 @@ class TestUiSchoolScholarshipDeduction(HttpSavepointCase):
                     "enrollment_id": tour_enrollment.id,
                     "date_start": "2026-07-01",
                     "date_end": "2026-12-31",
+                    # school_scholarship_award_benefit._compute_account_id
+                    # reads this directly off the Award (not through any
+                    # onchange chain) for a Benefit with benefit_type
+                    # "cash", as created below. create() here never runs
+                    # the form's own onchange_expense_account_id (that
+                    # only fires in the real web client), so without this
+                    # the Benefit's own account_id -- and, through the
+                    # deduction Line's onchange_final_account_id, the
+                    # deduction Line's own Final Account -- would compute
+                    # to False, leaving that required field empty and
+                    # the Line permanently invalid for the browser to
+                    # commit.
+                    "expense_account_id": tour_discount_account.id,
                     "benefit_ids": [
                         (
                             0,
