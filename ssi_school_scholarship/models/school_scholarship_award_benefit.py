@@ -111,6 +111,15 @@ class SchoolScholarshipAwardBenefit(models.Model):
         store=True,
         compute_sudo=True,
         readonly=False,
+        # ``mixin.product_line_account`` declares this field
+        # ``required=True`` at the DB level. Odoo's ``create()`` never
+        # includes a stored *computed* field's value in the initial
+        # INSERT (it is filled by a follow-up UPDATE once the compute
+        # runs), so keeping the inherited NOT NULL constraint makes
+        # every create() fail before ``_compute_account_id`` ever
+        # executes. The compute always assigns a real account, so the
+        # DB-level requirement is redundant and must be relaxed here.
+        required=False,
         help="Accounting account this line posts to when a later "
         "document realizes it: the award's Employee Benefit Account "
         "when the award is flagged as an employee benefit, the "

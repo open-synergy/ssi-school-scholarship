@@ -190,6 +190,7 @@ class TestUiSchoolScholarshipAward(HttpSavepointCase):
                         0,
                         0,
                         {
+                            "name": "TOUR Award Confirm Benefit",
                             "product_id": cls.tour_product.id,
                             "price_unit": 1000000.0,
                         },
@@ -225,6 +226,7 @@ class TestUiSchoolScholarshipAward(HttpSavepointCase):
                         0,
                         0,
                         {
+                            "name": "TOUR Award Approve Benefit",
                             "product_id": cls.tour_product.id,
                             "price_unit": 1000000.0,
                         },
