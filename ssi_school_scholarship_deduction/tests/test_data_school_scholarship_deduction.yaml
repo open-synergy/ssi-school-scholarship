@@ -1023,6 +1023,25 @@ scenarios:
                 type: "m2o"
                 expected: "REC: d1_receivable_account"
 
+      # ── Onchange (form): adding an Allocation line WITHOUT yet
+      # picking its Customer Invoice leaves the header's own
+      # Receivable Account untouched -- the falsy-``invoice_account_id``
+      # branch of ``onchange_receivable_account_id`` ─────────────────
+      - step:
+          "Open a new Deduction form and add an Allocation with no invoice picked yet"
+        action: "form"
+        model: "school_scholarship_deduction"
+        save: false
+        ops:
+          - new:
+              field: "allocation_ids"
+              values:
+                amount_allocated: 100000.0
+          - assert:
+              receivable_account_id:
+                type: "value"
+                operator: "is_falsy"
+
   - name: "Deduction - Negative Paths"
     steps:
       # ── Shared fixture chain (suffix D2) ─────────────────────────
@@ -1523,3 +1542,444 @@ scenarios:
         expect_error:
           type: "UserError"
           message_contains: "Amount Unallocated"
+
+      # ── Negative: the invoice's own Receivable Account does not
+      # allow reconciliation ──────────────────────────────────────────
+      - step: "Create a receivable account that does not allow reconciliation"
+        action: "create"
+        model: "account.account"
+        save_as: "d2_no_reconcile_account"
+        values:
+          name: "D2 Non-Reconcilable Account"
+          code: "D2NRA"
+          user_type_id: "REC: account_type_receivable.id"
+          reconcile: false
+
+      - step: "Create an invoice billed on the non-reconcilable account"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "d2_invoice_no_reconcile"
+        values:
+          type_id: "REC: d2_invoice_type.id"
+          partner_id: "REC: d2_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: d2_journal.id"
+          receivable_account_id: "REC: d2_no_reconcile_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the non-reconcilable invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "d2_invoice_no_reconcile_line"
+        values:
+          customer_invoice_id: "REC: d2_invoice_no_reconcile.id"
+          name: "D2 Non-Reconcilable Invoice Line"
+          account_id: "REC: d2_income_account.id"
+          uom_quantity: 1
+          price_unit: 400000.0
+
+      - step: "Confirm the non-reconcilable invoice"
+        action: "call"
+        target: "d2_invoice_no_reconcile"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Approve the non-reconcilable invoice"
+        action: "call"
+        target: "d2_invoice_no_reconcile"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create a deduction whose own Receivable Account cannot reconcile"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "d2_deduction_no_reconcile"
+        values:
+          award_id: "REC: d2_award.id"
+          journal_id: "REC: d2_journal.id"
+          receivable_account_id: "REC: d2_no_reconcile_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: d2_schedule.id"
+                funding_id: "REC: d2_funding.id"
+                final_account_id: "REC: d2_discount_account.id"
+                name: "D2 Non-Reconcilable Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: d2_invoice_no_reconcile.id"
+                amount_allocated: 400000.0
+
+      - step: "Confirm the non-reconcilable deduction"
+        action: "call"
+        target: "d2_deduction_no_reconcile"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Invalidate cache before approving the non-reconcilable deduction"
+        action: "call"
+        target: "d2_deduction_no_reconcile"
+        method: "invalidate_cache"
+
+      - step: "Approving is rejected because the Receivable Account cannot reconcile"
+        action: "call"
+        target: "d2_deduction_no_reconcile"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "does not allow reconciliation"
+
+      # ── Negative: the invoice's own Partner does not match the
+      # deduction's own Partner ───────────────────────────────────────
+      - step: "Create a second contact billed on a different invoice"
+        action: "create"
+        model: "res.partner"
+        save_as: "d2_other_contact"
+        values:
+          name: "D2 Other Contact"
+
+      - step: "Create an invoice billed to the other contact"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "d2_invoice_other_partner"
+        values:
+          type_id: "REC: d2_invoice_type.id"
+          partner_id: "REC: d2_other_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: d2_journal.id"
+          receivable_account_id: "REC: d2_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the other-partner invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "d2_invoice_other_partner_line"
+        values:
+          customer_invoice_id: "REC: d2_invoice_other_partner.id"
+          name: "D2 Other Partner Invoice Line"
+          account_id: "REC: d2_income_account.id"
+          uom_quantity: 1
+          price_unit: 400000.0
+
+      - step: "Confirm the other-partner invoice"
+        action: "call"
+        target: "d2_invoice_other_partner"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Approve the other-partner invoice"
+        action: "call"
+        target: "d2_invoice_other_partner"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create a deduction allocated against the other contact's invoice"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "d2_deduction_partner_mismatch"
+        values:
+          award_id: "REC: d2_award.id"
+          journal_id: "REC: d2_journal.id"
+          receivable_account_id: "REC: d2_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: d2_schedule.id"
+                funding_id: "REC: d2_funding.id"
+                final_account_id: "REC: d2_discount_account.id"
+                name: "D2 Partner Mismatch Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: d2_invoice_other_partner.id"
+                amount_allocated: 400000.0
+
+      - step: "Confirm the partner-mismatch deduction"
+        action: "call"
+        target: "d2_deduction_partner_mismatch"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Invalidate cache before approving the partner-mismatch deduction"
+        action: "call"
+        target: "d2_deduction_partner_mismatch"
+        method: "invalidate_cache"
+
+      - step: "Approving is rejected by the Partner mismatch"
+        action: "call"
+        target: "d2_deduction_partner_mismatch"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "Partner"
+
+      # ── Negative: the invoice's own Currency does not match the
+      # deduction's own Currency ──────────────────────────────────────
+      - step: "Create an invoice billed in a different Currency"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "d2_invoice_other_currency"
+        values:
+          type_id: "REC: d2_invoice_type.id"
+          partner_id: "REC: d2_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REF: base.EUR"
+          journal_id: "REC: d2_journal.id"
+          receivable_account_id: "REC: d2_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the other-currency invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "d2_invoice_other_currency_line"
+        values:
+          customer_invoice_id: "REC: d2_invoice_other_currency.id"
+          name: "D2 Other Currency Invoice Line"
+          account_id: "REC: d2_income_account.id"
+          uom_quantity: 1
+          price_unit: 400000.0
+
+      - step: "Confirm the other-currency invoice"
+        action: "call"
+        target: "d2_invoice_other_currency"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Approve the other-currency invoice"
+        action: "call"
+        target: "d2_invoice_other_currency"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create a deduction allocated against the other-currency invoice"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "d2_deduction_currency_mismatch"
+        values:
+          award_id: "REC: d2_award.id"
+          journal_id: "REC: d2_journal.id"
+          receivable_account_id: "REC: d2_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: d2_schedule.id"
+                funding_id: "REC: d2_funding.id"
+                final_account_id: "REC: d2_discount_account.id"
+                name: "D2 Currency Mismatch Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: d2_invoice_other_currency.id"
+                amount_allocated: 400000.0
+
+      - step: "Confirm the currency-mismatch deduction"
+        action: "call"
+        target: "d2_deduction_currency_mismatch"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Invalidate cache before approving the currency-mismatch deduction"
+        action: "call"
+        target: "d2_deduction_currency_mismatch"
+        method: "invalidate_cache"
+
+      - step: "Approving is rejected by the Currency mismatch"
+        action: "call"
+        target: "d2_deduction_currency_mismatch"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "Currency"
+
+      # ── Negative: a prior deduction's own reconciliation shrinks the
+      # invoice's residual below a SECOND allocation that was valid
+      # when it was first created against the invoice's original,
+      # still-untouched residual ──────────────────────────────────────
+      - step: "Create an invoice shared by two deductions opened in sequence"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "d2_invoice_shared"
+        values:
+          type_id: "REC: d2_invoice_type.id"
+          partner_id: "REC: d2_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: d2_journal.id"
+          receivable_account_id: "REC: d2_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the shared invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "d2_invoice_shared_line"
+        values:
+          customer_invoice_id: "REC: d2_invoice_shared.id"
+          name: "D2 Shared Invoice Line"
+          account_id: "REC: d2_income_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+
+      - step: "Confirm the shared invoice"
+        action: "call"
+        target: "d2_invoice_shared"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Approve the shared invoice, giving it a 1000000 residual"
+        action: "call"
+        target: "d2_invoice_shared"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          amount_residual:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "Create the first deduction allocating part of the shared invoice"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "d2_deduction_shared_first"
+        values:
+          award_id: "REC: d2_award.id"
+          journal_id: "REC: d2_journal.id"
+          receivable_account_id: "REC: d2_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: d2_schedule.id"
+                funding_id: "REC: d2_funding.id"
+                final_account_id: "REC: d2_discount_account.id"
+                name: "D2 Shared First Deduction Line"
+                uom_quantity: 1
+                price_unit: 200000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: d2_invoice_shared.id"
+                amount_allocated: 200000.0
+
+      - step:
+          "Create the second deduction, valid against the invoice's original residual"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "d2_deduction_shared_second"
+        values:
+          award_id: "REC: d2_award.id"
+          journal_id: "REC: d2_journal.id"
+          receivable_account_id: "REC: d2_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: d2_schedule.id"
+                funding_id: "REC: d2_funding.id"
+                final_account_id: "REC: d2_discount_account.id"
+                name: "D2 Shared Second Deduction Line"
+                uom_quantity: 1
+                price_unit: 900000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: d2_invoice_shared.id"
+                amount_allocated: 900000.0
+
+      - step: "Confirm the first shared deduction"
+        action: "call"
+        target: "d2_deduction_shared_first"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Invalidate cache before approving the first shared deduction"
+        action: "call"
+        target: "d2_deduction_shared_first"
+        method: "invalidate_cache"
+
+      - step: "Approve the first shared deduction, shrinking the invoice's residual"
+        action: "call"
+        target: "d2_deduction_shared_first"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert the shared invoice's residual dropped to 800000"
+        action: "assert"
+        target: "d2_invoice_shared"
+        refresh: true
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: 800000.0
+
+      - step: "Confirm the second shared deduction"
+        action: "call"
+        target: "d2_deduction_shared_second"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Invalidate cache before approving the second shared deduction"
+        action: "call"
+        target: "d2_deduction_shared_second"
+        method: "invalidate_cache"
+
+      - step:
+          "Approving is rejected because the first deduction already used up the
+          residual"
+        action: "call"
+        target: "d2_deduction_shared_second"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "exceeds its residual"
