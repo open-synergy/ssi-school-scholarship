@@ -139,9 +139,22 @@ odoo.define(
                 {
                     // Commit the last edited cell -- never `press Tab`
                     // (odoo-development-ui-test references/patterns.md
-                    // §C).
+                    // §C). Click `uom_quantity`, not `schedule_id`:
+                    // `schedule_id` is the onchange trigger for
+                    // `onchange_name`/`onchange_product_id`/
+                    // `onchange_final_account_id`/`onchange_price_unit`
+                    // on this line model, and re-clicking an
+                    // onchange-source field right before switching tabs
+                    // and adding a row elsewhere re-arms that cascade,
+                    // racing the Allocations tab's own row-add and
+                    // popping the generic "The record has been
+                    // modified, your changes will be discarded"
+                    // dialog -- confirmed via the CI job's own DOM dump
+                    // (odoo-development-ui-test references/patterns.md
+                    // §Jebakan 1). `uom_quantity` triggers no onchange
+                    // on this model, so committing through it is safe.
                     content: "Commit the Line",
-                    trigger: ".o_selected_row .o_field_widget[name='schedule_id']",
+                    trigger: ".o_selected_row .o_field_widget[name='uom_quantity']",
                     run: "click",
                 },
 
@@ -313,8 +326,18 @@ odoo.define(
                     },
                 },
                 {
+                    // A *readonly* many2one in 14.0 (`receivable_move_line_id`
+                    // is always `readonly=True`) renders as a bare
+                    // `<a class="o_form_uri o_field_widget ...">` -- it
+                    // never gets the `.o_field_many2one` wrapper class,
+                    // which only applies in edit mode. Confirmed via the
+                    // CI job's own DOM dump: the element exists and is
+                    // filled, but `.o_field_many2one[name='...'] a`
+                    // matches nothing (odoo-development-ui-test
+                    // references/selectors.md §8, "Field readonly").
                     content: "The Receivable Move Line field is filled",
-                    trigger: ".o_field_many2one[name='receivable_move_line_id'] a",
+                    trigger:
+                        ".o_field_widget[name='receivable_move_line_id'].o_form_uri",
                     run: function () {
                         // Assertion only; do not trigger the default click.
                     },
