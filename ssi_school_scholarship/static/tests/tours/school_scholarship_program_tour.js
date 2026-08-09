@@ -125,8 +125,15 @@ odoo.define("ssi_school_scholarship.school_scholarship_program_tour", function (
                 trigger: ".o_notebook .nav-link:contains(Eligibility)",
             },
             {
+                // Class CSS widget many2many_tags legacy 14.0 adalah
+                // "o_field_many2manytags" -- TANPA underscore antara
+                // "many2many" dan "tags" (lihat FieldMany2ManyTags.
+                // className di web/static/src/js/fields/
+                // relational_fields.js). Selector sebelumnya
+                // ".o_field_many2many_tags" (dengan underscore) tidak
+                // pernah cocok.
                 content: "Open the Funding Sources tag input",
-                trigger: ".o_field_many2many_tags[name='funding_source_ids'] input",
+                trigger: ".o_field_many2manytags[name='funding_source_ids'] input",
                 run: "text TOUR Program Funding Source",
             },
             {
