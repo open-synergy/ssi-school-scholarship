@@ -243,8 +243,7 @@ class SchoolScholarshipAward(models.Model):
         compute="_compute_amount_awarded",
         store=True,
         compute_sudo=True,
-        help="Total value of this award, computed as the sum of its "
-        "Benefit lines.",
+        help="Total value of this award, computed as the sum of its " "Benefit lines.",
     )
     amount_realized = fields.Monetary(
         string="Amount Realized",

@@ -34,18 +34,12 @@
 <!-- Data Ownership -->
 <record id="school_scholarship_award_company_group" model="res.groups">
     <field name="name">Award Company</field>
-    <field
-            name="category_id"
-            ref="school_scholarship_data_ownership_module_category"
-        />
+    <field name="category_id" ref="school_scholarship_data_ownership_module_category" />
 </record>
 
 <record id="school_scholarship_award_company_child_group" model="res.groups">
     <field name="name">Award Company and All Child Companies</field>
-    <field
-            name="category_id"
-            ref="school_scholarship_data_ownership_module_category"
-        />
+    <field name="category_id" ref="school_scholarship_data_ownership_module_category" />
     <field
             name="implied_ids"
             eval="[(4, ref('school_scholarship_award_company_group'))]"
@@ -54,10 +48,7 @@
 
 <record id="school_scholarship_award_all_group" model="res.groups">
     <field name="name">Award All</field>
-    <field
-            name="category_id"
-            ref="school_scholarship_data_ownership_module_category"
-        />
+    <field name="category_id" ref="school_scholarship_data_ownership_module_category" />
     <field
             name="implied_ids"
             eval="[(4, ref('school_scholarship_award_company_child_group'))]"

@@ -268,11 +268,9 @@ class TestUiSchoolScholarshipAward(HttpSavepointCase):
         # created as SUPERUSER, which record rules never match
         # (odoo-development-ui-test, structure-and-runner.md, Fixture
         # berjalan sebagai SUPERUSER).
-        (
-            cls.tour_award_confirm
-            | cls.tour_award_approve
-            | cls.tour_award_cancel
-        ).write({"user_id": admin.id})
+        (cls.tour_award_confirm | cls.tour_award_approve | cls.tour_award_cancel).write(
+            {"user_id": admin.id}
+        )
 
     def test_create(self):
         """Run the create tour for ``school_scholarship_award``.

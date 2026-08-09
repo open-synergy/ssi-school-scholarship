@@ -140,10 +140,7 @@
                     <field name="funding_ids" colspan="4" nolabel="1">
                         <tree editable="bottom">
                             <field name="sequence" widget="handle" />
-                            <field
-                                    name="allowed_funding_source_ids"
-                                    invisible="1"
-                                />
+                            <field name="allowed_funding_source_ids" invisible="1" />
                             <field
                                     name="funding_source_id"
                                     domain="[('id', 'in', allowed_funding_source_ids)]"

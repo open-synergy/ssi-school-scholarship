@@ -21,8 +21,8 @@
 2. Click the **New** button. **(14.0: "Create")**
 3. Fill in the required fields:
    - **Program** _(required)_: Select the scholarship program this award is granted
-     under. Selecting it fills the Type, Academic Year, the nine accounting fields on the
-     **Deduction**, **Disbursement**, and **Deferred Recognition** tabs, and **Is
+     under. Selecting it fills the Type, Academic Year, the nine accounting fields on
+     the **Deduction**, **Disbursement**, and **Deferred Recognition** tabs, and **Is
      Employee Benefit** from the program's configuration.
    - **Student** _(required)_: Select the student this award is granted to.
    - **Enrollment** _(required)_: Select the enrollment this award is billed against,
@@ -36,10 +36,11 @@
    confirmed — see `04-confirm`)_:
    - **Scope**: Optionally select a Scope line of the selected Program. Selecting it
      fills Benefit Type, Product, Product Category, Computation, Percentage, Fixed
-     Amount, Max Amount per Period, and Periodicity from that scope line. Leave empty for
-     an ad hoc benefit not tied to any configured scope.
-   - **Benefit Type**: Automatically defaulted to **Fee Reduction**. Change it to **Cash**
-     to pay the benefit out to the student instead of deducting it from the invoice.
+     Amount, Max Amount per Period, and Periodicity from that scope line. Leave empty
+     for an ad hoc benefit not tied to any configured scope.
+   - **Benefit Type**: Automatically defaulted to **Fee Reduction**. Change it to
+     **Cash** to pay the benefit out to the student instead of deducting it from the
+     invoice.
    - **Product** _(required)_: Select the product this line covers.
    - **Product Category**: Optionally select the product category this line covers.
    - **Computation**: Automatically defaulted to **Percentage**. Change it to **Fixed
@@ -59,8 +60,8 @@
    - **Percentage** _(required)_: Enter the percentage of this award's Amount Awarded
      drawn from this Funding Source.
 6. Optionally, on the **Letters** tab, add letters related to this award (Award Letter,
-   Agreement, Revocation Letter, Renewal Letter). Attach the physical file of a letter on
-   its own chatter after saving, rather than on a field.
+   Agreement, Revocation Letter, Renewal Letter). Attach the physical file of a letter
+   on its own chatter after saving, rather than on a field.
 7. Review the accounting fields defaulted from the Program on the **Deduction**,
    **Disbursement**, and **Deferred Recognition** tabs, and override any of them if this
    award needs a different account or journal than its program.

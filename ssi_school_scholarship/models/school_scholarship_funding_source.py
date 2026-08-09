@@ -142,9 +142,7 @@ class SchoolScholarshipFundingSource(models.Model):
         :return: nothing; assigns ``amount_available``
         """
         for record in self:
-            record.amount_available = (
-                record.amount_ceiling - record.amount_committed
-            )
+            record.amount_available = record.amount_ceiling - record.amount_committed
 
     @api.constrains("analytic_account_id")
     def _check_analytic_account_id(self):

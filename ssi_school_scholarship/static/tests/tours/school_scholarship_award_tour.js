@@ -2,9 +2,7 @@
 // Copyright 2026 PT. Simetri Sinergi Indonesia
 // License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-odoo.define("ssi_school_scholarship.school_scholarship_award_tour", function (
-    require
-) {
+odoo.define("ssi_school_scholarship.school_scholarship_award_tour", function (require) {
     "use strict";
 
     var tour = require("web_tour.tour");
@@ -197,8 +195,7 @@ odoo.define("ssi_school_scholarship.school_scholarship_award_tour", function (
             },
             {
                 content: "Commit the Funding line",
-                trigger:
-                    ".o_selected_row .o_field_widget[name='funding_source_id']",
+                trigger: ".o_selected_row .o_field_widget[name='funding_source_id']",
                 run: "click",
             },
 

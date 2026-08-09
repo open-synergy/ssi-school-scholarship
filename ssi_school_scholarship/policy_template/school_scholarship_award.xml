@@ -111,7 +111,10 @@
 </record>
 
 <!-- Done -->
-<record id="policy_template_school_scholarship_award_done" model="policy.template_detail">
+<record
+        id="policy_template_school_scholarship_award_done"
+        model="policy.template_detail"
+    >
     <field name="template_id" ref="policy_template_school_scholarship_award" />
     <field
             name="field_id"
@@ -180,7 +183,10 @@
 </record>
 
 <!-- Reject -->
-<record id="policy_template_school_scholarship_award_reject" model="policy.template_detail">
+<record
+        id="policy_template_school_scholarship_award_reject"
+        model="policy.template_detail"
+    >
     <field name="template_id" ref="policy_template_school_scholarship_award" />
     <field
             name="field_id"
