@@ -240,6 +240,19 @@ class TestUiSchoolScholarshipAwardCreateDueDeduction(HttpSavepointCase):
                 "user_id": admin.id,
             }
         )
+        # Without a Line, ``move_id`` is never created and
+        # ``customer_invoice._20_skip_open`` jumps this document
+        # straight from Confirm to Done -- it never stops at Open at
+        # all (odoo-school-scholarship-deduction PR #25 CI finding).
+        cls.env["customer_invoice.line"].create(
+            {
+                "customer_invoice_id": tour_invoice.id,
+                "name": "TOUR CDD Invoice Line",
+                "account_id": tour_income_account.id,
+                "uom_quantity": 1,
+                "price_unit": 1000000.0,
+            }
+        )
         tour_invoice.action_confirm()
         tour_invoice.invalidate_cache()
         tour_invoice.with_user(admin).action_approve_approval()
@@ -282,15 +295,15 @@ class TestUiSchoolScholarshipAwardCreateDueDeduction(HttpSavepointCase):
                 ],
             }
         )
-        tour_benefit = cls.tour_award.benefit_ids[:1]
-        cls.env["school_scholarship_award_schedule"].create(
-            {
-                "benefit_id": tour_benefit.id,
-                "payment_term_id": tour_term.id,
-                "date": tour_term.date_invoice,
-                "state": "scheduled",
-            }
-        )
+        # Confirm/Approve so the Award reaches Open -- the state the
+        # Create Due Deduction button's own policy requires
+        # (create_deduction_ok) -- which also auto-generates one
+        # Schedule line for the Term above via the award's own
+        # post_open hook (_10_generate_schedule), so no manual
+        # Schedule create() is needed here.
+        cls.tour_award.action_confirm()
+        cls.tour_award.invalidate_cache()
+        cls.tour_award.with_user(admin).action_approve_approval()
 
     def test_create_due_deduction(self):
         """Run the create due deduction tour for ``school_scholarship_award``.

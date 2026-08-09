@@ -326,6 +326,17 @@ scenarios:
           receivable_account_id: "REC: cdd_receivable_account.id"
           user_id: "REF: base.user_admin"
 
+      - step: "Add a Line to CDD A Invoice 1 (needed to stop at Open, not Done)"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "cdd_a_invoice1_line"
+        values:
+          customer_invoice_id: "REC: cdd_a_invoice1.id"
+          name: "CDD A Invoice 1 Line"
+          account_id: "REC: cdd_income_account.id"
+          uom_quantity: 1.0
+          price_unit: 1000000.0
+
       - step: "A: confirm the Term 1 invoice"
         action: "call"
         target: "cdd_a_invoice1"
@@ -368,6 +379,17 @@ scenarios:
           journal_id: "REC: cdd_journal.id"
           receivable_account_id: "REC: cdd_receivable_account.id"
           user_id: "REF: base.user_admin"
+
+      - step: "Add a Line to CDD A Invoice 2 (needed to stop at Open, not Done)"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "cdd_a_invoice2_line"
+        values:
+          customer_invoice_id: "REC: cdd_a_invoice2.id"
+          name: "CDD A Invoice 2 Line"
+          account_id: "REC: cdd_income_account.id"
+          uom_quantity: 1.0
+          price_unit: 1000000.0
 
       - step: "A: confirm the Term 2 invoice"
         action: "call"
@@ -609,6 +631,17 @@ scenarios:
           receivable_account_id: "REC: cdd_receivable_account.id"
           user_id: "REF: base.user_admin"
 
+      - step: "Add a Line to CDD B Invoice (needed to stop at Open, not Done)"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "cdd_b_invoice_line"
+        values:
+          customer_invoice_id: "REC: cdd_b_invoice.id"
+          name: "CDD B Invoice Line"
+          account_id: "REC: cdd_income_account.id"
+          uom_quantity: 1.0
+          price_unit: 1000000.0
+
       - step: "B: confirm the invoice"
         action: "call"
         target: "cdd_b_invoice"
@@ -771,6 +804,17 @@ scenarios:
           receivable_account_id: "REC: cdd_receivable_account.id"
           user_id: "REF: base.user_admin"
 
+      - step: "Add a Line to CDD C Invoice 1 (needed to stop at Open, not Done)"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "cdd_c_invoice1_line"
+        values:
+          customer_invoice_id: "REC: cdd_c_invoice1.id"
+          name: "CDD C Invoice 1 Line"
+          account_id: "REC: cdd_income_account.id"
+          uom_quantity: 1.0
+          price_unit: 1000000.0
+
       - step: "C: confirm the Term 1 invoice"
         action: "call"
         target: "cdd_c_invoice1"
@@ -831,6 +875,17 @@ scenarios:
           journal_id: "REC: cdd_journal.id"
           receivable_account_id: "REC: cdd_receivable_account.id"
           user_id: "REF: base.user_admin"
+
+      - step: "Add a Line to CDD C Invoice 2 (needed to stop at Open, not Done)"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "cdd_c_invoice2_line"
+        values:
+          customer_invoice_id: "REC: cdd_c_invoice2.id"
+          name: "CDD C Invoice 2 Line"
+          account_id: "REC: cdd_income_account.id"
+          uom_quantity: 1.0
+          price_unit: 1000000.0
 
       - step: "C: confirm the Term 2 invoice"
         action: "call"
