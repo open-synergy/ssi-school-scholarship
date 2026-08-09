@@ -2,6 +2,8 @@
 # Copyright 2026 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from datetime import date as datetime_date
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools.float_utils import float_compare, float_round
@@ -102,6 +104,7 @@ class SchoolScholarshipDeductionRecognition(models.Model):
     )
     date = fields.Date(
         string="Date",
+        default=lambda r: datetime_date.today(),
         required=True,
         readonly=True,
         states={
