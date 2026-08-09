@@ -271,6 +271,19 @@ class TestUiSchoolScholarshipDeduction(HttpSavepointCase):
             :param amount: the invoice line's Price Unit, also the
                 resulting invoice's own residual once opened
             :return: the opened ``customer_invoice`` record
+
+            Must be unique not just among invoices but across every
+            OTHER posted transactional document in this file too:
+            ``mixin.account_move`` posts each document's own journal
+            entry using that document's own ``name`` as the entry's
+            ``name`` (``_number_field_name`` defaults to ``"name"``),
+            and Odoo's ``account.move`` rejects two POSTED entries
+            sharing one name in the same company ("Posted journal
+            entry must have an unique sequence number per company").
+            An invoice and a ``school_scholarship_deduction`` that
+            both reach a posted state -- as the 05-approve fixture's
+            invoice and deduction both do -- collide if they share a
+            literal name, even though they are different models.
             """
             invoice = cls.env["customer_invoice"].create(
                 {
@@ -322,7 +335,7 @@ class TestUiSchoolScholarshipDeduction(HttpSavepointCase):
             tour_schedule_confirm,
         ) = _make_award("TOUR-DEDUCTION-AWARD-CONFIRM-001", 400000.0)
         tour_invoice_confirm = _make_open_invoice(
-            "TOUR-DEDUCTION-CONFIRM-001", 1000000.0
+            "TOUR-DEDUCTION-CONFIRM-INV-001", 1000000.0
         )
         cls.tour_deduction_confirm = cls.env["school_scholarship_deduction"].create(
             {
@@ -369,7 +382,7 @@ class TestUiSchoolScholarshipDeduction(HttpSavepointCase):
             tour_schedule_approve,
         ) = _make_award("TOUR-DEDUCTION-AWARD-APPROVE-001", 400000.0)
         tour_invoice_approve = _make_open_invoice(
-            "TOUR-DEDUCTION-APPROVE-001", 1000000.0
+            "TOUR-DEDUCTION-APPROVE-INV-001", 1000000.0
         )
         cls.tour_deduction_approve = cls.env["school_scholarship_deduction"].create(
             {
