@@ -1023,6 +1023,28 @@ scenarios:
                 type: "m2o"
                 expected: "REC: d1_receivable_account"
 
+      # ── Onchange (form): the header's own Receivable Account, once
+      # already set by the user, is left alone when a further
+      # Allocation line is added -- the short-circuiting
+      # `not self.receivable_account_id` half of
+      # `onchange_receivable_account_id`'s ``and`` condition ─────────
+      - step: "Open a new Deduction form with the Receivable Account already set"
+        action: "form"
+        model: "school_scholarship_deduction"
+        save: false
+        ops:
+          - set:
+              receivable_account_id: "REC: d1_receivable_account"
+          - new:
+              field: "allocation_ids"
+              values:
+                customer_invoice_id: "REC: d1_invoice_two"
+                amount_allocated: 50000.0
+          - assert:
+              receivable_account_id:
+                type: "m2o"
+                expected: "REC: d1_receivable_account"
+
       # The falsy-``invoice_account_id`` branch of
       # ``onchange_receivable_account_id`` (adding an Allocation row
       # before its Customer Invoice is picked) cannot be exercised

@@ -447,20 +447,29 @@ Solution: Allocate the full Amount Total across the Allocation lines
     def _20_reconcile(self):
         """Reconcile the receivable line against every allocated invoice.
 
+        Every allocation reaching this hook already cleared
+        ``_05_check_reconcilable``, so ``lines`` below is never empty
+        and ``reconcile()`` always has a genuine, unreconciled amount
+        on both sides to match -- ``partials`` is therefore never
+        empty in practice. The slice-and-``.id`` idiom below still
+        degrades safely to ``False`` instead of an ``IndexError`` if
+        that ever stops holding, without an explicit branch to guard
+        it.
+
         :return: nothing; assigns ``partial_reconcile_id`` on each
             Allocation line
         """
         self.ensure_one()
+        no_partial = self.env["account.partial.reconcile"]
         for allocation in self.allocation_ids:
             lines = self.receivable_move_line_id + allocation.invoice_move_line_id
             result = lines.reconcile()
-            partials = result.get("partials")
-            if partials:
-                allocation.write(
-                    {
-                        "partial_reconcile_id": partials[0].id,
-                    }
-                )
+            partial = result.get("partials", no_partial)[:1]
+            allocation.write(
+                {
+                    "partial_reconcile_id": partial.id,
+                }
+            )
 
     @ssi_decorator.post_open_action()
     def _30_mark_schedule_realized(self):
