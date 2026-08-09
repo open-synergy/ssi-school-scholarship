@@ -14,6 +14,17 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: ssi_school_scholarship_deduction
+#: code:addons/ssi_school_scholarship_deduction/wizards/create_due_scholarship_deduction.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Create due scholarship deduction\n"
+"Database ID: %s\n"
+"Problem: No Deduction document was created for the selected Award(s)\n"
+"Solution: Check that the period's invoice has already been issued\n"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__deduction_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__deduction_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__deduction_id
@@ -206,6 +217,17 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__award_ids
+msgid "Awards"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__award_ids
+msgid ""
+"Awards whose due Schedule lines will be realized into Deduction documents."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__benefit_id
 msgid "Benefit"
 msgstr ""
@@ -261,6 +283,11 @@ msgid "Can Start"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.create_due_scholarship_deduction_view_form
+msgid "Cancel"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__cancel_reason_id
 msgid "Cancel Reason"
 msgstr ""
@@ -309,6 +336,21 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.create_due_scholarship_deduction_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_award_view_form_create_due_deduction
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_award_view_tree_create_due_deduction
+msgid "Create Due Deduction"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.actions.act_window,name:ssi_school_scholarship_deduction.create_due_scholarship_deduction_action
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_create_due_scholarship_deduction
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.create_due_scholarship_deduction_view_form
+msgid "Create Due Scholarship Deduction"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__create_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__create_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__create_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__create_uid
@@ -316,6 +358,7 @@ msgid "Created by"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__create_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__create_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__create_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__create_date
@@ -359,6 +402,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__date
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__date
 msgid "Date"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__date_end
+msgid "Date End"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__date_start
+msgid "Date Start"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -422,6 +475,8 @@ msgid "Description"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_funding__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__display_name
@@ -436,6 +491,11 @@ msgid ""
 "Done policy\n"
 "\n"
 "* If active user can see and execute 'Done' button"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__date_start
+msgid "Earliest Schedule Date to process. Leave empty for no lower bound."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -493,6 +553,8 @@ msgid "Group By"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_funding__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__id
@@ -572,6 +634,8 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_funding____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction____last_update
@@ -581,6 +645,7 @@ msgid "Last Modified on"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__write_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__write_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__write_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__write_uid
@@ -588,10 +653,16 @@ msgid "Last Updated by"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__write_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__write_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__write_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__write_date
 msgid "Last Updated on"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__date_end
+msgid "Latest Schedule Date to process."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -864,6 +935,11 @@ msgstr ""
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__award_id
 msgid "Scholarship award this deduction realizes."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_scholarship_award
+msgid "School Scholarship Award"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
