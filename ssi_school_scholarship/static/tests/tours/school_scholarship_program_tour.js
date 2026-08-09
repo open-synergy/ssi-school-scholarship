@@ -136,8 +136,7 @@ odoo.define("ssi_school_scholarship.school_scholarship_program_tour", function (
             },
             {
                 content: "Open the Funding Sources tag input",
-                trigger:
-                    ".o_field_many2many_tags[name='funding_source_ids'] input",
+                trigger: ".o_field_many2many_tags[name='funding_source_ids'] input",
                 run: "text TOUR Program Funding Source",
             },
             {

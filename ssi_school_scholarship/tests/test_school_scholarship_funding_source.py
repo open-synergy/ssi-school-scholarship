@@ -2,9 +2,8 @@
 # Copyright 2026 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from psycopg2 import IntegrityError
-
 from odoo_yaml_test import YamlTransactionCase
+from psycopg2 import IntegrityError
 
 from odoo.tests import tagged
 from odoo.tools import mute_logger

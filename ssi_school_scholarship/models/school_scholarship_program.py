@@ -74,8 +74,7 @@ class SchoolScholarshipProgram(models.Model):
         column1="program_id",
         column2="funding_source_id",
         required=True,
-        help="Funding sources an award granted under this program may "
-        "draw from.",
+        help="Funding sources an award granted under this program may " "draw from.",
     )
     quota = fields.Integer(
         string="Quota",
@@ -256,9 +255,7 @@ class SchoolScholarshipProgram(models.Model):
         """Default the Employee Benefit Account from the selected type."""
         self.employee_benefit_account_id = False
         if self.type_id:
-            self.employee_benefit_account_id = (
-                self.type_id.employee_benefit_account_id
-            )
+            self.employee_benefit_account_id = self.type_id.employee_benefit_account_id
 
     @api.onchange("type_id")
     def onchange_disbursement_journal_id(self):
@@ -295,9 +292,7 @@ class SchoolScholarshipProgram(models.Model):
         """Default the Deferred Expense Account from the selected type."""
         self.deferred_expense_account_id = False
         if self.type_id:
-            self.deferred_expense_account_id = (
-                self.type_id.deferred_expense_account_id
-            )
+            self.deferred_expense_account_id = self.type_id.deferred_expense_account_id
 
     @api.onchange("type_id")
     def onchange_recognition_journal_id(self):
