@@ -1,0 +1,1071 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ssi_school_scholarship_deduction
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__deduction_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__deduction_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__deduction_id
+msgid "# Deduction"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__name
+msgid "# Document"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__account_id
+msgid "Account"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__account_id
+msgid ""
+"Accounting account this line posts to. Always equal to Final Account in this"
+" item."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__date
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__date
+msgid "Accounting date of this deduction document."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__journal_id
+msgid ""
+"Accounting journal in which the resulting accounting entry of this document "
+"will be posted."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__active_approval_ids
+msgid "Active Approvals"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__active_approver_partner_ids
+msgid "Active Partners"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__active_approver_user_ids
+msgid "Active Users"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__allocation_ids
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_form
+msgid "Allocations"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__allowed_policy_template_ids
+msgid "Allowed Policy Templates"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__allowed_pricelist_ids
+msgid "Allowed Pricelists"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__allowed_uom_ids
+msgid "Allowed UoMs"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__allowed_usage_ids
+msgid "Allowed Usages"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_allocated
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__amount_allocated
+msgid "Amount Allocated"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_total
+msgid "Amount Total"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_unallocated
+msgid ""
+"Amount Total not yet assigned to an Allocation line. Must be zero before "
+"this document can be opened."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_unallocated
+msgid "Amount Unallocated"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__analytic_account_id
+msgid "Analytic Account"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__analytic_account_id
+msgid "Analytic account of the selected Funding Source."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__approval_template_id
+msgid "Approval Configuration"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__approval_template_id
+msgid "Approval Template"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__approval_ids
+msgid "Approvals"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__approve_ok
+msgid ""
+"Approve policy\n"
+"\n"
+"* If active user can see and execute 'Approve' button"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__approved
+msgid "Approved"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__award_id
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_search
+msgid "Award"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__funding_id
+msgid "Award Funding line this line's amount is drawn from."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__schedule_id
+msgid "Award Schedule line this deduction line realizes."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__schedule_ids
+msgid ""
+"Award Schedule lines realized by this document. Filled when this document "
+"opens; cleared again if it is cancelled."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__benefit_id
+msgid "Benefit"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__benefit_id
+msgid "Benefit line of the selected Schedule line."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__approve_ok
+msgid "Can Approve"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__cancel_ok
+msgid "Can Cancel"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__confirm_ok
+msgid "Can Confirm"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__done_ok
+msgid "Can Finished"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__manual_number_ok
+msgid "Can Input Manual Document Number"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__reject_ok
+msgid "Can Reject"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__restart_ok
+msgid "Can Restart"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__restart_approval_ok
+msgid "Can Restart Approval"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__open_ok
+msgid "Can Start"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__cancel_reason_id
+msgid "Cancel Reason"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__cancel_ok
+msgid ""
+"Cancel policy\n"
+"\n"
+"* If active user can see and execute 'Cancel' button"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__company_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__company_id
+msgid "Company"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__company_currency_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__company_currency_id
+msgid "Company Currency"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__company_partner_id
+msgid "Company Partner"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__company_id
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__company_id
+msgid ""
+"Company that own the document\n"
+"\n"
+"* Automatically filled with user's company.\n"
+"  Default company can be changed"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__confirm_ok
+msgid ""
+"Confirm policy\n"
+"\n"
+"* If active user can see and execute 'Confirm' button"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__create_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__create_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__create_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__create_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__currency_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__currency_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__currency_id
+msgid "Currency of the parent document."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__currency_id
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__currency_id
+msgid ""
+"Currency this document is expressed in. This document does not support a "
+"currency other than the Company Currency."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__customer_invoice_id
+msgid "Customer Invoice"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__allocation_ids
+msgid ""
+"Customer invoices this deduction is reconciled against. Their Amount "
+"Allocated must add up to exactly this document's Amount Total before it can "
+"be opened."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__date
+msgid "Date"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_all_group
+msgid "Deduction All"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_company_group
+msgid "Deduction Company"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_company_child_group
+msgid "Deduction Company and All Child Companies"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_user_group
+msgid "Deduction User"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_validator_group
+msgid "Deduction Validator"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_viewer_group
+msgid "Deduction Viewer"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__deduction_id
+msgid ""
+"Deduction document that realizes this schedule line. Filled automatically "
+"once a deduction line targets this schedule line and its document is opened;"
+" cleared again if that document is cancelled."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__deduction_id
+msgid "Deduction document this allocation line belongs to."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__deduction_id
+msgid "Deduction document this line belongs to."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__line_ids
+msgid ""
+"Deduction lines, one per (Schedule line, Funding line) pairing. Their sum is"
+" this document's Amount Total."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__name
+msgid "Description"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_funding__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__done_ok
+msgid ""
+"Done policy\n"
+"\n"
+"* If active user can see and execute 'Done' button"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__final_account_id
+msgid "Final Account"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__final_account_id
+msgid ""
+"Final accounting destination of this line, copied from the Benefit line's "
+"own Account. In this item, ``account_id`` always equals this field; a later,"
+" deferred-recognition item may point ``account_id`` at a different, "
+"temporary account instead while keeping this field as the eventual target."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_channel_ids
+msgid "Followers (Channels)"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__funding_id
+msgid "Funding"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__funding_source_id
+msgid "Funding Source"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__funding_source_id
+msgid "Funding source of the selected Funding line."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_search
+msgid "Group By"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_funding__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__id
+msgid "ID"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_needaction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_unread
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_has_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__invoice_account_id
+msgid "Invoice Receivable Account"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__invoice_move_line_id
+msgid "Invoice Receivable Move Line"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__invoice_residual
+msgid "Invoice Residual"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__journal_id
+msgid "Journal"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__move_line_id
+msgid "Journal Item"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__move_id
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__move_id
+msgid "Journal entry generated when this document is opened."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__move_line_id
+msgid "Journal item created for this line once the parent document is opened."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__receivable_move_line_id
+msgid ""
+"Journal item on the Receivable Account created together with ``move_id``, "
+"then reconciled against every allocated invoice's own receivable journal "
+"item."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_funding____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__write_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__write_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__write_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__write_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__line_ids
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_form
+msgid "Lines"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__manual_number_ok
+msgid ""
+"Manual number assignment policy\n"
+"\n"
+"* If active user can edit document number"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__move_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__move_id
+msgid "Move"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__need_validation
+msgid "Need Validation"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__next_approval_ids
+msgid "Next Approvals"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__note
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__note
+msgid "Note"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_unread_counter
+msgid "Number of unread messages"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__customer_invoice_id
+msgid ""
+"Open customer invoice this allocation reconciles against. Restricted to "
+"invoices of this document's own Partner with a positive residual."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__partial_reconcile_id
+msgid "Partial Reconcile"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__partner_id
+msgid "Partner"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__policy_template_id
+msgid "Policy Template"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__amount_allocated
+msgid ""
+"Portion of this document's Amount Total applied to the selected invoice. May"
+" not exceed Invoice Residual."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__price_subtotal
+msgid "Price Subtotal"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__price_unit
+msgid "Price Unit"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__pricelist_id
+msgid "Pricelist"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__product_id
+msgid "Product"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__product_category_id
+msgid "Product Category"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__quantity
+msgid "Quantity"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__schedule_ids
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_form
+msgid "Realized Schedule"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__receivable_account_id
+msgid "Receivable Account"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__receivable_move_line_id
+msgid "Receivable Move Line"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__receivable_account_id
+msgid ""
+"Receivable account credited for the total deduction amount. Must be "
+"identical to the Receivable Account of every allocated invoice, or "
+"reconciliation fails when this document is opened."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__invoice_account_id
+msgid ""
+"Receivable account of the selected invoice. Must match this document's own "
+"Receivable Account, or opening this document is rejected."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__invoice_move_line_id
+msgid ""
+"Receivable journal item of the selected invoice, reconciled against this "
+"document's own receivable journal item once this document is opened."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__reconciled
+msgid "Reconciled"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__partial_reconcile_id
+msgid ""
+"Reconciliation record created by the header's ``_20_reconcile`` hook once "
+"this document is opened."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__reject_ok
+msgid ""
+"Reject policy\n"
+"\n"
+"* If active user can see and execute 'Reject' button"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__rejected
+msgid "Rejected"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__invoice_residual
+msgid ""
+"Residual amount still outstanding on the selected invoice. Amount Allocated "
+"may not exceed this."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__user_id
+msgid "Responsible"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__restart_approval_ok
+msgid ""
+"Restart approval policy\n"
+"\n"
+"* If active user can see and execute 'Restart Approval' button"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__restart_ok
+msgid ""
+"Restart policy\n"
+"\n"
+"* If active user can see and execute 'Restart' button"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__reviewer_id
+msgid "Reviewer"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__schedule_id
+msgid "Schedule"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.actions.act_window,name:ssi_school_scholarship_deduction.school_scholarship_deduction_action
+#: model:ir.ui.menu,name:ssi_school_scholarship_deduction.school_scholarship_deduction_menu
+msgid "Scholarship Deductions"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__award_id
+msgid "Scholarship award this deduction realizes."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_scholarship_award_funding
+msgid "School Scholarship Award Funding"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_scholarship_award_schedule
+msgid "School Scholarship Award Schedule"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_scholarship_deduction
+msgid "School Scholarship Deduction"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_scholarship_deduction_allocation
+msgid "School Scholarship Deduction - Allocation"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_scholarship_deduction_line
+msgid "School Scholarship Deduction - Line"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__product_category_id
+msgid "Select category for the current product"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__standard_price_subtotal
+msgid "Standard Price Subtotal"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__standard_price_subtotal_diff
+msgid "Standard Price Subtotal Diff."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__standard_price_unit
+msgid "Standard Price Unit"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__standard_price_unit_diff
+msgid "Standard Price Unit Diff."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__open_ok
+msgid ""
+"Start policy\n"
+"\n"
+"* If active user can see and execute 'Start' button"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__state
+msgid "State"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__student_id
+msgid "Student"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__student_id
+msgid "Student of the selected Award."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_allocated
+msgid "Sum of the Allocation lines' Amount Allocated."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_total
+msgid ""
+"Sum of the Deduction lines' Price Subtotal. This is also the amount credited"
+" to the Receivable Account."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__price_tax
+msgid "Tax"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__tax_ids
+msgid "Tax(es)"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__reconciled
+msgid ""
+"Technical flag mirroring whether the receivable journal item has been fully "
+"reconciled."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__partner_id
+msgid ""
+"The student's contact partner. Must match the Partner of every allocated "
+"invoice."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__price_total
+msgid "Total"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__name
+msgid ""
+"Transaction/document number\n"
+"\n"
+"* Unique indentifer of transaction\n"
+"* Leave '/' to automatically generate number\n"
+"* Change '/' into any number/identifier to manually assign number.\n"
+"  Manual number assignment can be done in 'Draft' state\n"
+"  Only user with 'Can Manualy Assign Number' policy can manually assign number.\n"
+"* Transaction with number other than '/' can not be deleted."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_unread
+msgid "Unread Messages"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__uom_id
+msgid "UoM"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__uom_quantity
+msgid "UoM Quantity"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__usage_id
+msgid "Usage"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__user_id
+msgid ""
+"User that responsible for document\n"
+"\n"
+"* Create user can be different with responsible user\n"
+"* Automatically filled with user that initiate document creation.\n"
+"  Default responsible can be changed."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__reviewer_id
+msgid ""
+"User that responsible to review document\n"
+"\n"
+"* Unless it configured to approve reviewer does not equal to approver"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__active_approver_user_ids
+msgid "Users that can approve/reject document"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__website_message_ids
+msgid "Website communication history"
+msgstr ""
