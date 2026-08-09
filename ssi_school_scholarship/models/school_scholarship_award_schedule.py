@@ -159,14 +159,17 @@ class SchoolScholarshipAwardSchedule(models.Model):
     def _compute_name(self):
         """Derive a display name from the Payment Term, or the Date.
 
+        ``date`` is required, so on any persisted record it is
+        already set by the time this runs -- there is no reachable
+        state with neither a Payment Term nor a Date, so the Date
+        fallback needs no ``elif`` guard of its own.
+
         :return: nothing; assigns ``name``
         """
         for record in self:
-            result = ""
+            result = fields.Date.to_string(record.date)
             if record.payment_term_id:
                 result = record.payment_term_id.name
-            elif record.date:
-                result = fields.Date.to_string(record.date)
             record.name = result
 
     @api.depends(
