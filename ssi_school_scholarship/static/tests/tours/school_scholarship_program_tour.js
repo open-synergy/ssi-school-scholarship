@@ -172,8 +172,15 @@ odoo.define("ssi_school_scholarship.school_scholarship_program_tour", function (
                 in_modal: false,
             },
             {
+                // Plain Float fields in a 14.0 editable list render as a
+                // bare `<input class="o_field_widget o_input" name=
+                // "percentage">` -- unlike Many2one/Monetary, there is no
+                // wrapping element carrying the `name=` attribute
+                // separately from the `<input>` itself, so the selector
+                // must target the input directly rather than looking for
+                // an `input` descendant of `.o_field_widget[name=...]`.
                 content: "Fill in the Percentage",
-                trigger: ".o_selected_row .o_field_widget[name='percentage'] input",
+                trigger: ".o_selected_row input[name='percentage']",
                 run: "text 40",
             },
             {
