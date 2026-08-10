@@ -22,8 +22,8 @@
 3. Fill in the required fields:
    - **Program** _(required)_: Select the scholarship program this award is granted
      under. Selecting it fills the Type, Academic Year, the nine accounting fields on
-     the **Deduction**, **Disbursement**, and **Deferred Recognition** tabs, and **Is
-     Employee Benefit** from the program's configuration.
+     the **Accounting** tab (Deduction, Disbursement, and Deferred Recognition groups),
+     and **Is Employee Benefit** from the program's configuration.
    - **Student** _(required)_: Select the student this award is granted to.
    - **Enrollment** _(required)_: Select the enrollment this award is billed against,
      restricted to enrollments of the selected Student.
@@ -62,9 +62,9 @@
 6. Optionally, on the **Letters** tab, add letters related to this award (Award Letter,
    Agreement, Revocation Letter, Renewal Letter). Attach the physical file of a letter
    on its own chatter after saving, rather than on a field.
-7. Review the accounting fields defaulted from the Program on the **Deduction**,
-   **Disbursement**, and **Deferred Recognition** tabs, and override any of them if this
-   award needs a different account or journal than its program.
+7. Review the accounting fields defaulted from the Program on the **Accounting** tab
+   (Deduction, Disbursement, and Deferred Recognition groups), and override any of them
+   if this award needs a different account or journal than its program.
 8. Click **Save**.
 
 ## Post-Condition

@@ -216,27 +216,20 @@
                         </tree>
                     </field>
                 </page>
-                <page name="deduction" string="Deduction">
-                    <group name="deduction_group" string="Deduction Configuration">
+                <page name="accounting" string="Accounting">
+                    <group name="deduction_group" string="Deduction">
                         <field name="deduction_journal_id" />
                         <field name="discount_account_id" />
                         <field name="employee_benefit_account_id" />
                     </group>
-                </page>
-                <page name="disbursement" string="Disbursement">
-                    <group
-                            name="disbursement_group"
-                            string="Disbursement Configuration"
-                        >
+                    <group name="disbursement_group" string="Disbursement">
                         <field name="disbursement_journal_id" />
                         <field name="expense_account_id" />
                         <field name="payable_account_id" />
                     </group>
-                </page>
-                <page name="deferred_recognition" string="Deferred Recognition">
                     <group
                             name="deferred_recognition_group"
-                            string="Deferred Recognition Configuration"
+                            string="Deferred Recognition"
                         >
                         <field name="deferred_discount_account_id" />
                         <field name="deferred_expense_account_id" />
