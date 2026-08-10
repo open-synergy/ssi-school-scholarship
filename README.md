@@ -24,6 +24,7 @@ addon | version | maintainers | summary
 [ssi_school_scholarship](ssi_school_scholarship/) | 14.0.1.5.0 |  | School Scholarship
 [ssi_school_scholarship_deduction](ssi_school_scholarship_deduction/) | 14.0.1.4.0 |  | School Scholarship Deduction
 [ssi_school_scholarship_disbursement](ssi_school_scholarship_disbursement/) | 14.0.1.0.0 |  | School Scholarship Disbursement
+[ssi_school_scholarship_operating_unit](ssi_school_scholarship_operating_unit/) | 14.0.1.0.0 |  | School Scholarship - Operating Unit
 
 [//]: # (end addons)
 
