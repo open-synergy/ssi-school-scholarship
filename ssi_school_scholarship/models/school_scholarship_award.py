@@ -157,10 +157,27 @@ class SchoolScholarshipAward(models.Model):
         "billed on the student's invoices so the deduction created "
         "by a later document can be reconciled against it.",
     )
+    source_type = fields.Selection(
+        string="Billing Source",
+        selection=[
+            ("enrollment", "Enrollment"),
+        ],
+        default="enrollment",
+        required=True,
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+        help="Billing source this award is billed against. This "
+        "module only registers Enrollment -- extension modules add "
+        "further values with ``selection_add`` and override the "
+        "``_get_source_*`` hooks to match.",
+    )
     enrollment_id = fields.Many2one(
         string="Enrollment",
         comodel_name="school_enrollment",
-        required=True,
         ondelete="restrict",
         readonly=True,
         states={
@@ -169,23 +186,28 @@ class SchoolScholarshipAward(models.Model):
             ],
         },
         help="Enrollment this award is billed against. Must belong to "
-        "the selected Student.",
+        "the selected Student. Required when Billing Source is "
+        "Enrollment -- enforced by ``_check_billing_source``, not by "
+        "this field itself, so an extension module's own billing "
+        "source is not forced to also be a required field.",
     )
     school_id = fields.Many2one(
         string="School",
         comodel_name="school",
-        related="enrollment_id.school_id",
+        compute="_compute_school_id",
         store=True,
+        compute_sudo=True,
         readonly=True,
-        help="School of the selected enrollment.",
+        help="School of the selected billing source.",
     )
     grade_id = fields.Many2one(
         string="Grade",
         comodel_name="school_grade",
-        related="enrollment_id.grade_id",
+        compute="_compute_grade_id",
         store=True,
+        compute_sudo=True,
         readonly=True,
-        help="Grade of the selected enrollment.",
+        help="Grade of the selected billing source.",
     )
     academic_year_id = fields.Many2one(
         string="Academic Year",
@@ -510,6 +532,33 @@ class SchoolScholarshipAward(models.Model):
         "policy field is wired up in advance.",
     )
 
+    @api.depends("enrollment_id")
+    def _compute_school_id(self):
+        """Derive the School from this award's billing source.
+
+        Extension point: a module registering another Billing Source
+        value declares a new method decorated with its own
+        ``@api.depends`` (e.g. ``"admission_id"``) that calls
+        ``super()`` first, so this method's own ``enrollment_id``
+        dependency keeps working unmodified.
+
+        :return: nothing; assigns ``school_id``
+        """
+        for record in self:
+            record.school_id = record._get_source_record().school_id
+
+    @api.depends("enrollment_id")
+    def _compute_grade_id(self):
+        """Derive the Grade from this award's billing source.
+
+        See ``_compute_school_id`` for the extension pattern this
+        method follows.
+
+        :return: nothing; assigns ``grade_id``
+        """
+        for record in self:
+            record.grade_id = record._get_source_record().grade_id
+
     @api.depends("schedule_ids.amount_planned", "schedule_ids.state")
     def _compute_amount_awarded(self):
         """Sum the Schedule lines into the award's committed amount.
@@ -674,16 +723,49 @@ Solution: Select an End Date on or after Start Date
                 )
                 raise ValidationError(_(error_message))
 
-    @api.constrains("enrollment_id", "student_id")
+    @api.constrains("source_type", "enrollment_id")
+    def _check_billing_source(self):
+        """Require a billing source record for the selected source type.
+
+        The requiredness of ``enrollment_id`` moved here from the
+        field's own ``required`` attribute so an extension module's
+        Billing Source value is not forced to also key off
+        ``enrollment_id``: each value's own source field is validated
+        through ``_get_source_record()`` instead.
+
+        :raises ValidationError: when ``_get_source_record()`` is
+            empty.
+        """
+        for record in self:
+            if not record._get_source_record():
+                error_message = """
+Document Type: %s
+Context: Set award billing source
+Database ID: %s
+Problem: No billing source record set for Billing Source '%s'
+Solution: Select the record matching the selected Billing Source
+""" % (
+                    record._description,
+                    record.id,
+                    record.source_type,
+                )
+                raise ValidationError(_(error_message))
+
+    @api.constrains("enrollment_id", "student_id", "source_type")
     def _check_enrollment_student(self):
         """Require the Enrollment to belong to the selected Student.
+
+        Guarded to Billing Source Enrollment: an extension module's
+        billing source is not billed against an Enrollment at all, so
+        this check has nothing to compare for it.
 
         :raises ValidationError: when ``enrollment_id.student_id`` is
             not the same as ``student_id``.
         """
         for record in self:
             if (
-                record.enrollment_id
+                record.source_type == "enrollment"
+                and record.enrollment_id
                 and record.student_id
                 and record.enrollment_id.student_id != record.student_id
             ):
@@ -703,24 +785,21 @@ Solution: Select an Enrollment that belongs to the selected Student
 
     @api.constrains("company_currency_id", "enrollment_id")
     def _check_currency(self):
-        """Require the award's currency to match the enrollment's.
+        """Require the award's currency to match its billing source's.
 
         The award carries no standalone ``currency_id`` of its own —
         ``company_currency_id`` (from ``mixin.company_currency``) is
         the field the Benefit/Funding Monetary amounts are expressed
-        in, and it must match the currency the enrollment is billed
-        in for the eventual deduction to reconcile against the
+        in, and it must match the currency the billing source is
+        billed in for the eventual deduction to reconcile against the
         invoice.
 
-        :raises ValidationError: when ``enrollment_id.currency_id`` is
+        :raises ValidationError: when ``_get_source_currency()`` is
             set and differs from ``company_currency_id``.
         """
         for record in self:
-            if (
-                record.enrollment_id
-                and record.enrollment_id.currency_id
-                and record.company_currency_id != record.enrollment_id.currency_id
-            ):
+            source_currency = record._get_source_currency()
+            if source_currency and record.company_currency_id != source_currency:
                 error_message = """
 Document Type: %s
 Context: Set award enrollment
@@ -731,7 +810,7 @@ Solution: Select an Enrollment billed in the award's Company Currency
                     self._description,
                     record.id,
                     record.company_currency_id.name,
-                    record.enrollment_id.currency_id.name,
+                    source_currency.name,
                 )
                 raise ValidationError(_(error_message))
 
@@ -873,9 +952,9 @@ Solution: Check generate schedule policy prerequisite
     def _generate_fee_reduction_schedule(self, benefit):
         """Create Schedule lines for a Fee Reduction line's periods.
 
-        One Schedule line is created per Payment Term of this
-        award's Enrollment whose Estimated Invoice Date falls within
-        ``date_start``..``date_end``.
+        One Schedule line is created per payment term of this
+        award's billing source whose Estimated Invoice Date falls
+        within ``date_start``..``date_end``.
 
         :param benefit: the ``school_scholarship_award_benefit``
             record being scheduled
@@ -884,16 +963,13 @@ Solution: Check generate schedule policy prerequisite
         """
         self.ensure_one()
         schedule_obj = self.env["school_scholarship_award_schedule"]
-        terms = self.enrollment_id.payment_term_ids.filtered(
+        terms = self._get_source_payment_terms().filtered(
             lambda term: term.date_invoice
             and self.date_start <= term.date_invoice <= self.date_end
         )
         for term in terms:
             existing = schedule_obj.search(
-                [
-                    ("benefit_id", "=", benefit.id),
-                    ("payment_term_id", "=", term.id),
-                ],
+                self._get_schedule_term_domain(benefit, term),
                 limit=1,
             )
             if existing:
@@ -966,12 +1042,76 @@ Solution: Check generate schedule policy prerequisite
             values
         """
         self.ensure_one()
-        return {
+        result = {
             "benefit_id": benefit.id,
-            "payment_term_id": payment_term.id if payment_term else False,
-            "date": payment_term.date_invoice if payment_term else date,
+            "payment_term_id": False,
+            "date": date,
             "state": "scheduled",
         }
+        if payment_term:
+            result.update(self._prepare_schedule_term_data(payment_term))
+            result["date"] = payment_term.date_invoice
+        return result
+
+    def _get_source_record(self):
+        """Return the billing source record backing this award.
+
+        Extension point: a module registering another Billing Source
+        value overrides this together with ``source_type``'s
+        ``selection_add`` to point at that value's own source record
+        instead.
+
+        :return: recordset of the billing source (``school_enrollment``
+            in this module), possibly empty
+        """
+        self.ensure_one()
+        return self.enrollment_id
+
+    def _get_source_payment_terms(self):
+        """Return the payment terms of this award's billing source.
+
+        :return: ``school_enrollment_payment_term`` recordset,
+            possibly empty
+        """
+        self.ensure_one()
+        return self.enrollment_id.payment_term_ids
+
+    def _get_source_currency(self):
+        """Return the currency of this award's billing source.
+
+        :return: ``res.currency`` record, or an empty recordset when
+            no billing source is set
+        """
+        self.ensure_one()
+        return self.enrollment_id.currency_id
+
+    def _get_schedule_term_domain(self, benefit, term):
+        """Build the domain finding an existing Schedule line.
+
+        Used by ``_generate_fee_reduction_schedule`` to decide
+        whether a (Benefit, term) pairing already has a Schedule
+        line, so generation stays idempotent.
+
+        :param benefit: the ``school_scholarship_award_benefit``
+            record being scheduled
+        :param term: the payment term record being realized
+        :return: a search domain list
+        """
+        self.ensure_one()
+        return [
+            ("benefit_id", "=", benefit.id),
+            ("payment_term_id", "=", term.id),
+        ]
+
+    def _prepare_schedule_term_data(self, payment_term):
+        """Build the payment-term-specific Schedule line values.
+
+        :param payment_term: the payment term record being realized
+        :return: dict of ``school_scholarship_award_schedule``
+            values
+        """
+        self.ensure_one()
+        return {"payment_term_id": payment_term.id}
 
     @api.model
     def _get_policy_field(self):

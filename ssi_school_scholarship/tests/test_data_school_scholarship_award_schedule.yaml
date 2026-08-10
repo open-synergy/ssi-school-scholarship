@@ -417,6 +417,17 @@ scenarios:
           amount_planned:
             type: "value"
             expected: 400000.0
+          # payment_term_state and customer_invoice_id switched from
+          # related to compute (odoo-school-scholarship#34) -- assert
+          # they still mirror the source term unchanged: the
+          # enrollment is still Draft (never confirmed in this
+          # scenario) and no invoice was ever created.
+          payment_term_state:
+            type: "value"
+            expected: "draft"
+          customer_invoice_id:
+            type: "value"
+            operator: "is_falsy"
 
       - step: "Manually override the July Schedule line's Amount Planned"
         action: "write"

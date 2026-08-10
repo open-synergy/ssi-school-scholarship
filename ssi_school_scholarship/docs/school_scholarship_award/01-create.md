@@ -25,8 +25,11 @@
      the **Accounting** tab (Deduction, Disbursement, and Deferred Recognition groups),
      and **Is Employee Benefit** from the program's configuration.
    - **Student** _(required)_: Select the student this award is granted to.
-   - **Enrollment** _(required)_: Select the enrollment this award is billed against,
-     restricted to enrollments of the selected Student.
+   - **Billing Source** _(required)_: Select the billing source this award is billed
+     against. Defaults to **Enrollment**, the only value this module registers.
+   - **Enrollment** _(required when Billing Source is Enrollment)_: Select the
+     enrollment this award is billed against, restricted to enrollments of the selected
+     Student. Hidden when Billing Source is not Enrollment.
    - **Start Date** _(required)_: Enter the first period this award applies to.
    - **End Date** _(required)_: Enter the last period this award applies to. Must not be
      earlier than Start Date.

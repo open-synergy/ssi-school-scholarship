@@ -126,7 +126,14 @@ class SchoolScholarshipAwardSchedule(models.Model):
     )
     payment_term_state = fields.Selection(
         string="Payment Term State",
-        related="payment_term_id.state",
+        selection=[
+            ("draft", "Draft"),
+            ("uninvoiced", "Uninvoiced"),
+            ("invoiced", "Invoiced"),
+            ("manual", "Manually Controlled"),
+            ("cancelled", "Cancelled"),
+        ],
+        compute="_compute_payment_term_state",
         store=True,
         compute_sudo=True,
         help="Billing status of the linked Payment Term.",
@@ -134,7 +141,7 @@ class SchoolScholarshipAwardSchedule(models.Model):
     customer_invoice_id = fields.Many2one(
         string="# Customer Invoice",
         comodel_name="customer_invoice",
-        related="payment_term_id.customer_invoice_id",
+        compute="_compute_customer_invoice_id",
         store=True,
         compute_sudo=True,
         help="Customer invoice of the linked Payment Term, once one "
@@ -155,21 +162,49 @@ class SchoolScholarshipAwardSchedule(models.Model):
         help="Free-form note about this schedule line.",
     )
 
+    def _get_source_term(self):
+        """Return the payment term this schedule line realizes.
+
+        Extension point: a module that gives Schedule its own extra
+        source field (alongside ``payment_term_id``) overrides this
+        to return that field instead.
+
+        :return: ``school_enrollment_payment_term`` record, or an
+            empty recordset when unset
+        """
+        self.ensure_one()
+        return self.payment_term_id
+
+    def _get_source_term_parent(self):
+        """Return the billing source record owning the source term.
+
+        Used by ``_check_payment_term_enrollment`` to compare against
+        the award's own ``_get_source_record()``, so that check stays
+        meaningful for whatever billing source an extension module
+        introduces.
+
+        :return: recordset of the source term's parent (e.g. its
+            ``school_enrollment``), possibly empty
+        """
+        self.ensure_one()
+        return self.payment_term_id.enrollment_id
+
     @api.depends("payment_term_id", "payment_term_id.name", "date")
     def _compute_name(self):
-        """Derive a display name from the Payment Term, or the Date.
+        """Derive a display name from the source term, or the Date.
 
         ``date`` is required, so on any persisted record it is
         already set by the time this runs -- there is no reachable
-        state with neither a Payment Term nor a Date, so the Date
+        state with neither a source term nor a Date, so the Date
         fallback needs no ``elif`` guard of its own.
 
         :return: nothing; assigns ``name``
         """
         for record in self:
             result = fields.Date.to_string(record.date)
-            if record.payment_term_id:
-                result = record.payment_term_id.name
+            term = record._get_source_term()
+            if term:
+                result = term.name
             record.name = result
 
     @api.depends(
@@ -181,7 +216,7 @@ class SchoolScholarshipAwardSchedule(models.Model):
         "benefit_id.product_category_id",
     )
     def _compute_base_amount(self):
-        """Sum the Payment Term detail lines matching the Benefit's scope.
+        """Sum the source term's detail lines matching the Benefit's scope.
 
         Matches by ``product_id`` when the Benefit line has no
         Product Category (a single-Product benefit), or by the
@@ -192,7 +227,7 @@ class SchoolScholarshipAwardSchedule(models.Model):
         """
         for record in self:
             result = 0.0
-            term = record.payment_term_id
+            term = record._get_source_term()
             benefit = record.benefit_id
             if term:
                 if benefit.product_category_id:
@@ -206,6 +241,26 @@ class SchoolScholarshipAwardSchedule(models.Model):
                     )
                 result = sum(details.mapped("price_subtotal"))
             record.base_amount = result
+
+    @api.depends("payment_term_id", "payment_term_id.state")
+    def _compute_payment_term_state(self):
+        """Mirror the source term's billing status.
+
+        :return: nothing; assigns ``payment_term_state``
+        """
+        for record in self:
+            term = record._get_source_term()
+            record.payment_term_state = term.state if term else False
+
+    @api.depends("payment_term_id", "payment_term_id.customer_invoice_id")
+    def _compute_customer_invoice_id(self):
+        """Mirror the source term's linked customer invoice.
+
+        :return: nothing; assigns ``customer_invoice_id``
+        """
+        for record in self:
+            term = record._get_source_term()
+            record.customer_invoice_id = term.customer_invoice_id if term else False
 
     @api.depends(
         "base_amount",
@@ -264,13 +319,14 @@ class SchoolScholarshipAwardSchedule(models.Model):
             Term.
         """
         for record in self:
-            if not record.payment_term_id:
+            term = record._get_source_term()
+            if not term:
                 continue
             duplicate_count = self.search_count(
                 [
                     ("id", "!=", record.id),
                     ("benefit_id", "=", record.benefit_id.id),
-                    ("payment_term_id", "=", record.payment_term_id.id),
+                    ("payment_term_id", "=", term.id),
                 ]
             )
             if duplicate_count > 0:
@@ -283,7 +339,7 @@ Solution: Select a Payment Term not yet scheduled for this Benefit line
 """ % (
                     self._description,
                     record.id,
-                    record.payment_term_id.display_name,
+                    term.display_name,
                 )
                 raise ValidationError(_(error_message))
 
@@ -292,13 +348,13 @@ Solution: Select a Payment Term not yet scheduled for this Benefit line
         """Require Payment Term for Fee Reduction, forbid it for Cash.
 
         :raises ValidationError: when the Benefit line's
-            ``benefit_type`` is ``fee_reduction`` and
-            ``payment_term_id`` is empty, or is ``cash`` and
-            ``payment_term_id`` is set.
+            ``benefit_type`` is ``fee_reduction`` and the source term
+            is empty, or is ``cash`` and the source term is set.
         """
         for record in self:
             benefit_type = record.benefit_id.benefit_type
-            if benefit_type == "fee_reduction" and not record.payment_term_id:
+            term = record._get_source_term()
+            if benefit_type == "fee_reduction" and not term:
                 error_message = """
 Document Type: %s
 Context: Configure award schedule
@@ -310,7 +366,7 @@ Solution: Select the Payment Term this schedule line realizes
                     record.id,
                 )
                 raise ValidationError(_(error_message))
-            if benefit_type == "cash" and record.payment_term_id:
+            if benefit_type == "cash" and term:
                 error_message = """
 Document Type: %s
 Context: Configure award schedule
@@ -325,18 +381,23 @@ Solution: Clear the Payment Term of this schedule line
 
     @api.constrains("payment_term_id", "award_id")
     def _check_payment_term_enrollment(self):
-        """Require the Payment Term to belong to the award's Enrollment.
+        """Require the source term to belong to the award's billing source.
 
-        :raises ValidationError: when ``payment_term_id.enrollment_id``
-            is set and differs from ``award_id.enrollment_id``.
+        Rewritten through ``_get_source_term``/``_get_source_term_parent``
+        and the award's own ``_get_source_record`` so this check keeps
+        working for whatever billing source an extension module adds,
+        without renaming this method or its XML ID references.
+
+        :raises ValidationError: when the source term's parent record
+            is set and differs from the award's own billing source
+            record.
         """
         for record in self:
-            term = record.payment_term_id
-            if (
-                term
-                and term.enrollment_id
-                and term.enrollment_id != record.award_id.enrollment_id
-            ):
+            term = record._get_source_term()
+            parent = record._get_source_term_parent()
+            award = record.award_id
+            source = award._get_source_record() if award else award
+            if term and parent and parent != source:
                 error_message = """
 Document Type: %s
 Context: Configure award schedule
