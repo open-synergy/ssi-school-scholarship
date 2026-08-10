@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+<record id="school_scholarship_funding_source_view_form_ou" model="ir.ui.view">
+    <field name="name">school_scholarship_funding_source form - operating unit</field>
+    <field name="model">school_scholarship_funding_source</field>
+    <field
+            name="inherit_id"
+            ref="ssi_school_scholarship.school_scholarship_funding_source_view_form"
+        />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='active']" position="after">
+                <field
+                        name="operating_unit_ids"
+                        widget="many2many_tags"
+                        groups="operating_unit.group_multi_operating_unit"
+                    />
+            </xpath>
+        </data>
+    </field>
+</record>
+
+</odoo>
