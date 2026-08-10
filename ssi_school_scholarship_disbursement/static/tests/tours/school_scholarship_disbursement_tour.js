@@ -104,6 +104,22 @@ odoo.define(
                     in_modal: false,
                 },
                 {
+                    // Payment Method defaults to Bank Transfer, which
+                    // makes Bank Account required (see the view's own
+                    // attrs). Switching to Cash here avoids adding a
+                    // Bank Account fixture just for this tour --
+                    // matching the "cash" fixtures already used by the
+                    // confirm/approve/cancel tours' own setUpClass.
+                    // 14.0's <select> carries the o_field_widget class
+                    // itself (not wrapped in a div), so the selector is
+                    // a tag+class combination, not a descendant one
+                    // (odoo-development-ui-test references/patterns.md
+                    // §Field selection).
+                    content: "Select Cash as the Payment Method",
+                    trigger: "select.o_field_widget[name='payment_method']",
+                    run: "text Cash",
+                },
+                {
                     content: "Fill in Date Due",
                     trigger: ".o_field_widget[name='date_due'] input",
                     run: "text 08/15/2026",
