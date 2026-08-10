@@ -489,11 +489,28 @@ scenarios:
         save_as: "p_deduction_line"
 
       - step:
+          "Find the Line's own debit journal item -- ``school_scholarship_deduction_line.move_line_id``
+          is never populated by the base ``ssi_school_scholarship_deduction`` module
+          (its ``_10_create_accounting_entry`` discards ``line._create_standard_ml()``'s
+          return value, exactly like the base module's own tests locate journal items
+          through a search instead of that field), so the Line's own move line is
+          looked up the same way here: by its Move and its own posting Account."
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["move_id", "=", "REC: p_move.id"],
+            ["account_id", "=", "REC: p_deduction_line.account_id.id"],
+          ]
+        limit: 1
+        save_as: "p_deduction_line_ml"
+
+      - step:
           "The Line's own debit journal item carries the deduction's Operating Unit too"
         action: "assert"
-        target: "p_deduction_line"
+        target: "p_deduction_line_ml"
         asserts:
-          move_line_id.operating_unit_id:
+          operating_unit_id:
             type: "m2o"
             expected: "REC: p_ou_a"
 
