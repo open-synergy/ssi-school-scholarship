@@ -296,7 +296,8 @@ scenarios:
           date: 2026-08-01
           state: "scheduled"
 
-      - step: "Create the disbursement document, without setting Operating Unit explicitly"
+      - step:
+          "Create the disbursement document, without setting Operating Unit explicitly"
         action: "create"
         model: "school_scholarship_disbursement"
         save_as: "p_disbursement"
@@ -332,7 +333,7 @@ scenarios:
       # ── Positive #2: onchange (action: form) -- setting award_id on a
       # new document fills operating_unit_id too ───────────────────────
       - step: "Open a new Disbursement form and select the Award"
-        action: "form"
+        action: form
         model: "school_scholarship_disbursement"
         save: false
         ops:

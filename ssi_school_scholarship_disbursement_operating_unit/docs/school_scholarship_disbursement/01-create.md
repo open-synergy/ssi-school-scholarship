@@ -15,6 +15,6 @@
 
 ## Modified — Record Visibility
 
-- Users in the _Operating Unit_ group only see, edit, and delete Scholarship Disbursement
-  records whose Operating Unit matches one of their own Operating Units. Users outside
-  this group are not restricted by this rule.
+- Users in the _Operating Unit_ group only see, edit, and delete Scholarship
+  Disbursement records whose Operating Unit matches one of their own Operating Units.
+  Users outside this group are not restricted by this rule.
