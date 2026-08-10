@@ -73,7 +73,7 @@ odoo.define("ssi_school_scholarship.school_scholarship_award_tour", function (re
             // Date, End Date. Selecting Program triggers the onchange
             // that fills the nine accounting fields and Is Employee
             // Benefit in the background -- reviewed later in Flow 7,
-            // once the Deduction tab is actually open.
+            // once the Accounting tab is actually open.
             {
                 content: "Select the Program",
                 trigger: ".o_field_many2one[name='program_id'] input",
@@ -200,14 +200,15 @@ odoo.define("ssi_school_scholarship.school_scholarship_award_tour", function (re
             },
 
             // ── Flow 7 — Review the accounting fields defaulted from
-            // the Program on the Deduction tab. Opening the tab is
-            // required before its fields can be asserted: they render
-            // inside a Bootstrap `.tab-pane` kept `display:none` while
-            // a different tab is active, so `.o_external_button` never
-            // becomes `:visible` until this tab is opened.
+            // the Program on the Accounting tab (Deduction group).
+            // Opening the tab is required before its fields can be
+            // asserted: they render inside a Bootstrap `.tab-pane` kept
+            // `display:none` while a different tab is active, so
+            // `.o_external_button` never becomes `:visible` until this
+            // tab is opened.
             {
-                content: "Open the Deduction tab",
-                trigger: ".o_notebook .nav-link:contains(Deduction)",
+                content: "Open the Accounting tab",
+                trigger: ".o_notebook .nav-link:contains(Accounting)",
             },
             {
                 content: "Deduction Journal is filled by the onchange",
