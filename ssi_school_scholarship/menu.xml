@@ -12,9 +12,9 @@
 
 <menuitem
         id="menu_school_scholarship_configuration"
-        name="Configuration"
-        parent="menu_school_scholarship"
-        sequence="99"
+        name="Scholarship"
+        parent="ssi_school.menu_school_configuration"
+        sequence="170"
     />
 
 </odoo>
