@@ -207,8 +207,7 @@ scenarios:
             type: "m2o"
             expected: "REC: ou1"
 
-  - name:
-      "Award OU Derive - onchange enrollment_id fills operating_unit_id on the form"
+  - name: "Award OU Derive - onchange enrollment_id fills operating_unit_id on the form"
     steps:
       # ── Shared fixture chain (suffix AWOU2) ──────────────────────
       - step: "Create partner for the school's own operating unit"
@@ -546,7 +545,9 @@ scenarios:
           deduction_journal_id: "REC: journal3.id"
           discount_account_id: "REC: discount_account3.id"
 
-      - step: "Create the scholarship program (tied to School A, unrelated to the award's Enrollment school)"
+      - step:
+          "Create the scholarship program (tied to School A, unrelated to the award's
+          Enrollment school)"
         action: "create"
         model: "school_scholarship_program"
         save_as: "program3"
@@ -891,8 +892,7 @@ scenarios:
               - "REC: pg_ou_a"
               - "REC: pg_ou_b"
 
-  - name:
-      "Award OU Rule - user without matching operating unit access is denied"
+  - name: "Award OU Rule - user without matching operating unit access is denied"
     steps:
       # ── Shared fixture chain (suffix AWOU7) ──────────────────────
       - step: "Create partner for the award's own operating unit"
@@ -1135,7 +1135,8 @@ scenarios:
               - 0
               - - "REF: base.group_user"
                 - "REF: ssi_school_scholarship.school_scholarship_award_user_group"
-                - "REF: ssi_school_scholarship_operating_unit.school_scholarship_award_operating_unit_group"
+                - "REF:
+                  ssi_school_scholarship_operating_unit.school_scholarship_award_operating_unit_group"
           assigned_operating_unit_ids:
             - - 6
               - 0

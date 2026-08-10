@@ -5,7 +5,9 @@
 <odoo>
 
 <record id="school_scholarship_award_ou" model="ir.rule">
-    <field name="name">school_scholarship_award - Responsible to operating unit data</field>
+    <field
+            name="name"
+        >school_scholarship_award - Responsible to operating unit data</field>
     <field
             name="model_id"
             ref="ssi_school_scholarship.model_school_scholarship_award"
