@@ -1,0 +1,1052 @@
+setup:
+  steps:
+    - step: "Create the grade type"
+      action: "create"
+      model: "school_grade_type"
+      save_as: "s_grade_type"
+      values:
+        name: "S Grade Type"
+        code: "SGT"
+
+    - step: "Create the school"
+      action: "create"
+      model: "school"
+      save_as: "s_school"
+      values:
+        name: "S School"
+        code: "SSC"
+        grade_type_id: "REC: s_grade_type.id"
+
+    - step: "Create the academic year"
+      action: "create"
+      model: "school_academic_year"
+      save_as: "s_academic_year"
+      values:
+        name: "S Academic Year"
+        code: "SAY"
+        date_start: 2026-07-01
+        date_end: 2027-06-30
+
+    - step: "Create the academic term"
+      action: "create"
+      model: "school_academic_term"
+      save_as: "s_academic_term"
+      values:
+        name: "S Term"
+        code: "STM"
+        date_start: 2026-07-01
+        date_end: 2026-12-31
+        year_id: "REC: s_academic_year.id"
+
+    - step: "Create the grade"
+      action: "create"
+      model: "school_grade"
+      save_as: "s_grade"
+      values:
+        name: "S Grade"
+        code: "SGR"
+        type_id: "REC: s_grade_type.id"
+
+    - step: "Create the grade class"
+      action: "create"
+      model: "school_grade_class"
+      save_as: "s_grade_class"
+      values:
+        name: "S Class"
+        code: "SCL"
+        school_id: "REC: s_school.id"
+        grade_id: "REC: s_grade.id"
+
+    - step: "Create the student contact"
+      action: "create"
+      model: "res.partner"
+      save_as: "s_contact"
+      values:
+        name: "S Contact"
+
+    - step: "Create a sponsor contact, unrelated to the student"
+      action: "create"
+      model: "res.partner"
+      save_as: "s_sponsor_contact"
+      values:
+        name: "S Sponsor Contact"
+
+    - step: "Create the student"
+      action: "create"
+      model: "school_student"
+      save_as: "s_student"
+      values:
+        name: "S Student"
+        code: "SST"
+        contact_id: "REC: s_contact.id"
+        school_id: "REC: s_school.id"
+
+    - step: "Create the enrollment"
+      action: "create"
+      model: "school_enrollment"
+      save_as: "s_enrollment"
+      values:
+        academic_year_id: "REC: s_academic_year.id"
+        academic_term_id: "REC: s_academic_term.id"
+        school_id: "REC: s_school.id"
+        grade_id: "REC: s_grade.id"
+        grade_class_id: "REC: s_grade_class.id"
+        student_id: "REC: s_student.id"
+
+    - step: "Create the analytic account for the funding source"
+      action: "create"
+      model: "account.analytic.account"
+      save_as: "s_analytic"
+      values:
+        name: "S Analytic"
+
+    - step: "Create the funding source"
+      action: "create"
+      model: "school_scholarship_funding_source"
+      save_as: "s_funding_source"
+      values:
+        name: "S Funding Source"
+        code: "SFS"
+        analytic_account_id: "REC: s_analytic.id"
+
+    - step: "Create the product covered by the benefit lines"
+      action: "create"
+      model: "product.product"
+      save_as: "s_product"
+      values:
+        name: "S Product"
+        type: "service"
+
+    # ── Three DIFFERENT journals, so the compute's own journal-based
+    # split is genuinely exercised: the sales journal only ever posts
+    # the invoice's own move, the scholarship journal only ever posts
+    # deduction documents, and the bank journal only ever posts plain
+    # cash-deposit journal entries that must NEVER be mistaken for a
+    # scholarship. ──────────────────────────────────────────────────
+    - step: "Create the sales journal used by the invoice's own move"
+      action: "create"
+      model: "account.journal"
+      save_as: "s_invoice_journal"
+      values:
+        name: "S Invoice Journal"
+        code: "SIJ"
+        type: "sale"
+
+    - step: "Create the journal used by scholarship deduction documents"
+      action: "create"
+      model: "account.journal"
+      save_as: "s_scholarship_journal"
+      values:
+        name: "S Scholarship Journal"
+        code: "SSJ"
+        type: "general"
+
+    - step: "Create the bank journal used by plain cash deposits"
+      action: "create"
+      model: "account.journal"
+      save_as: "s_bank_journal"
+      values:
+        name: "S Bank Journal"
+        code: "SBJ"
+        type: "bank"
+
+    - step: "Get the account.account.type Income reference"
+      action: "ref"
+      xml_id: "account.data_account_type_revenue"
+      save_as: "account_type_income"
+
+    - step: "Get the account.account.type Receivable reference"
+      action: "ref"
+      xml_id: "account.data_account_type_receivable"
+      save_as: "account_type_receivable"
+
+    - step: "Get the account.account.type Liquidity reference"
+      action: "ref"
+      xml_id: "account.data_account_type_liquidity"
+      save_as: "account_type_liquidity"
+
+    - step: "Create the receivable account shared by invoices and deductions"
+      action: "create"
+      model: "account.account"
+      save_as: "s_receivable_account"
+      values:
+        name: "S Receivable Account"
+        code: "SRA"
+        user_type_id: "REC: account_type_receivable.id"
+        reconcile: true
+
+    - step: "Create the discount account the deduction lines post to"
+      action: "create"
+      model: "account.account"
+      save_as: "s_discount_account"
+      values:
+        name: "S Discount Account"
+        code: "SDA"
+        user_type_id: "REC: account_type_income.id"
+        reconcile: false
+
+    - step: "Create the income account the invoice lines post to"
+      action: "create"
+      model: "account.account"
+      save_as: "s_income_account"
+      values:
+        name: "S Income Account"
+        code: "SIA"
+        user_type_id: "REC: account_type_income.id"
+        reconcile: false
+
+    - step: "Create the bank account the cash deposits debit"
+      action: "create"
+      model: "account.account"
+      save_as: "s_bank_account"
+      values:
+        name: "S Bank Account"
+        code: "SBA"
+        user_type_id: "REC: account_type_liquidity.id"
+        reconcile: false
+
+    - step: "Create the customer invoice type"
+      action: "create"
+      model: "customer_invoice_type"
+      save_as: "s_invoice_type"
+      values:
+        name: "S Invoice Type"
+        code: "/"
+        journal_id: "REC: s_invoice_journal.id"
+        receivable_account_id: "REC: s_receivable_account.id"
+
+    - step: "Create the scholarship type"
+      action: "create"
+      model: "school_scholarship_type"
+      save_as: "s_type"
+      values:
+        name: "S Type"
+        code: "STY"
+        deduction_journal_id: "REC: s_scholarship_journal.id"
+        discount_account_id: "REC: s_discount_account.id"
+
+    - step: "Create the scholarship program"
+      action: "create"
+      model: "school_scholarship_program"
+      save_as: "s_program"
+      values:
+        name: "S Program"
+        code: "SPRG"
+        type_id: "REC: s_type.id"
+        school_id: "REC: s_school.id"
+        academic_year_id: "REC: s_academic_year.id"
+        funding_source_ids: [[6, 0, ["REC: s_funding_source.id"]]]
+        deduction_journal_id: "REC: s_scholarship_journal.id"
+        discount_account_id: "REC: s_discount_account.id"
+        scope_ids:
+          - - 0
+            - 0
+            - scope_basis: "product"
+              product_id: "REC: s_product.id"
+              benefit_type: "cash"
+              computation: "fixed"
+              percentage: 0.0
+              amount_fixed: 100000.0
+
+scenarios:
+  # ══════════════════════════════════════════════════════════════════
+  # Positive (compute): a plain invoice with no deduction and no
+  # payment reports zero on both split fields.
+  # ══════════════════════════════════════════════════════════════════
+  - name: "No Deduction, No Payment - Both Split Fields Stay Zero"
+    steps:
+      - step: "Create the plain invoice"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "e1_invoice"
+        values:
+          type_id: "REC: s_invoice_type.id"
+          partner_id: "REC: s_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: s_invoice_journal.id"
+          receivable_account_id: "REC: s_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the plain invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "e1_invoice_line"
+        values:
+          customer_invoice_id: "REC: e1_invoice.id"
+          name: "E1 Invoice Line"
+          account_id: "REC: s_income_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+
+      - step: "Confirm the plain invoice"
+        action: "call"
+        target: "e1_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the plain invoice, posting its journal entry"
+        action: "call"
+        target: "e1_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          amount_residual:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "Assert both split fields, and the flag, stay zero/false"
+        action: "assert"
+        target: "e1_invoice"
+        asserts:
+          amount_settled_by_scholarship:
+            type: "value"
+            expected: 0.0
+          amount_settled_by_cash:
+            type: "value"
+            expected: 0.0
+          has_scholarship:
+            type: "value"
+            expected: false
+          scholarship_deduction_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ══════════════════════════════════════════════════════════════════
+  # Positive (compute): a 400000 deduction against a 1000000 invoice,
+  # then a 600000 cash top-up, then cancelling the deduction. Covers
+  # the M2M trace (scholarship_deduction_ids) and the reversal on
+  # cancel.
+  # ══════════════════════════════════════════════════════════════════
+  - name: "Partial Deduction, Then Cash Top-Up, Then Cancel Reversal"
+    steps:
+      - step: "Create the award backing the partial deduction"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "e2_award"
+        values:
+          program_id: "REC: s_program.id"
+          student_id: "REC: s_student.id"
+          enrollment_id: "REC: s_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "E2 Benefit"
+                product_id: "REC: s_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: s_funding_source.id"
+                percentage: 100.0
+
+      - step: "Find the award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: e2_award.id"]]
+        limit: 1
+        save_as: "e2_benefit"
+
+      - step: "Find the award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: e2_award.id"]]
+        limit: 1
+        save_as: "e2_funding"
+
+      - step: "Create the Schedule line realizing the Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "e2_schedule"
+        values:
+          benefit_id: "REC: e2_benefit.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the invoice the partial deduction is allocated against"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "e2_invoice"
+        values:
+          type_id: "REC: s_invoice_type.id"
+          partner_id: "REC: s_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: s_invoice_journal.id"
+          receivable_account_id: "REC: s_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "e2_invoice_line"
+        values:
+          customer_invoice_id: "REC: e2_invoice.id"
+          name: "E2 Invoice Line"
+          account_id: "REC: s_income_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+
+      - step: "Confirm the invoice"
+        action: "call"
+        target: "e2_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the invoice, posting its journal entry"
+        action: "call"
+        target: "e2_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          amount_residual:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "Create the deduction document"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "e2_deduction"
+        values:
+          award_id: "REC: e2_award.id"
+          date: 2026-08-05
+          journal_id: "REC: s_scholarship_journal.id"
+          receivable_account_id: "REC: s_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: e2_schedule.id"
+                funding_id: "REC: e2_funding.id"
+                final_account_id: "REC: s_discount_account.id"
+                name: "E2 Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: e2_invoice.id"
+                amount_allocated: 400000.0
+
+      - step: "Confirm the deduction"
+        action: "call"
+        target: "e2_deduction"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Invalidate cache before approving (avoids stale policy cache)"
+        action: "call"
+        target: "e2_deduction"
+        method: "invalidate_cache"
+
+      - step: "Approve the deduction, reconciling 400000 off the invoice"
+        action: "call"
+        target: "e2_deduction"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert the split fields right after the deduction opens"
+        action: "assert"
+        target: "e2_invoice"
+        refresh: true
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: 600000.0
+          amount_settled_by_scholarship:
+            type: "value"
+            expected: 400000.0
+          amount_settled_by_cash:
+            type: "value"
+            expected: 0.0
+          has_scholarship:
+            type: "value"
+            expected: true
+          scholarship_deduction_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: e2_deduction"
+
+      - step: "Create the journal entry for the 600000 cash deposit"
+        action: "create"
+        model: "account.move"
+        save_as: "e2_bank_move"
+        values:
+          journal_id: "REC: s_bank_journal.id"
+          date: 2026-08-10
+          line_ids:
+            - - 0
+              - 0
+              - account_id: "REC: s_bank_account.id"
+                name: "E2 Cash Deposit - Bank"
+                partner_id: "REC: s_contact.id"
+                debit: 600000.0
+                credit: 0.0
+            - - 0
+              - 0
+              - account_id: "REC: s_receivable_account.id"
+                name: "E2 Cash Deposit - Receivable"
+                partner_id: "REC: s_contact.id"
+                debit: 0.0
+                credit: 600000.0
+
+      - step: "Post the cash deposit journal entry"
+        action: "call"
+        target: "e2_bank_move"
+        method: "action_post"
+
+      - step: "Find the deposit's own credit line on the receivable account"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["move_id", "=", "REC: e2_bank_move.id"],
+            ["credit", "=", 600000.0],
+          ]
+        limit: 1
+        save_as: "e2_bank_credit_line"
+
+      - step: "Combine the invoice's own receivable line with the deposit's own credit line"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            [
+              "id",
+              "in",
+              ["REC: e2_invoice.receivable_move_line_id.id", "REC: e2_bank_credit_line.id"],
+            ],
+          ]
+        save_as: "e2_combined_lines"
+
+      - step: "Reconcile the deposit against the invoice's remaining residual"
+        action: "call"
+        target: "e2_combined_lines"
+        method: "reconcile"
+
+      - step: "Assert the cash top-up settles the residual, scholarship unchanged"
+        action: "assert"
+        target: "e2_invoice"
+        refresh: true
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: 0.0
+          amount_settled_by_scholarship:
+            type: "value"
+            expected: 400000.0
+          amount_settled_by_cash:
+            type: "value"
+            expected: 600000.0
+          has_scholarship:
+            type: "value"
+            expected: true
+
+      - step: "Create the cancellation reason"
+        action: "create"
+        model: "base.cancel_reason"
+        save_as: "e2_reason"
+        values:
+          name: "E2 Cancel Reason"
+          code: "E2CR"
+
+      - step: "Cancel the deduction via the wizard"
+        action: "wizard"
+        model: "base.select_cancel_reason"
+        target: "e2_deduction"
+        as_user: "base.user_admin"
+        values:
+          cancel_reason_id: "REC: e2_reason.id"
+        method: "action_confirm"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Assert cancelling the deduction zeroes the scholarship split back out"
+        action: "assert"
+        target: "e2_invoice"
+        refresh: true
+        asserts:
+          amount_settled_by_scholarship:
+            type: "value"
+            expected: 0.0
+          amount_settled_by_cash:
+            type: "value"
+            expected: 600000.0
+          has_scholarship:
+            type: "value"
+            expected: false
+
+  # ══════════════════════════════════════════════════════════════════
+  # Positive (compute, most risk-loaded): an invoice fully covered by
+  # a scholarship reaches Paid (``done``) without a single unit of
+  # cash moving -- ``amount_settled_by_cash`` must still read zero.
+  # ══════════════════════════════════════════════════════════════════
+  - name: "Invoice Fully Covered By Scholarship Stays Zero Cash, Even When Paid"
+    steps:
+      - step: "Create the award backing the full deduction"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "e3_award"
+        values:
+          program_id: "REC: s_program.id"
+          student_id: "REC: s_student.id"
+          enrollment_id: "REC: s_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "E3 Benefit"
+                product_id: "REC: s_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 1000000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: s_funding_source.id"
+                percentage: 100.0
+
+      - step: "Find the award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: e3_award.id"]]
+        limit: 1
+        save_as: "e3_benefit"
+
+      - step: "Find the award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: e3_award.id"]]
+        limit: 1
+        save_as: "e3_funding"
+
+      - step: "Create the Schedule line realizing the Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "e3_schedule"
+        values:
+          benefit_id: "REC: e3_benefit.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the invoice the full deduction is allocated against"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "e3_invoice"
+        values:
+          type_id: "REC: s_invoice_type.id"
+          partner_id: "REC: s_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: s_invoice_journal.id"
+          receivable_account_id: "REC: s_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "e3_invoice_line"
+        values:
+          customer_invoice_id: "REC: e3_invoice.id"
+          name: "E3 Invoice Line"
+          account_id: "REC: s_income_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+
+      - step: "Confirm the invoice"
+        action: "call"
+        target: "e3_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the invoice, posting its journal entry"
+        action: "call"
+        target: "e3_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the full deduction document"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "e3_deduction"
+        values:
+          award_id: "REC: e3_award.id"
+          date: 2026-08-05
+          journal_id: "REC: s_scholarship_journal.id"
+          receivable_account_id: "REC: s_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: e3_schedule.id"
+                funding_id: "REC: e3_funding.id"
+                final_account_id: "REC: s_discount_account.id"
+                name: "E3 Deduction Line"
+                uom_quantity: 1
+                price_unit: 1000000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: e3_invoice.id"
+                amount_allocated: 1000000.0
+
+      - step: "Confirm the full deduction"
+        action: "call"
+        target: "e3_deduction"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Invalidate cache before approving the full deduction"
+        action: "call"
+        target: "e3_deduction"
+        method: "invalidate_cache"
+
+      - step: "Approve the full deduction, fully reconciling the invoice"
+        action: "call"
+        target: "e3_deduction"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          reconciled:
+            type: "value"
+            expected: true
+
+      - step: "Assert the invoice reached Paid with zero cash settled"
+        action: "assert"
+        target: "e3_invoice"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          amount_residual:
+            type: "value"
+            expected: 0.0
+          amount_settled_by_scholarship:
+            type: "value"
+            expected: 1000000.0
+          amount_settled_by_cash:
+            type: "value"
+            expected: 0.0
+          has_scholarship:
+            type: "value"
+            expected: true
+
+  # ══════════════════════════════════════════════════════════════════
+  # Negative paths: a credit from a bank journal must never be
+  # mistaken for a scholarship, whether it comes from the student's
+  # own contact or from an unrelated sponsor.
+  # ══════════════════════════════════════════════════════════════════
+  - name: "Bank-Only Settlement Never Counts As Scholarship"
+    steps:
+      # ── Negative: settled entirely by the student's own bank
+      # deposit, no deduction at all ──────────────────────────────────
+      - step: "Create the invoice settled purely by a bank deposit"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "e4_invoice_own"
+        values:
+          type_id: "REC: s_invoice_type.id"
+          partner_id: "REC: s_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: s_invoice_journal.id"
+          receivable_account_id: "REC: s_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the bank-only invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "e4_invoice_own_line"
+        values:
+          customer_invoice_id: "REC: e4_invoice_own.id"
+          name: "E4 Own Invoice Line"
+          account_id: "REC: s_income_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+
+      - step: "Confirm the bank-only invoice"
+        action: "call"
+        target: "e4_invoice_own"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the bank-only invoice"
+        action: "call"
+        target: "e4_invoice_own"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the journal entry for the full 1000000 cash deposit"
+        action: "create"
+        model: "account.move"
+        save_as: "e4_own_bank_move"
+        values:
+          journal_id: "REC: s_bank_journal.id"
+          date: 2026-08-10
+          line_ids:
+            - - 0
+              - 0
+              - account_id: "REC: s_bank_account.id"
+                name: "E4 Own Cash Deposit - Bank"
+                partner_id: "REC: s_contact.id"
+                debit: 1000000.0
+                credit: 0.0
+            - - 0
+              - 0
+              - account_id: "REC: s_receivable_account.id"
+                name: "E4 Own Cash Deposit - Receivable"
+                partner_id: "REC: s_contact.id"
+                debit: 0.0
+                credit: 1000000.0
+
+      - step: "Post the full cash deposit"
+        action: "call"
+        target: "e4_own_bank_move"
+        method: "action_post"
+
+      - step: "Find the deposit's own credit line"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["move_id", "=", "REC: e4_own_bank_move.id"],
+            ["credit", "=", 1000000.0],
+          ]
+        limit: 1
+        save_as: "e4_own_credit_line"
+
+      - step: "Combine the invoice's own receivable line with the deposit's own credit line"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            [
+              "id",
+              "in",
+              [
+                "REC: e4_invoice_own.receivable_move_line_id.id",
+                "REC: e4_own_credit_line.id",
+              ],
+            ],
+          ]
+        save_as: "e4_own_combined_lines"
+
+      - step: "Reconcile the full deposit against the invoice"
+        action: "call"
+        target: "e4_own_combined_lines"
+        method: "reconcile"
+
+      - step: "Assert a bank-only settlement never counts as scholarship"
+        action: "assert"
+        target: "e4_invoice_own"
+        refresh: true
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: 0.0
+          amount_settled_by_scholarship:
+            type: "value"
+            expected: 0.0
+          amount_settled_by_cash:
+            type: "value"
+            expected: 1000000.0
+          has_scholarship:
+            type: "value"
+            expected: false
+
+      # ── Negative: settled by a sponsor's bank deposit -- a
+      # third-party payment is still a cash settlement, not a
+      # scholarship deduction ─────────────────────────────────────────
+      - step: "Create the invoice settled by a sponsor's bank deposit"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "e4_invoice_sponsor"
+        values:
+          type_id: "REC: s_invoice_type.id"
+          partner_id: "REC: s_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: s_invoice_journal.id"
+          receivable_account_id: "REC: s_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the sponsor-paid invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "e4_invoice_sponsor_line"
+        values:
+          customer_invoice_id: "REC: e4_invoice_sponsor.id"
+          name: "E4 Sponsor Invoice Line"
+          account_id: "REC: s_income_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+
+      - step: "Confirm the sponsor-paid invoice"
+        action: "call"
+        target: "e4_invoice_sponsor"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the sponsor-paid invoice"
+        action: "call"
+        target: "e4_invoice_sponsor"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the journal entry for the sponsor's cash deposit"
+        action: "create"
+        model: "account.move"
+        save_as: "e4_sponsor_bank_move"
+        values:
+          journal_id: "REC: s_bank_journal.id"
+          date: 2026-08-10
+          line_ids:
+            - - 0
+              - 0
+              - account_id: "REC: s_bank_account.id"
+                name: "E4 Sponsor Cash Deposit - Bank"
+                partner_id: "REC: s_sponsor_contact.id"
+                debit: 1000000.0
+                credit: 0.0
+            - - 0
+              - 0
+              - account_id: "REC: s_receivable_account.id"
+                name: "E4 Sponsor Cash Deposit - Receivable"
+                partner_id: "REC: s_sponsor_contact.id"
+                debit: 0.0
+                credit: 1000000.0
+
+      - step: "Post the sponsor's cash deposit"
+        action: "call"
+        target: "e4_sponsor_bank_move"
+        method: "action_post"
+
+      - step: "Find the sponsor deposit's own credit line"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["move_id", "=", "REC: e4_sponsor_bank_move.id"],
+            ["credit", "=", 1000000.0],
+          ]
+        limit: 1
+        save_as: "e4_sponsor_credit_line"
+
+      - step: "Combine the invoice's own receivable line with the sponsor's credit line"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            [
+              "id",
+              "in",
+              [
+                "REC: e4_invoice_sponsor.receivable_move_line_id.id",
+                "REC: e4_sponsor_credit_line.id",
+              ],
+            ],
+          ]
+        save_as: "e4_sponsor_combined_lines"
+
+      - step: "Reconcile the sponsor's deposit against the invoice"
+        action: "call"
+        target: "e4_sponsor_combined_lines"
+        method: "reconcile"
+
+      - step: "Assert a sponsor's bank settlement never counts as scholarship"
+        action: "assert"
+        target: "e4_invoice_sponsor"
+        refresh: true
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: 0.0
+          amount_settled_by_scholarship:
+            type: "value"
+            expected: 0.0
+          amount_settled_by_cash:
+            type: "value"
+            expected: 1000000.0
+          has_scholarship:
+            type: "value"
+            expected: false

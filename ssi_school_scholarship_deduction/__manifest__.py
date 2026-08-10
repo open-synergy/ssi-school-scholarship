@@ -15,6 +15,7 @@
     "installable": True,
     "application": False,
     "depends": [
+        "ssi_school",
         "ssi_school_scholarship",
         "ssi_customer_invoice",
         "ssi_accounting_entry_mixin",
@@ -46,6 +47,7 @@
         "views/school_scholarship_deduction.xml",
         "views/school_scholarship_deduction_recognition.xml",
         "views/school_scholarship_award.xml",
+        "views/customer_invoice.xml",
         "views/assets.xml",
     ],
 }

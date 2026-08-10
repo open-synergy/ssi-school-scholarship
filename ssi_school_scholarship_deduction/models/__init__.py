@@ -10,3 +10,5 @@ from . import school_scholarship_deduction_line  # noqa: F401
 from . import school_scholarship_deduction_allocation  # noqa: F401
 from . import school_scholarship_deduction_recognition  # noqa: F401
 from . import school_scholarship_deduction_recognition_line  # noqa: F401
+from . import customer_invoice  # noqa: F401
+from . import school_enrollment_fee_analysis  # noqa: F401

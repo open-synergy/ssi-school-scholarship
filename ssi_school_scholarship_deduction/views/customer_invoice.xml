@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="customer_invoice_view_form_scholarship_deduction" model="ir.ui.view">
+    <field name="name">customer_invoice - form - scholarship deduction</field>
+    <field name="model">customer_invoice</field>
+    <field name="inherit_id" ref="ssi_customer_invoice.customer_invoice_view_form" />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='amount_residual']" position="after">
+                <field name="amount_settled_by_scholarship" />
+                <field name="amount_settled_by_cash" />
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record
+        id="customer_invoice_view_search_scholarship_deduction"
+        model="ir.ui.view"
+    >
+    <field name="name">customer_invoice - search - scholarship deduction</field>
+    <field name="model">customer_invoice</field>
+    <field
+            name="inherit_id"
+            ref="ssi_customer_invoice.customer_invoice_view_search"
+        />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//filter[@name='dom_my_data']" position="after">
+                <filter
+                        name="dom_has_scholarship"
+                        string="Has Scholarship"
+                        domain="[('has_scholarship', '=', True)]"
+                    />
+            </xpath>
+        </data>
+    </field>
+</record>
+</odoo>
