@@ -25,15 +25,33 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: code:addons/ssi_school_scholarship_deduction/wizards/create_due_scholarship_recognition.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Create due scholarship recognition\n"
+"Database ID: %s\n"
+"Problem: No Deduction is due for recognition as of the selected Date\n"
+"Solution: Pick a later Date, or check the deductions' own Recognition Date\n"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__deduction_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__deduction_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__deduction_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__deduction_id
 msgid "# Deduction"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__name
 msgid "# Document"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__recognition_id
+msgid "# Recognition"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -44,14 +62,27 @@ msgstr ""
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__account_id
 msgid ""
-"Accounting account this line posts to. Always equal to Final Account in this"
-" item."
+"Accounting account this line posts to. Equal to Final Account, unless the "
+"parent document's Recognition Method is ``Deferred``, in which case it is "
+"the parent's own Deferred Account instead."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__date
+msgid "Accounting date inherited from the parent Recognition document."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__date
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__date
 msgid "Accounting date of this deduction document."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__date
+msgid ""
+"Accounting date of this recognition document. May not be earlier than the "
+"deduction's own Date."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -62,42 +93,55 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__journal_id
+msgid "Accounting journal this document's own entry posts to."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_needaction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_needaction
 msgid "Action Needed"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__active_approval_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__active_approval_ids
 msgid "Active Approvals"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__active_approver_partner_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__active_approver_partner_ids
 msgid "Active Partners"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__active_approver_user_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__active_approver_user_ids
 msgid "Active Users"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_ids
 msgid "Activities"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_exception_decoration
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_exception_decoration
 msgid "Activity Exception Decoration"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_state
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_state
 msgid "Activity State"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_type_icon
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_type_icon
 msgid "Activity Type Icon"
 msgstr ""
 
@@ -109,6 +153,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__allowed_policy_template_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__allowed_policy_template_ids
 msgid "Allowed Policy Templates"
 msgstr ""
 
@@ -128,9 +173,25 @@ msgid "Allowed Usages"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__amount
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__amount
+msgid "Amount"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_allocated
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__amount_allocated
 msgid "Amount Allocated"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_deferred
+msgid "Amount Deferred"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_recognized
+msgid "Amount Recognized"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -146,13 +207,28 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_deferred
+msgid ""
+"Amount Total not yet moved out of the Deferred Account by a Recognition "
+"document. Reaches zero once fully recognized."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_unallocated
 msgid "Amount Unallocated"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__analytic_account_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__analytic_account_id
 msgid "Analytic Account"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__analytic_account_id
+msgid ""
+"Analytic Account of the Deduction Line's own Funding source, carried on both"
+" the debit and credit side."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -162,21 +238,25 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__approval_template_id
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__approval_template_id
 msgid "Approval Configuration"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__approval_template_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__approval_template_id
 msgid "Approval Template"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__approval_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__approval_ids
 msgid "Approvals"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__approve_ok
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__approve_ok
 msgid ""
 "Approve policy\n"
 "\n"
@@ -185,11 +265,13 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__approved
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__approved
 msgid "Approved"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_attachment_count
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_attachment_count
 msgid "Attachment Count"
 msgstr ""
 
@@ -239,41 +321,49 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__approve_ok
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__approve_ok
 msgid "Can Approve"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__cancel_ok
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__cancel_ok
 msgid "Can Cancel"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__confirm_ok
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__confirm_ok
 msgid "Can Confirm"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__done_ok
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__done_ok
 msgid "Can Finished"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__manual_number_ok
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__manual_number_ok
 msgid "Can Input Manual Document Number"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__reject_ok
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__reject_ok
 msgid "Can Reject"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__restart_ok
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__restart_ok
 msgid "Can Restart"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__restart_approval_ok
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__restart_approval_ok
 msgid "Can Restart Approval"
 msgstr ""
 
@@ -284,16 +374,19 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.create_due_scholarship_deduction_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.create_due_scholarship_recognition_view_form
 msgid "Cancel"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__cancel_reason_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__cancel_reason_id
 msgid "Cancel Reason"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__cancel_ok
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__cancel_ok
 msgid ""
 "Cancel policy\n"
 "\n"
@@ -303,23 +396,39 @@ msgstr ""
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__company_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__company_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__company_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__company_id
 msgid "Company"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__company_currency_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__company_currency_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__company_currency_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__company_currency_id
 msgid "Company Currency"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__company_partner_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__company_partner_id
 msgid "Company Partner"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__company_currency_id
+msgid "Company currency inherited from the parent Recognition document."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__company_id
+msgid "Company inherited from the parent Recognition document."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__company_id
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__company_id
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__company_id
 msgid ""
 "Company that own the document\n"
 "\n"
@@ -329,6 +438,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__confirm_ok
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__confirm_ok
 msgid ""
 "Confirm policy\n"
 "\n"
@@ -343,6 +453,12 @@ msgid "Create Due Deduction"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.create_due_scholarship_recognition_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_tree
+msgid "Create Due Recognition"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.actions.act_window,name:ssi_school_scholarship_deduction.create_due_scholarship_deduction_action
 #: model:ir.model,name:ssi_school_scholarship_deduction.model_create_due_scholarship_deduction
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.create_due_scholarship_deduction_view_form
@@ -350,26 +466,51 @@ msgid "Create Due Scholarship Deduction"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.actions.act_window,name:ssi_school_scholarship_deduction.create_due_scholarship_recognition_action
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_create_due_scholarship_recognition
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.create_due_scholarship_recognition_view_form
+msgid "Create Due Scholarship Recognition"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__create_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__create_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__create_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__create_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__create_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__create_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__create_uid
 msgid "Created by"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__create_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__create_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__create_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__create_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__create_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__create_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__create_date
 msgid "Created on"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__credit_account_id
+msgid "Credit Account"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__currency_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__currency_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__currency_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__currency_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__currency_id
 msgid "Currency"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__currency_id
+msgid "Currency inherited from the parent Recognition document."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -380,6 +521,7 @@ msgstr ""
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__currency_id
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__currency_id
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__currency_id
 msgid ""
 "Currency this document is expressed in. This document does not support a "
 "currency other than the Company Currency."
@@ -399,8 +541,11 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__date
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__date
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__date
 msgid "Date"
 msgstr ""
 
@@ -412,6 +557,16 @@ msgstr ""
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__date_start
 msgid "Date Start"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__debit_account_id
+msgid "Debit Account"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_view_search
+msgid "Deduction"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -427,6 +582,16 @@ msgstr ""
 #. module: ssi_school_scholarship_deduction
 #: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_company_child_group
 msgid "Deduction Company and All Child Companies"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__deduction_line_id
+msgid "Deduction Line"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__deduction_line_id
+msgid "Deduction Line released by this Recognition Line."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -470,23 +635,59 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__deduction_ids
+msgid "Deductions"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields.selection,name:ssi_school_scholarship_deduction.selection__school_scholarship_deduction__recognition_method__deferred
+msgid "Deferred"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__deferred_account_id
+msgid "Deferred Account"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__credit_account_id
+msgid ""
+"Deferred Account of the Deduction Line, credited by this Recognition Line."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__deduction_id
+msgid "Deferred deduction document this document releases."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__deduction_ids
+msgid ""
+"Deferred deductions due for recognition as of Date, computed automatically."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__name
 msgid "Description"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_funding__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__display_name
 msgid "Display Name"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__done_ok
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__done_ok
 msgid ""
 "Done policy\n"
 "\n"
@@ -504,32 +705,46 @@ msgid "Final Account"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__debit_account_id
+msgid "Final Account of the Deduction Line, debited by this Recognition Line."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__final_account_id
 msgid ""
 "Final accounting destination of this line, copied from the Benefit line's "
-"own Account. In this item, ``account_id`` always equals this field; a later,"
-" deferred-recognition item may point ``account_id`` at a different, "
-"temporary account instead while keeping this field as the eventual target."
+"own Account. Always the eventual target, even while the parent document's "
+"Recognition Method is ``Deferred`` and ``account_id`` posts to the Deferred "
+"Account instead."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_follower_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_follower_ids
 msgid "Followers"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_channel_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_channel_ids
 msgid "Followers (Channels)"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_partner_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_partner_ids
 msgid "Followers (Partners)"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_type_icon
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__note
+msgid "Free-form note about this recognition document."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -548,40 +763,54 @@ msgid "Funding source of the selected Funding line."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_view_search
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_search
 msgid "Group By"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_funding__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__id
 msgid "ID"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_exception_icon
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_exception_icon
 msgid "Icon"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_exception_icon
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_exception_icon
 msgid "Icon to indicate an exception activity."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_needaction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_unread
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_needaction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_unread
 msgid "If checked, new messages require your attention."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_has_error
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_has_error
 msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields.selection,name:ssi_school_scholarship_deduction.selection__school_scholarship_deduction__recognition_method__immediate
+msgid "Immediate"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -601,11 +830,13 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_is_follower
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_is_follower
 msgid "Is Follower"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__journal_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__journal_id
 msgid "Journal"
 msgstr ""
 
@@ -615,9 +846,26 @@ msgid "Journal Item"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_journal_id
+msgid ""
+"Journal a Recognition document of this deduction posts its entry to. "
+"Defaulted from the Award's own Recognition Journal."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__move_id
+msgid "Journal entry generated when this document is Done."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__move_id
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__move_id
 msgid "Journal entry generated when this document is opened."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__move_id
+msgid "Journal entry of the parent Recognition document."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -635,28 +883,37 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_funding____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line____last_update
 msgid "Last Modified on"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__write_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__write_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__write_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__write_uid
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__write_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__write_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__write_uid
 msgid "Last Updated by"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__write_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__write_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__write_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__write_date
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__write_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__write_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__write_date
 msgid "Last Updated on"
 msgstr ""
 
@@ -673,11 +930,13 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_main_attachment_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_main_attachment_id
 msgid "Main Attachment"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__manual_number_ok
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__manual_number_ok
 msgid ""
 "Manual number assignment policy\n"
 "\n"
@@ -686,79 +945,109 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_has_error
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_has_error
 msgid "Message Delivery error"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_ids
 msgid "Messages"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__move_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__move_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__move_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__move_id
 msgid "Move"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__my_activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__my_activity_date_deadline
 msgid "My Activity Deadline"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__need_validation
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__need_validation
 msgid "Need Validation"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_date_deadline
 msgid "Next Activity Deadline"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_summary
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_summary
 msgid "Next Activity Summary"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_type_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_type_id
 msgid "Next Activity Type"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__next_approval_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__next_approval_ids
 msgid "Next Approvals"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields.selection,name:ssi_school_scholarship_deduction.selection__school_scholarship_deduction__recognition_state__not_applicable
+msgid "Not Applicable"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__note
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__note
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__note
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_view_form
 msgid "Note"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_needaction_counter
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_needaction_counter
 msgid "Number of Actions"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_has_error_counter
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_has_error_counter
 msgid "Number of errors"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_needaction_counter
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_needaction_counter
 msgid "Number of messages which requires an action"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_has_error_counter
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_unread_counter
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_unread_counter
 msgid "Number of unread messages"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__recognition_line_ids
+msgid ""
+"One technical line per deduction Line, each carrying the debit/credit pair "
+"posted for it. Generated when this document is Done; cleared again if it is "
+"cancelled."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -774,13 +1063,39 @@ msgid "Partial Reconcile"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields.selection,name:ssi_school_scholarship_deduction.selection__school_scholarship_deduction__recognition_state__partial
+msgid "Partially Recognized"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__partner_id
 msgid "Partner"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields.selection,name:ssi_school_scholarship_deduction.selection__school_scholarship_deduction__recognition_state__pending
+msgid "Pending"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__policy_template_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__policy_template_id
 msgid "Policy Template"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__amount
+msgid ""
+"Portion of the Recognition document's own Amount released for this Deduction"
+" Line, already rounded to the currency's own precision."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__amount
+msgid ""
+"Portion of the deduction's own Amount Deferred released by this document. "
+"The sum of every Done Recognition's Amount may not exceed the deduction's "
+"own Amount Total."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -818,6 +1133,11 @@ msgstr ""
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__quantity
 msgid "Quantity"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__ratio
+msgid "Ratio"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -859,6 +1179,63 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_date
+msgid "Recognition Date"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_journal_id
+msgid "Recognition Journal"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__recognition_line_ids
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_view_form
+msgid "Recognition Lines"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_method
+msgid "Recognition Method"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_state
+msgid "Recognition Status"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__recognition_id
+msgid "Recognition document this line belongs to."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__date
+msgid ""
+"Recognition documents are created for every deduction whose own Recognition "
+"Date falls on or before this date, and this is also the Date of every "
+"document created."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_ids
+msgid ""
+"Recognition documents that move this deduction's deferred amount from the "
+"Deferred Account to each Line's own Final Account."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_ids
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_form
+msgid "Recognitions"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields.selection,name:ssi_school_scholarship_deduction.selection__school_scholarship_deduction__recognition_state__recognized
+msgid "Recognized"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__reconciled
 msgid "Reconciled"
 msgstr ""
@@ -872,6 +1249,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__reject_ok
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__reject_ok
 msgid ""
 "Reject policy\n"
 "\n"
@@ -880,6 +1258,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__rejected
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__rejected
 msgid "Rejected"
 msgstr ""
 
@@ -892,16 +1271,19 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__user_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__user_id
 msgid "Responsible"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_user_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_user_id
 msgid "Responsible User"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__restart_approval_ok
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__restart_approval_ok
 msgid ""
 "Restart approval policy\n"
 "\n"
@@ -910,6 +1292,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__restart_ok
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__restart_ok
 msgid ""
 "Restart policy\n"
 "\n"
@@ -918,12 +1301,19 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__reviewer_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__reviewer_id
 msgid "Reviewer"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__schedule_id
 msgid "Schedule"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.actions.act_window,name:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_action
+#: model:ir.ui.menu,name:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_menu
+msgid "Scholarship Deduction Recognitions"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -968,6 +1358,16 @@ msgid "School Scholarship Deduction - Line"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_scholarship_deduction_recognition
+msgid "School Scholarship Deduction Recognition"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_scholarship_deduction_recognition_line
+msgid "School Scholarship Deduction Recognition - Line"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__product_category_id
 msgid "Select category for the current product"
 msgstr ""
@@ -998,6 +1398,14 @@ msgid "Standard Price Unit Diff."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_date
+msgid ""
+"Start of the period the underlying service is actually delivered -- the "
+"later of this document's own Date and the Award's own Start Date. Defaults "
+"automatically but may be overridden manually."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__open_ok
 msgid ""
 "Start policy\n"
@@ -1007,11 +1415,13 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__state
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__state
 msgid "State"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_state
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_state
 msgid ""
 "Status based on activities\n"
 "Overdue: Due date is already passed\n"
@@ -1042,6 +1452,13 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_recognized
+msgid ""
+"Sum of this deduction's own Recognition documents' Amount, counting only "
+"those in Done status."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__price_tax
 msgid "Tax"
 msgstr ""
@@ -1059,10 +1476,26 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__deferred_account_id
+msgid ""
+"Temporary asset account each Line posts to instead of its own Final Account "
+"while Recognition Method is ``Deferred``. Defaulted from the Award's own "
+"Deferred Discount Account. Required while Recognition Method is "
+"``Deferred``."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__partner_id
 msgid ""
 "The student's contact partner. Must match the Partner of every allocated "
 "invoice."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__ratio
+msgid ""
+"This document's own Amount divided by the deduction's own Amount Total -- "
+"the proportion of each Line released by this document."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -1072,6 +1505,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__name
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__name
 msgid ""
 "Transaction/document number\n"
 "\n"
@@ -1085,16 +1519,19 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_exception_decoration
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_exception_decoration
 msgid "Type of the exception activity on record."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_unread
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_unread
 msgid "Unread Messages"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_unread_counter
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_unread_counter
 msgid "Unread Messages Counter"
 msgstr ""
 
@@ -1115,6 +1552,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__user_id
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__user_id
 msgid ""
 "User that responsible for document\n"
 "\n"
@@ -1125,6 +1563,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__reviewer_id
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__reviewer_id
 msgid ""
 "User that responsible to review document\n"
 "\n"
@@ -1133,15 +1572,35 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__active_approver_user_ids
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__active_approver_user_ids
 msgid "Users that can approve/reject document"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__website_message_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__website_message_ids
 msgid "Website Messages"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__website_message_ids
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__website_message_ids
 msgid "Website communication history"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_method
+msgid ""
+"``Deferred`` once Recognition Date falls after this document's own Date -- "
+"meaning the service this deduction pays for has not started yet. Defaults "
+"automatically but may be overridden manually."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_state
+msgid ""
+"``Not Applicable`` while Recognition Method is ``Immediate``; otherwise "
+"``Pending`` before any Recognition is Done, ``Partially Recognized`` while "
+"Amount Recognized is below Amount Total, and ``Recognized`` once it reaches "
+"it."
 msgstr ""
