@@ -15,6 +15,4 @@ class TestCustomerInvoiceScholarshipDeduction(YamlTransactionCase):
         """Run the scholarship/cash split compute and negative-path
         scenarios for ``customer_invoice``.
         """
-        self.run_yaml_scenario(
-            "test_data_customer_invoice_scholarship_deduction.yaml"
-        )
+        self.run_yaml_scenario("test_data_customer_invoice_scholarship_deduction.yaml")

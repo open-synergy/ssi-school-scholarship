@@ -106,15 +106,11 @@ class CustomerInvoice(models.Model):
             amount_settled_by_scholarship = 0.0
             partials = record.receivable_move_line_id.matched_credit_ids
             if partials:
-                journal_ids = partials.mapped(
-                    "credit_move_id.move_id.journal_id"
-                ).ids
+                journal_ids = partials.mapped("credit_move_id.move_id.journal_id").ids
                 scholarship_journal_ids = (
                     Deduction.sudo()
                     .search(
-                        record._get_scholarship_deduction_journal_criteria(
-                            journal_ids
-                        )
+                        record._get_scholarship_deduction_journal_criteria(journal_ids)
                     )
                     .mapped("journal_id")
                     .ids
@@ -160,9 +156,7 @@ class CustomerInvoice(models.Model):
             allocations = Allocation.sudo().search(
                 record._get_scholarship_deduction_allocation_criteria()
             )
-            record.scholarship_deduction_ids = allocations.mapped(
-                "deduction_id"
-            ).ids
+            record.scholarship_deduction_ids = allocations.mapped("deduction_id").ids
 
     def _get_scholarship_deduction_allocation_criteria(self):
         """Build the domain selecting this invoice's own allocations.

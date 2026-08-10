@@ -17,16 +17,10 @@
     </field>
 </record>
 
-<record
-        id="customer_invoice_view_search_scholarship_deduction"
-        model="ir.ui.view"
-    >
+<record id="customer_invoice_view_search_scholarship_deduction" model="ir.ui.view">
     <field name="name">customer_invoice - search - scholarship deduction</field>
     <field name="model">customer_invoice</field>
-    <field
-            name="inherit_id"
-            ref="ssi_customer_invoice.customer_invoice_view_search"
-        />
+    <field name="inherit_id" ref="ssi_customer_invoice.customer_invoice_view_search" />
     <field name="arch" type="xml">
         <data>
             <xpath expr="//filter[@name='dom_my_data']" position="after">

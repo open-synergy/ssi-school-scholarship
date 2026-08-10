@@ -535,15 +535,12 @@ scenarios:
       - step: "Find the deposit's own credit line on the receivable account"
         action: "search"
         model: "account.move.line"
-        domain:
-          [
-            ["move_id", "=", "REC: e2_bank_move.id"],
-            ["credit", "=", 600000.0],
-          ]
+        domain: [["move_id", "=", "REC: e2_bank_move.id"], ["credit", "=", 600000.0]]
         limit: 1
         save_as: "e2_bank_credit_line"
 
-      - step: "Combine the invoice's own receivable line with the deposit's own credit line"
+      - step:
+          "Combine the invoice's own receivable line with the deposit's own credit line"
         action: "search"
         model: "account.move.line"
         domain:
@@ -551,7 +548,10 @@ scenarios:
             [
               "id",
               "in",
-              ["REC: e2_invoice.receivable_move_line_id.id", "REC: e2_bank_credit_line.id"],
+              [
+                "REC: e2_invoice.receivable_move_line_id.id",
+                "REC: e2_bank_credit_line.id",
+              ],
             ],
           ]
         save_as: "e2_combined_lines"
@@ -877,14 +877,12 @@ scenarios:
         action: "search"
         model: "account.move.line"
         domain:
-          [
-            ["move_id", "=", "REC: e4_own_bank_move.id"],
-            ["credit", "=", 1000000.0],
-          ]
+          [["move_id", "=", "REC: e4_own_bank_move.id"], ["credit", "=", 1000000.0]]
         limit: 1
         save_as: "e4_own_credit_line"
 
-      - step: "Combine the invoice's own receivable line with the deposit's own credit line"
+      - step:
+          "Combine the invoice's own receivable line with the deposit's own credit line"
         action: "search"
         model: "account.move.line"
         domain:
@@ -1005,10 +1003,7 @@ scenarios:
         action: "search"
         model: "account.move.line"
         domain:
-          [
-            ["move_id", "=", "REC: e4_sponsor_bank_move.id"],
-            ["credit", "=", 1000000.0],
-          ]
+          [["move_id", "=", "REC: e4_sponsor_bank_move.id"], ["credit", "=", 1000000.0]]
         limit: 1
         save_as: "e4_sponsor_credit_line"
 
