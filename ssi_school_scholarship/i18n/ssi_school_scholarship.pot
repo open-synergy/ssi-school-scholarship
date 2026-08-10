@@ -669,11 +669,6 @@ msgid "Computation"
 msgstr ""
 
 #. module: ssi_school_scholarship
-#: model:ir.ui.menu,name:ssi_school_scholarship.menu_school_scholarship_configuration
-msgid "Configuration"
-msgstr ""
-
-#. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__confirm_ok
 msgid ""
 "Confirm policy\n"
@@ -2201,6 +2196,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship
 #: model:ir.ui.menu,name:ssi_school_scholarship.menu_school_scholarship
+#: model:ir.ui.menu,name:ssi_school_scholarship.menu_school_scholarship_configuration
 msgid "Scholarship"
 msgstr ""
 
