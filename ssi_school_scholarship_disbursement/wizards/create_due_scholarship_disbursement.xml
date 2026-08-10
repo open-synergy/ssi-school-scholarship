@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="create_due_scholarship_disbursement_view_form" model="ir.ui.view">
+    <field name="name">create_due_scholarship_disbursement - form</field>
+    <field name="model">create_due_scholarship_disbursement</field>
+    <field name="arch" type="xml">
+        <form string="Create Due Scholarship Disbursement">
+            <group name="main" colspan="4" col="2">
+                <field
+                        name="award_ids"
+                        widget="many2many_tags"
+                        colspan="2"
+                        invisible="1"
+                    />
+                <field name="date_start" />
+                <field name="date_end" />
+            </group>
+            <footer>
+                <button
+                        name="action_create_due_disbursement"
+                        type="object"
+                        string="Create Due Disbursement"
+                        class="btn-primary"
+                    />
+                <button string="Cancel" class="btn-default" special="cancel" />
+            </footer>
+        </form>
+    </field>
+</record>
+
+<record id="create_due_scholarship_disbursement_action" model="ir.actions.act_window">
+    <field name="name">Create Due Scholarship Disbursement</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">create_due_scholarship_disbursement</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+</record>
+</odoo>
