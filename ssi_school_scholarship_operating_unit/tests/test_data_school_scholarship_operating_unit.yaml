@@ -859,6 +859,16 @@ scenarios:
           user_type_id: "REC: pg_account_type_income.id"
           reconcile: false
 
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "pg_type"
+        values:
+          name: "Program OU Type"
+          code: "PGOUTY"
+          deduction_journal_id: "REC: pg_journal.id"
+          discount_account_id: "REC: pg_discount_account.id"
+
       - step: "Create the scholarship program with two Operating Units"
         action: "create"
         model: "school_scholarship_program"
@@ -866,6 +876,7 @@ scenarios:
         values:
           name: "Program Two OU"
           code: "PGOUTWO"
+          type_id: "REC: pg_type.id"
           school_id: "REC: pg_school.id"
           academic_year_id: "REC: pg_academic_year.id"
           funding_source_ids: [[6, 0, ["REC: pg_funding_source.id"]]]
