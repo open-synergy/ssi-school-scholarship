@@ -17,8 +17,8 @@ odoo.define("ssi_school_scholarship.school_scholarship_funding_source_tour", fun
             url: "/web",
         },
         [
-            // ── Flow 1 — Open the School > Scholarship > Configuration >
-            // Scholarship Funding Sources menu. "Configuration"
+            // ── Flow 1 — Open the School > Configuration > Scholarship >
+            // Scholarship Funding Sources menu. "Scholarship"
             // (menu_school_scholarship_configuration) is a level-3
             // grouping menuitem with no action= attribute, so 14.0
             // renders it as a non-clickable dropdown header without
@@ -30,9 +30,9 @@ odoo.define("ssi_school_scholarship.school_scholarship_funding_source_tour", fun
                 trigger: '.o_app[data-menu-xmlid="ssi_school.menu_school_root"]',
             },
             {
-                content: "Open the Scholarship menu",
+                content: "Open the Configuration menu",
                 trigger:
-                    '.o_menu_sections [data-menu-xmlid="ssi_school_scholarship.menu_school_scholarship"]',
+                    '.o_menu_sections [data-menu-xmlid="ssi_school.menu_school_configuration"]',
             },
             {
                 content: "Open the Scholarship Funding Sources menu",

@@ -2,7 +2,7 @@
 
 > **Module:** ssi_school_scholarship\
 > **Model:** `school_scholarship_funding_source`\
-> **Menu:** School > Scholarship > Configuration > Scholarship Funding Sources\
+> **Menu:** School > Configuration > Scholarship > Scholarship Funding Sources\
 > **Actor:** user in group `Scholarship Funding Source`\
 > **Inline Actions:** `action_generate_code` (Generate Code)
 
@@ -16,7 +16,7 @@
 
 ## Flow
 
-1. Open the **School > Scholarship > Configuration > Scholarship Funding Sources** menu.
+1. Open the **School > Configuration > Scholarship > Scholarship Funding Sources** menu.
 2. Click the **New** button. **(14.0: "Create")**
 3. Fill in the required fields:
    - **Name** _(required)_: Enter the name of the funding source (e.g. "Foundation Grant

@@ -2,7 +2,7 @@
 
 > **Module:** ssi_school_scholarship\
 > **Model:** `school_scholarship_type`\
-> **Menu:** School > Scholarship > Configuration > Scholarship Types\
+> **Menu:** School > Configuration > Scholarship > Scholarship Types\
 > **Actor:** user in group `Scholarship Type`\
 > **Inline Actions:** `action_generate_code` (Generate Code)
 
@@ -16,7 +16,7 @@
 
 ## Flow
 
-1. Open the **School > Scholarship > Configuration > Scholarship Types** menu.
+1. Open the **School > Configuration > Scholarship > Scholarship Types** menu.
 2. Click the **New** button. **(14.0: "Create")**
 3. Fill in the required fields:
    - **Name** _(required)_: Enter the name of the scholarship type (e.g. "Full
