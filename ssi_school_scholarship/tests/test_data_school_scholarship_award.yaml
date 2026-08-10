@@ -194,6 +194,24 @@ scenarios:
             type: "value"
             expected: 0.0
 
+      # ── Positive (compute, default): source_type was not passed in
+      # values above -- it must default to "enrollment", and school_id
+      # /grade_id must be derived from the Enrollment through the
+      # _get_source_record() hook rather than left empty.
+      - step: "Assert Billing Source defaults to Enrollment, School/Grade derived"
+        action: "assert"
+        target: "award_zero"
+        asserts:
+          source_type:
+            type: "value"
+            expected: "enrollment"
+          school_id:
+            type: "m2o"
+            expected: "REC: school1"
+          grade_id:
+            type: "m2o"
+            expected: "REC: grade1"
+
       # ── Positive (compute, empty condition): two Benefit lines, but
       # Amount Awarded is derived from the Schedule now
       # (odoo-school-scholarship#6), not from the Benefit lines
@@ -936,6 +954,21 @@ scenarios:
                 benefit_type: "fee_reduction"
                 computation: "percentage"
                 percentage: 40.0
+
+      # ── Negative: Billing Source Enrollment with no Enrollment ────
+      - step: "Reject an Enrollment-sourced award with no Enrollment"
+        action: "create"
+        model: "school_scholarship_award"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "billing source"
+        values:
+          program_id: "REC: program3.id"
+          student_id: "REC: student3a.id"
+          source_type: "enrollment"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account3.id"
 
       # ── Negative: Confirm without a Benefit line ─────────────────
       - step: "Create an award with Funding but no Benefit line"

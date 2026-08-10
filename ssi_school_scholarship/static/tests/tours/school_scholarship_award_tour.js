@@ -96,6 +96,17 @@ odoo.define("ssi_school_scholarship.school_scholarship_award_tour", function (re
                     ".ui-autocomplete .ui-menu-item a:contains(TOUR Award Student)",
                 in_modal: false,
             },
+            // Billing Source defaults to Enrollment and is left at
+            // that default -- only its visibility is asserted here,
+            // never its value (odoo-development-ui-test, tour tests
+            // the click-flow, not compute/onchange results).
+            {
+                content: "Billing Source field is displayed",
+                trigger: ".o_field_widget[name='source_type']",
+                run: function () {
+                    // Assertion only; do not trigger the default click.
+                },
+            },
             {
                 content: "Select the Enrollment",
                 trigger: ".o_field_many2one[name='enrollment_id'] input",
