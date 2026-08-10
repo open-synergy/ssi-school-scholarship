@@ -955,6 +955,14 @@ scenarios:
           code: "B2FS"
           analytic_account_id: "REC: b2_analytic.id"
 
+      - step: "Create the product covered by the program's Scope line"
+        action: "create"
+        model: "product.product"
+        save_as: "b2_product"
+        values:
+          name: "B2 Product"
+          type: "service"
+
       - step: "Create the cash journal used for disbursement"
         action: "create"
         model: "account.journal"
@@ -1048,6 +1056,15 @@ scenarios:
           discount_account_id: "REC: b2_discount_account.id"
           disbursement_journal_id: "REC: b2_journal.id"
           payable_account_id: "REC: b2_payable_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: b2_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 100000.0
 
       - step: "Create the award backing the negative-path fixtures"
         action: "create"

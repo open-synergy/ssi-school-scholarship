@@ -125,6 +125,26 @@ class TestUiSchoolScholarshipDisbursement(HttpSavepointCase):
                 "type": "cash",
             }
         )
+        # school_scholarship_type/_program require a Deduction Journal
+        # and Discount Account even though this module never posts a
+        # deduction -- a dummy sale journal + non-reconcilable income
+        # account satisfies those two unrelated required fields.
+        tour_dummy_journal = cls.env["account.journal"].create(
+            {
+                "name": "TOUR Disbursement Dummy Deduction Journal",
+                "code": "TDBJD",
+                "type": "sale",
+            }
+        )
+        account_type_income = cls.env.ref("account.data_account_type_revenue")
+        tour_discount_account = cls.env["account.account"].create(
+            {
+                "name": "TOUR Disbursement Discount Account",
+                "code": "TOURDBDA",
+                "user_type_id": account_type_income.id,
+                "reconcile": False,
+            }
+        )
         tour_payable_account = cls.env["account.account"].create(
             {
                 "name": "TOUR Disbursement Payable Account",
@@ -145,6 +165,8 @@ class TestUiSchoolScholarshipDisbursement(HttpSavepointCase):
             {
                 "name": "TOUR Disbursement Scholarship Type",
                 "code": "TOURDBTY",
+                "deduction_journal_id": tour_dummy_journal.id,
+                "discount_account_id": tour_discount_account.id,
                 "disbursement_journal_id": tour_journal.id,
                 "payable_account_id": tour_payable_account.id,
             }
@@ -157,6 +179,8 @@ class TestUiSchoolScholarshipDisbursement(HttpSavepointCase):
                 "school_id": tour_school.id,
                 "academic_year_id": tour_academic_year.id,
                 "funding_source_ids": [(6, 0, [tour_funding_source.id])],
+                "deduction_journal_id": tour_dummy_journal.id,
+                "discount_account_id": tour_discount_account.id,
                 "disbursement_journal_id": tour_journal.id,
                 "payable_account_id": tour_payable_account.id,
                 "scope_ids": [

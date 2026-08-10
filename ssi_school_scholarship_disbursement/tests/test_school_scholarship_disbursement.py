@@ -91,8 +91,15 @@ class TestSchoolScholarshipDisbursement(YamlTransactionCase):
                 "student_id": student.id,
             }
         )
+        analytic_account = self.env["account.analytic.account"].create(
+            {"name": "E1 Analytic"}
+        )
         funding_source = self.env["school_scholarship_funding_source"].create(
-            {"name": "E1 Funding Source", "code": "E1FS"}
+            {
+                "name": "E1 Funding Source",
+                "code": "E1FS",
+                "analytic_account_id": analytic_account.id,
+            }
         )
         product = self.env["product.product"].create(
             {"name": "E1 Product", "type": "service"}
@@ -127,6 +134,19 @@ class TestSchoolScholarshipDisbursement(YamlTransactionCase):
                 "funding_source_ids": [(6, 0, [funding_source.id])],
                 "deduction_journal_id": deduction_journal.id,
                 "discount_account_id": discount_account.id,
+                "scope_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "scope_basis": "product",
+                            "product_id": product.id,
+                            "benefit_type": "cash",
+                            "computation": "fixed",
+                            "amount_fixed": 100000.0,
+                        },
+                    )
+                ],
             }
         )
         award = self.env["school_scholarship_award"].create(
