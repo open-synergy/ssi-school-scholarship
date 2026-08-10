@@ -477,12 +477,25 @@ msgid "Benefits"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__source_type
+msgid "Billing Source"
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_schedule__base_amount
 msgid ""
 "Billing amount this schedule line's Computation is applied to: the sum of "
 "the linked Payment Term's detail lines matching the Benefit line's Product, "
 "or its Product Category when the Benefit line targets one. Zero when no "
 "Payment Term is linked."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__source_type
+msgid ""
+"Billing source this award is billed against. This module only registers "
+"Enrollment -- extension modules add further values with ``selection_add`` "
+"and override the ``_get_source_*`` hooks to match."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -564,6 +577,7 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_schedule__payment_term_state__cancelled
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_schedule__state__cancelled
 msgid "Cancelled"
 msgstr ""
@@ -968,6 +982,7 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_schedule__payment_term_state__draft
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_schedule__state__draft
 msgid "Draft"
 msgstr ""
@@ -1021,6 +1036,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__enrollment_id
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award__source_type__enrollment
 msgid "Enrollment"
 msgstr ""
 
@@ -1035,7 +1051,9 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__enrollment_id
 msgid ""
 "Enrollment this award is billed against. Must belong to the selected "
-"Student."
+"Student. Required when Billing Source is Enrollment -- enforced by "
+"``_check_billing_source``, not by this field itself, so an extension "
+"module's own billing source is not forced to also be a required field."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -1226,7 +1244,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__grade_id
-msgid "Grade of the selected enrollment."
+msgid "Grade of the selected billing source."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -1348,6 +1366,11 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__message_has_error
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_type__message_has_error
 msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_schedule__payment_term_state__invoiced
+msgid "Invoiced"
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -1546,6 +1569,11 @@ msgid ""
 "Manual number assignment policy\n"
 "\n"
 "* If active user can edit document number"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_schedule__payment_term_state__manual
+msgid "Manually Controlled"
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -2404,7 +2432,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__school_id
-msgid "School of the selected enrollment."
+msgid "School of the selected billing source."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -2640,6 +2668,11 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program__activity_exception_decoration
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_type__activity_exception_decoration
 msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_schedule__payment_term_state__uninvoiced
+msgid "Uninvoiced"
 msgstr ""
 
 #. module: ssi_school_scholarship
