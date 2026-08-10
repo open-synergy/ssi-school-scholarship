@@ -26,17 +26,17 @@ odoo.define(
                 url: "/web",
             },
             [
-                // ── Base Flow 1 — Open the School > Scholarship >
-                // Configuration > Scholarship Types menu.
+                // ── Base Flow 1 — Open the School > Configuration >
+                // Scholarship > Scholarship Types menu.
                 tour.stepUtils.showAppsMenuItem(),
                 {
                     content: "Open the School app",
                     trigger: '.o_app[data-menu-xmlid="ssi_school.menu_school_root"]',
                 },
                 {
-                    content: "Open the Scholarship menu",
+                    content: "Open the Configuration menu",
                     trigger:
-                        '.o_menu_sections [data-menu-xmlid="ssi_school_scholarship.menu_school_scholarship"]',
+                        '.o_menu_sections [data-menu-xmlid="ssi_school.menu_school_configuration"]',
                 },
                 {
                     content: "Open the Scholarship Types menu",
