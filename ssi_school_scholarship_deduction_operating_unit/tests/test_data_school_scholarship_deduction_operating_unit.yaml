@@ -230,6 +230,15 @@ scenarios:
           funding_source_ids: [[6, 0, ["REC: p_funding_source.id"]]]
           deduction_journal_id: "REC: p_journal.id"
           discount_account_id: "REC: p_discount_account.id"
+          # Positive #5 below allocates a Deferred deduction against an
+          # invoice that credits an ordinary Income account -- allowed
+          # only when the Program opts into asymmetric recognition (see
+          # the base module's own identical fixture convention in
+          # ``ssi_school_scholarship_deduction``'s
+          # ``test_data_school_scholarship_deduction_recognition.yaml``).
+          # Irrelevant to every other scenario in this file, which stays
+          # Immediate.
+          allow_asymmetric_recognition: true
           scope_ids:
             - - 0
               - 0
@@ -489,12 +498,13 @@ scenarios:
         save_as: "p_deduction_line"
 
       - step:
-          "Find the Line's own debit journal item -- ``school_scholarship_deduction_line.move_line_id``
-          is never populated by the base ``ssi_school_scholarship_deduction`` module
-          (its ``_10_create_accounting_entry`` discards ``line._create_standard_ml()``'s
+          "Find the Line's own debit journal item --
+          ``school_scholarship_deduction_line.move_line_id`` is never populated by the
+          base ``ssi_school_scholarship_deduction`` module (its
+          ``_10_create_accounting_entry`` discards ``line._create_standard_ml()``'s
           return value, exactly like the base module's own tests locate journal items
-          through a search instead of that field), so the Line's own move line is
-          looked up the same way here: by its Move and its own posting Account."
+          through a search instead of that field), so the Line's own move line is looked
+          up the same way here: by its Move and its own posting Account."
         action: "search"
         model: "account.move.line"
         domain:
