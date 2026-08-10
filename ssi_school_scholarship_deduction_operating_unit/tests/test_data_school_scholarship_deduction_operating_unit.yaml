@@ -1,0 +1,1218 @@
+options:
+  auto_refresh: true
+
+scenarios:
+  - name: "Operating Unit - Derivation, Move Propagation, Recognition Inheritance"
+    steps:
+      # ── Shared fixture chain (prefix P) ─────────────────────────────
+      - step: "Create the Operating Unit's own partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "p_ou_a_partner"
+        values:
+          name: "P OU A Partner"
+
+      - step: "Create Operating Unit A"
+        action: "create"
+        model: "operating.unit"
+        save_as: "p_ou_a"
+        values:
+          name: "P Operating Unit A"
+          code: "PDOUA"
+          company_id: "REC: company.id"
+          partner_id: "REC: p_ou_a_partner.id"
+
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "p_grade_type"
+        values:
+          name: "P Grade Type"
+          code: "PGT"
+
+      - step: "Create the school, belonging to Operating Unit A"
+        action: "create"
+        model: "school"
+        save_as: "p_school"
+        values:
+          name: "P School"
+          code: "PSC"
+          grade_type_id: "REC: p_grade_type.id"
+          operating_unit_ids: [[6, 0, ["REC: p_ou_a.id"]]]
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "p_academic_year"
+        values:
+          name: "P Academic Year"
+          code: "PAY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "p_academic_term"
+        values:
+          name: "P Term"
+          code: "PTM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: p_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "p_grade"
+        values:
+          name: "P Grade"
+          code: "PGR"
+          type_id: "REC: p_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "p_grade_class"
+        values:
+          name: "P Class"
+          code: "PCL"
+          school_id: "REC: p_school.id"
+          grade_id: "REC: p_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "p_contact"
+        values:
+          name: "P Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "p_student"
+        values:
+          name: "P Student"
+          code: "PST"
+          contact_id: "REC: p_contact.id"
+          school_id: "REC: p_school.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "p_enrollment"
+        values:
+          academic_year_id: "REC: p_academic_year.id"
+          academic_term_id: "REC: p_academic_term.id"
+          school_id: "REC: p_school.id"
+          grade_id: "REC: p_grade.id"
+          grade_class_id: "REC: p_grade_class.id"
+          student_id: "REC: p_student.id"
+
+      - step: "Create the funding source's analytic account"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "p_analytic"
+        values:
+          name: "P Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "p_funding_source"
+        values:
+          name: "P Funding Source"
+          code: "PFS"
+          analytic_account_id: "REC: p_analytic.id"
+
+      - step: "Create the product covered by the benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "p_product"
+        values:
+          name: "P Product"
+          type: "service"
+
+      - step: "Create the sale journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "p_journal"
+        values:
+          name: "P Journal"
+          code: "JP1"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "p_account_type_income"
+
+      - step: "Get the account.account.type Receivable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "p_account_type_receivable"
+
+      - step: "Get the account.account.type Current Assets reference"
+        action: "ref"
+        xml_id: "account.data_account_type_current_assets"
+        save_as: "p_account_type_asset"
+
+      - step: "Create the receivable account shared by the invoices and deductions"
+        action: "create"
+        model: "account.account"
+        save_as: "p_receivable_account"
+        values:
+          name: "P Receivable Account"
+          code: "PRA"
+          user_type_id: "REC: p_account_type_receivable.id"
+          reconcile: true
+
+      - step: "Create the discount (final) account the deduction lines post to"
+        action: "create"
+        model: "account.account"
+        save_as: "p_discount_account"
+        values:
+          name: "P Discount Account"
+          code: "PDA"
+          user_type_id: "REC: p_account_type_income.id"
+          reconcile: false
+
+      - step: "Create the income account the invoice lines post to"
+        action: "create"
+        model: "account.account"
+        save_as: "p_income_account"
+        values:
+          name: "P Income Account"
+          code: "PIA"
+          user_type_id: "REC: p_account_type_income.id"
+          reconcile: false
+
+      - step: "Create the deferred account the deferred deduction line posts to"
+        action: "create"
+        model: "account.account"
+        save_as: "p_deferred_account"
+        values:
+          name: "P Deferred Account"
+          code: "PFA"
+          user_type_id: "REC: p_account_type_asset.id"
+          reconcile: false
+
+      - step: "Create the customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "p_invoice_type"
+        values:
+          name: "P Invoice Type"
+          code: "/"
+          journal_id: "REC: p_journal.id"
+          receivable_account_id: "REC: p_receivable_account.id"
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "p_type"
+        values:
+          name: "P Type"
+          code: "PTY"
+          deduction_journal_id: "REC: p_journal.id"
+          discount_account_id: "REC: p_discount_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "p_program"
+        values:
+          name: "P Program"
+          code: "PPRG"
+          type_id: "REC: p_type.id"
+          school_id: "REC: p_school.id"
+          academic_year_id: "REC: p_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: p_funding_source.id"]]]
+          deduction_journal_id: "REC: p_journal.id"
+          discount_account_id: "REC: p_discount_account.id"
+          # Positive #5 below allocates a Deferred deduction against an
+          # invoice that credits an ordinary Income account -- allowed
+          # only when the Program opts into asymmetric recognition (see
+          # the base module's own identical fixture convention in
+          # ``ssi_school_scholarship_deduction``'s
+          # ``test_data_school_scholarship_deduction_recognition.yaml``).
+          # Irrelevant to every other scenario in this file, which stays
+          # Immediate.
+          allow_asymmetric_recognition: true
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: p_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 100000.0
+
+      # ── Positive #1: create a deduction from an Award belonging to
+      # a specific Operating Unit -- operating_unit_id gets filled ────
+      - step: "Create the award backing the deduction, on Operating Unit A"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "p_award"
+        values:
+          name: "P-AWARD-001"
+          program_id: "REC: p_program.id"
+          student_id: "REC: p_student.id"
+          enrollment_id: "REC: p_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "P Benefit"
+                product_id: "REC: p_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: p_funding_source.id"
+                percentage: 100.0
+
+      - step:
+          "The award itself already carries Operating Unit A
+          (ssi_school_scholarship_operating_unit)"
+        action: "assert"
+        target: "p_award"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: p_ou_a"
+
+      - step: "Find the award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: p_award.id"]]
+        limit: 1
+        save_as: "p_benefit"
+
+      - step: "Find the award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: p_award.id"]]
+        limit: 1
+        save_as: "p_funding"
+
+      - step: "Create the Schedule line realizing the Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "p_schedule"
+        values:
+          benefit_id: "REC: p_benefit.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the deduction document, without setting Operating Unit explicitly"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "p_deduction"
+        values:
+          award_id: "REC: p_award.id"
+          date: 2026-08-05
+          journal_id: "REC: p_journal.id"
+          receivable_account_id: "REC: p_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: p_schedule.id"
+                funding_id: "REC: p_funding.id"
+                final_account_id: "REC: p_discount_account.id"
+                name: "P Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+
+      - step: "Operating Unit is derived from the Award at create time"
+        action: "assert"
+        target: "p_deduction"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: p_ou_a"
+
+      # ── Positive #2: onchange (action: form) -- setting award_id on a
+      # new document fills operating_unit_id too ───────────────────────
+      - step: "Open a new Deduction form and select the Award"
+        action: form
+        model: "school_scholarship_deduction"
+        save: false
+        ops:
+          - set:
+              award_id: "REC: p_award"
+          - assert:
+              operating_unit_id:
+                type: "m2o"
+                expected: "REC: p_ou_a"
+
+      # ── Positive #3/#4: transition state, then the generated move and
+      # every one of its journal items carry the same Operating Unit ──
+      - step:
+          "Create the invoice the deduction is allocated against, on Operating Unit A"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "p_invoice"
+        values:
+          type_id: "REC: p_invoice_type.id"
+          partner_id: "REC: p_contact.id"
+          operating_unit_id: "REC: p_ou_a.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: p_journal.id"
+          receivable_account_id: "REC: p_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "p_invoice_line"
+        values:
+          customer_invoice_id: "REC: p_invoice.id"
+          name: "P Invoice Line"
+          account_id: "REC: p_income_account.id"
+          uom_quantity: 1
+          price_unit: 400000.0
+
+      - step: "Confirm the invoice"
+        action: "call"
+        target: "p_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the invoice and post its journal entry"
+        action: "call"
+        target: "p_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          amount_residual:
+            type: "value"
+            expected: 400000.0
+
+      - step: "Allocate the full amount against the invoice, same Operating Unit"
+        action: "create"
+        model: "school_scholarship_deduction_allocation"
+        save_as: "p_allocation"
+        values:
+          deduction_id: "REC: p_deduction.id"
+          customer_invoice_id: "REC: p_invoice.id"
+          amount_allocated: 400000.0
+
+      - step: "Amount Unallocated reaches zero once fully allocated"
+        action: "assert"
+        target: "p_deduction"
+        asserts:
+          amount_unallocated:
+            type: "value"
+            expected: 0.0
+
+      - step: "Confirm the deduction as admin"
+        action: "call"
+        target: "p_deduction"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Assert between confirm and approve (busts the cached policy field)"
+        action: "assert"
+        target: "p_deduction"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the deduction, opening it and posting its journal entry"
+        action: "call"
+        target: "p_deduction"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          move_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "The generated move carries the same Operating Unit as the deduction"
+        action: "assert"
+        target: "p_deduction"
+        asserts:
+          move_id.operating_unit_id:
+            type: "m2o"
+            expected: "REC: p_ou_a"
+
+      - step: "Find the deduction's own generated move"
+        action: "search"
+        model: "account.move"
+        domain: [["id", "=", "REC: p_deduction.move_id.id"]]
+        limit: 1
+        save_as: "p_move"
+
+      - step: "The move carries exactly two journal items (header credit + Line debit)"
+        action: "assert"
+        target: "p_move"
+        asserts:
+          line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+
+      - step:
+          "The header's own credit journal item carries the deduction's Operating Unit"
+        action: "assert"
+        target: "p_deduction"
+        asserts:
+          receivable_move_line_id.operating_unit_id:
+            type: "m2o"
+            expected: "REC: p_ou_a"
+
+      - step: "Find the deduction Line record to read its own generated journal item"
+        action: "search"
+        model: "school_scholarship_deduction_line"
+        domain: [["deduction_id", "=", "REC: p_deduction.id"]]
+        limit: 1
+        save_as: "p_deduction_line"
+
+      - step:
+          "Find the Line's own debit journal item --
+          ``school_scholarship_deduction_line.move_line_id`` is never populated by the
+          base ``ssi_school_scholarship_deduction`` module (its
+          ``_10_create_accounting_entry`` discards ``line._create_standard_ml()``'s
+          return value, exactly like the base module's own tests locate journal items
+          through a search instead of that field), so the Line's own move line is looked
+          up the same way here: by its Move and its own posting Account."
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["move_id", "=", "REC: p_move.id"],
+            ["account_id", "=", "REC: p_deduction_line.account_id.id"],
+          ]
+        limit: 1
+        save_as: "p_deduction_line_ml"
+
+      - step:
+          "The Line's own debit journal item carries the deduction's Operating Unit too"
+        action: "assert"
+        target: "p_deduction_line_ml"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: p_ou_a"
+
+      # ── Positive #5: the Recognition document inherits the Operating
+      # Unit from its parent (deferred) Deduction, and its own move
+      # carries it too ──────────────────────────────────────────────
+      - step: "Create the award backing the deferred deduction, on Operating Unit A"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "p_award_deferred"
+        values:
+          name: "P-AWARD-DEFERRED-001"
+          program_id: "REC: p_program.id"
+          student_id: "REC: p_student.id"
+          enrollment_id: "REC: p_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          deferred_discount_account_id: "REC: p_deferred_account.id"
+          recognition_journal_id: "REC: p_journal.id"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "P Deferred Benefit"
+                product_id: "REC: p_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: p_funding_source.id"
+                percentage: 100.0
+
+      - step: "Find the deferred award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: p_award_deferred.id"]]
+        limit: 1
+        save_as: "p_benefit_deferred"
+
+      - step: "Find the deferred award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: p_award_deferred.id"]]
+        limit: 1
+        save_as: "p_funding_deferred"
+
+      - step: "Create the Schedule line realizing the deferred Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "p_schedule_deferred"
+        values:
+          benefit_id: "REC: p_benefit_deferred.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the invoice the deferred deduction is allocated against"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "p_invoice_deferred"
+        values:
+          type_id: "REC: p_invoice_type.id"
+          partner_id: "REC: p_contact.id"
+          operating_unit_id: "REC: p_ou_a.id"
+          date: 2026-03-01
+          date_due: 2026-03-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: p_journal.id"
+          receivable_account_id: "REC: p_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the deferred invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "p_invoice_deferred_line"
+        values:
+          customer_invoice_id: "REC: p_invoice_deferred.id"
+          name: "P Deferred Invoice Line"
+          account_id: "REC: p_income_account.id"
+          uom_quantity: 1
+          price_unit: 400000.0
+
+      - step: "Confirm the deferred invoice"
+        action: "call"
+        target: "p_invoice_deferred"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the deferred invoice and post its journal entry"
+        action: "call"
+        target: "p_invoice_deferred"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the deferred deduction, Date before the Award's own Start Date"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "p_deduction_deferred"
+        values:
+          award_id: "REC: p_award_deferred.id"
+          date: 2026-03-01
+          journal_id: "REC: p_journal.id"
+          receivable_account_id: "REC: p_receivable_account.id"
+          deferred_account_id: "REC: p_deferred_account.id"
+          recognition_journal_id: "REC: p_journal.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: p_schedule_deferred.id"
+                funding_id: "REC: p_funding_deferred.id"
+                final_account_id: "REC: p_discount_account.id"
+                name: "P Deferred Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: p_invoice_deferred.id"
+                amount_allocated: 400000.0
+
+      - step: "Operating Unit and Recognition Method are both derived correctly"
+        action: "assert"
+        target: "p_deduction_deferred"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: p_ou_a"
+          recognition_method:
+            type: "value"
+            expected: "deferred"
+
+      - step: "Confirm the deferred deduction as admin"
+        action: "call"
+        target: "p_deduction_deferred"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the deferred deduction, opening it"
+        action: "call"
+        target: "p_deduction_deferred"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          move_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Open a new Recognition form and select the Deduction"
+        action: form
+        model: "school_scholarship_deduction_recognition"
+        save: false
+        ops:
+          - set:
+              deduction_id: "REC: p_deduction_deferred"
+          - assert:
+              operating_unit_id:
+                type: "m2o"
+                expected: "REC: p_ou_a"
+
+      - step:
+          "Create the Recognition document, without setting Operating Unit explicitly"
+        action: "create"
+        model: "school_scholarship_deduction_recognition"
+        save_as: "p_recognition"
+        values:
+          deduction_id: "REC: p_deduction_deferred.id"
+          date: 2026-08-10
+          journal_id: "REC: p_journal.id"
+          amount: 400000.0
+          user_id: "REF: base.user_admin"
+
+      - step: "The Recognition inherits the deduction's own Operating Unit"
+        action: "assert"
+        target: "p_recognition"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: p_ou_a"
+
+      - step: "Confirm the Recognition as admin"
+        action: "call"
+        target: "p_recognition"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Assert between confirm and approve (busts the cached policy field)"
+        action: "assert"
+        target: "p_recognition"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the Recognition, posting its own journal entry"
+        action: "call"
+        target: "p_recognition"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          move_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "The Recognition's own move carries the same Operating Unit too"
+        action: "assert"
+        target: "p_recognition"
+        asserts:
+          move_id.operating_unit_id:
+            type: "m2o"
+            expected: "REC: p_ou_a"
+
+  - name: "Operating Unit - Negative: Cross-Operating-Unit Allocation Rejected"
+    steps:
+      # ── Shared fixture chain (prefix N) ──────────────────────────────
+      - step: "Create Operating Unit A's own partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "n_ou_a_partner"
+        values:
+          name: "N OU A Partner"
+
+      - step: "Create Operating Unit A"
+        action: "create"
+        model: "operating.unit"
+        save_as: "n_ou_a"
+        values:
+          name: "N Operating Unit A"
+          code: "NDOUA"
+          company_id: "REC: company.id"
+          partner_id: "REC: n_ou_a_partner.id"
+
+      - step: "Create Operating Unit B's own partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "n_ou_b_partner"
+        values:
+          name: "N OU B Partner"
+
+      - step: "Create Operating Unit B"
+        action: "create"
+        model: "operating.unit"
+        save_as: "n_ou_b"
+        values:
+          name: "N Operating Unit B"
+          code: "NDOUB"
+          company_id: "REC: company.id"
+          partner_id: "REC: n_ou_b_partner.id"
+
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "n_grade_type"
+        values:
+          name: "N Grade Type"
+          code: "NGT"
+
+      - step: "Create the school, belonging to Operating Unit A"
+        action: "create"
+        model: "school"
+        save_as: "n_school"
+        values:
+          name: "N School"
+          code: "NSC"
+          grade_type_id: "REC: n_grade_type.id"
+          operating_unit_ids: [[6, 0, ["REC: n_ou_a.id"]]]
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "n_academic_year"
+        values:
+          name: "N Academic Year"
+          code: "NAY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "n_academic_term"
+        values:
+          name: "N Term"
+          code: "NTM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: n_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "n_grade"
+        values:
+          name: "N Grade"
+          code: "NGR"
+          type_id: "REC: n_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "n_grade_class"
+        values:
+          name: "N Class"
+          code: "NCL"
+          school_id: "REC: n_school.id"
+          grade_id: "REC: n_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "n_contact"
+        values:
+          name: "N Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "n_student"
+        values:
+          name: "N Student"
+          code: "NST"
+          contact_id: "REC: n_contact.id"
+          school_id: "REC: n_school.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "n_enrollment"
+        values:
+          academic_year_id: "REC: n_academic_year.id"
+          academic_term_id: "REC: n_academic_term.id"
+          school_id: "REC: n_school.id"
+          grade_id: "REC: n_grade.id"
+          grade_class_id: "REC: n_grade_class.id"
+          student_id: "REC: n_student.id"
+
+      - step: "Create the funding source's analytic account"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "n_analytic"
+        values:
+          name: "N Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "n_funding_source"
+        values:
+          name: "N Funding Source"
+          code: "NFS"
+          analytic_account_id: "REC: n_analytic.id"
+
+      - step: "Create the product covered by the benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "n_product"
+        values:
+          name: "N Product"
+          type: "service"
+
+      - step: "Create the sale journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "n_journal"
+        values:
+          name: "N Journal"
+          code: "JN1"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "n_account_type_income"
+
+      - step: "Get the account.account.type Receivable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "n_account_type_receivable"
+
+      - step: "Create the receivable account shared by the invoices and deductions"
+        action: "create"
+        model: "account.account"
+        save_as: "n_receivable_account"
+        values:
+          name: "N Receivable Account"
+          code: "NRA"
+          user_type_id: "REC: n_account_type_receivable.id"
+          reconcile: true
+
+      - step: "Create the discount account the deduction line posts to"
+        action: "create"
+        model: "account.account"
+        save_as: "n_discount_account"
+        values:
+          name: "N Discount Account"
+          code: "NDA"
+          user_type_id: "REC: n_account_type_income.id"
+          reconcile: false
+
+      - step: "Create the income account the invoice lines post to"
+        action: "create"
+        model: "account.account"
+        save_as: "n_income_account"
+        values:
+          name: "N Income Account"
+          code: "NIA"
+          user_type_id: "REC: n_account_type_income.id"
+          reconcile: false
+
+      - step: "Create the customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "n_invoice_type"
+        values:
+          name: "N Invoice Type"
+          code: "/"
+          journal_id: "REC: n_journal.id"
+          receivable_account_id: "REC: n_receivable_account.id"
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "n_type"
+        values:
+          name: "N Type"
+          code: "NTY"
+          deduction_journal_id: "REC: n_journal.id"
+          discount_account_id: "REC: n_discount_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "n_program"
+        values:
+          name: "N Program"
+          code: "NPRG"
+          type_id: "REC: n_type.id"
+          school_id: "REC: n_school.id"
+          academic_year_id: "REC: n_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: n_funding_source.id"]]]
+          deduction_journal_id: "REC: n_journal.id"
+          discount_account_id: "REC: n_discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: n_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 100000.0
+
+      - step: "Create the award backing the negative-path fixtures, on Operating Unit A"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "n_award"
+        values:
+          name: "N-AWARD-001"
+          program_id: "REC: n_program.id"
+          student_id: "REC: n_student.id"
+          enrollment_id: "REC: n_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "N Benefit"
+                product_id: "REC: n_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: n_funding_source.id"
+                percentage: 100.0
+
+      - step: "Find the award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: n_award.id"]]
+        limit: 1
+        save_as: "n_benefit"
+
+      - step: "Find the award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: n_award.id"]]
+        limit: 1
+        save_as: "n_funding"
+
+      - step: "Create the Schedule line realizing the Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "n_schedule"
+        values:
+          benefit_id: "REC: n_benefit.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the deduction document, on Operating Unit A"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "n_deduction"
+        values:
+          award_id: "REC: n_award.id"
+          date: 2026-08-05
+          journal_id: "REC: n_journal.id"
+          receivable_account_id: "REC: n_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: n_schedule.id"
+                funding_id: "REC: n_funding.id"
+                final_account_id: "REC: n_discount_account.id"
+                name: "N Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+
+      - step: "Sanity: the deduction carries Operating Unit A"
+        action: "assert"
+        target: "n_deduction"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: n_ou_a"
+
+      - step: "Create an invoice billed on the same account, but Operating Unit B"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "n_invoice_other_ou"
+        values:
+          type_id: "REC: n_invoice_type.id"
+          partner_id: "REC: n_contact.id"
+          operating_unit_id: "REC: n_ou_b.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: n_journal.id"
+          receivable_account_id: "REC: n_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the other-OU invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "n_invoice_other_ou_line"
+        values:
+          customer_invoice_id: "REC: n_invoice_other_ou.id"
+          name: "N Other OU Invoice Line"
+          account_id: "REC: n_income_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+
+      - step: "Confirm the other-OU invoice"
+        action: "call"
+        target: "n_invoice_other_ou"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the other-OU invoice"
+        action: "call"
+        target: "n_invoice_other_ou"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          amount_residual:
+            type: "value"
+            expected: 1000000.0
+
+      # ── Negative #1: create-time rejection ──────────────────────────
+      - step: "Reject an allocation whose invoice belongs to a different Operating Unit"
+        action: "create"
+        model: "school_scholarship_deduction_allocation"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "different Operating Unit"
+        values:
+          deduction_id: "REC: n_deduction.id"
+          customer_invoice_id: "REC: n_invoice_other_ou.id"
+          amount_allocated: 100000.0
+
+      # ── Negative #2: pre-open rejection, bypassing the create-time
+      # constrain via context, on a second, bare deduction so this
+      # negative record never touches the first, already-tested one ──
+      - step: "Create a second, bare deduction, on Operating Unit A"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "n_deduction_bypass"
+        values:
+          award_id: "REC: n_award.id"
+          journal_id: "REC: n_journal.id"
+          receivable_account_id: "REC: n_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "The bare deduction has zero Amount Total and Operating Unit A"
+        action: "assert"
+        target: "n_deduction_bypass"
+        asserts:
+          amount_total:
+            type: "value"
+            expected: 0.0
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: n_ou_a"
+
+      - step: "Bypass the create-time Operating Unit constrain via context"
+        action: "create"
+        model: "school_scholarship_deduction_allocation"
+        save_as: "n_allocation_bypass"
+        context:
+          school_scholarship_deduction_ou_skip_check: true
+        values:
+          deduction_id: "REC: n_deduction_bypass.id"
+          customer_invoice_id: "REC: n_invoice_other_ou.id"
+          amount_allocated: 0.0
+
+      - step: "The bypassed allocation was created despite the Operating Unit mismatch"
+        action: "assert"
+        target: "n_allocation_bypass"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Confirm the bare deduction as admin"
+        action: "call"
+        target: "n_deduction_bypass"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Assert between confirm and approve (busts the cached policy field)"
+        action: "assert"
+        target: "n_deduction_bypass"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approving is rejected by the pre-open Operating Unit check"
+        action: "call"
+        target: "n_deduction_bypass"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "different Operating Unit"
+
+      - step: "No journal entry was created by the rejected approval"
+        action: "assert"
+        target: "n_deduction_bypass"
+        refresh: true
+        asserts:
+          move_id:
+            type: "value"
+            operator: "is_falsy"

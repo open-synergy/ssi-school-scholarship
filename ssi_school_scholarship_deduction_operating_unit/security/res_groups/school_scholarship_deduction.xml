@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+<record id="school_scholarship_deduction_operating_unit_group" model="res.groups">
+    <field name="name">Deduction Operating Unit</field>
+    <field
+            name="category_id"
+            ref="ssi_school_scholarship.school_scholarship_data_ownership_module_category"
+        />
+</record>
+
+</odoo>
