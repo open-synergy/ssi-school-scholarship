@@ -12,14 +12,4 @@
         />
 </record>
 
-<record
-        id="ssi_school_scholarship_deduction.school_scholarship_deduction_company_group"
-        model="res.groups"
-    >
-    <field
-            name="implied_ids"
-            eval="[(4, ref('school_scholarship_deduction_operating_unit_group'))]"
-        />
-</record>
-
 </odoo>

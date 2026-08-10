@@ -240,6 +240,6 @@ class TestUiSchoolScholarshipDeductionRecognition(HttpSavepointCase):
         """
         self.start_tour(
             "/web",
-            "ssi_school_scholarship_deduction_operating_unit_school_scholarship_deduction_recognition_create",
+            "ssi_school_scholarship_deduction_operating_unit_school_scholarship_deduction_recognition_create",  # noqa: B950
             login="admin",
         )

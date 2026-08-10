@@ -268,7 +268,9 @@ scenarios:
               - funding_source_id: "REC: p_funding_source.id"
                 percentage: 100.0
 
-      - step: "The award itself already carries Operating Unit A (ssi_school_scholarship_operating_unit)"
+      - step:
+          "The award itself already carries Operating Unit A
+          (ssi_school_scholarship_operating_unit)"
         action: "assert"
         target: "p_award"
         asserts:
@@ -346,7 +348,8 @@ scenarios:
 
       # ── Positive #3/#4: transition state, then the generated move and
       # every one of its journal items carry the same Operating Unit ──
-      - step: "Create the invoice the deduction is allocated against, on Operating Unit A"
+      - step:
+          "Create the invoice the deduction is allocated against, on Operating Unit A"
         action: "create"
         model: "customer_invoice"
         save_as: "p_invoice"
@@ -469,7 +472,8 @@ scenarios:
             check: "count"
             expected_count: 2
 
-      - step: "The header's own credit journal item carries the deduction's Operating Unit"
+      - step:
+          "The header's own credit journal item carries the deduction's Operating Unit"
         action: "assert"
         target: "p_deduction"
         asserts:
@@ -484,7 +488,8 @@ scenarios:
         limit: 1
         save_as: "p_deduction_line"
 
-      - step: "The Line's own debit journal item carries the deduction's Operating Unit too"
+      - step:
+          "The Line's own debit journal item carries the deduction's Operating Unit too"
         action: "assert"
         target: "p_deduction_line"
         asserts:
@@ -667,7 +672,8 @@ scenarios:
                 type: "m2o"
                 expected: "REC: p_ou_a"
 
-      - step: "Create the Recognition document, without setting Operating Unit explicitly"
+      - step:
+          "Create the Recognition document, without setting Operating Unit explicitly"
         action: "create"
         model: "school_scholarship_deduction_recognition"
         save_as: "p_recognition"

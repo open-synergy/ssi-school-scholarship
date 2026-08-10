@@ -15,13 +15,23 @@
         />
 </record>
 
+<!-- Both this module's Operating Unit groups are implied by the single
+     shared Company group from ssi_school_scholarship_deduction: this
+     record is deliberately the ONLY place that writes to it (rather than
+     one write per res_groups/*.xml file) since a second record sharing
+     the same external id is flagged as a duplicate by
+     oca-checks-odoo-module, even though Odoo itself would just apply it
+     as a second write. Loading this file after
+     school_scholarship_deduction.xml (see __manifest__.py data) is
+     what makes both groups already exist by the time this runs. -->
 <record
         id="ssi_school_scholarship_deduction.school_scholarship_deduction_company_group"
         model="res.groups"
     >
     <field
             name="implied_ids"
-            eval="[(4, ref('school_scholarship_deduction_recognition_operating_unit_group'))]"
+            eval="[(4, ref('school_scholarship_deduction_operating_unit_group')),
+                   (4, ref('school_scholarship_deduction_recognition_operating_unit_group'))]"
         />
 </record>
 
