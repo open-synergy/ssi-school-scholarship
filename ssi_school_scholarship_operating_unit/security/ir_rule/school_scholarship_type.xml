@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+<record id="school_scholarship_type_rule_ou" model="ir.rule">
+    <field name="name">school_scholarship_type - operating unit</field>
+    <field name="model_id" ref="ssi_school_scholarship.model_school_scholarship_type" />
+    <field name="domain_force">
+        ['|', ('operating_unit_ids','=',False),
+        ('operating_unit_ids','in',user.operating_unit_ids.ids)]
+    </field>
+    <field name="global" eval="True" />
+    <field name="perm_unlink" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+</record>
+
+</odoo>

@@ -1,0 +1,1173 @@
+options:
+  auto_refresh: true
+scenarios:
+  - name: "Award OU Derive - create derives operating unit from enrollment's school"
+    steps:
+      # ── Shared fixture chain (suffix AWOU1) ──────────────────────
+      - step: "Create partner for the school's own operating unit"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou1_partner"
+        values:
+          name: "Award Derive OU1 Partner"
+
+      - step: "Create the school's own operating unit"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou1"
+        values:
+          name: "Award Derive OU1"
+          code: "AWOU1"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ou1_partner.id"
+
+      - step: "Create grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type1"
+        values:
+          name: "AWOU1 Grade Type"
+          code: "AWOU1GT"
+
+      - step: "Create school with exactly one operating unit"
+        action: "create"
+        model: "school"
+        save_as: "school1"
+        values:
+          name: "AWOU1 School"
+          code: "AWOU1SC"
+          grade_type_id: "REC: grade_type1.id"
+          operating_unit_ids: [[6, 0, ["REC: ou1.id"]]]
+
+      - step: "Create grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade1"
+        values:
+          name: "AWOU1 Grade"
+          code: "AWOU1GR"
+          type_id: "REC: grade_type1.id"
+
+      - step: "Create grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class1"
+        values:
+          name: "AWOU1 Class"
+          code: "AWOU1CL"
+          school_id: "REC: school1.id"
+          grade_id: "REC: grade1.id"
+
+      - step: "Create academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year1"
+        values:
+          name: "AWOU1 Academic Year"
+          code: "AWOU1AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term1"
+        values:
+          name: "AWOU1 Term"
+          code: "AWOU1TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year1.id"
+
+      - step: "Create student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact1"
+        values:
+          name: "AWOU1 Contact"
+
+      - step: "Create student"
+        action: "create"
+        model: "school_student"
+        save_as: "student1"
+        values:
+          name: "AWOU1 Student"
+          code: "AWOU1ST"
+          contact_id: "REC: contact1.id"
+          school_id: "REC: school1.id"
+
+      - step: "Create enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment1"
+        values:
+          academic_year_id: "REC: academic_year1.id"
+          academic_term_id: "REC: academic_term1.id"
+          school_id: "REC: school1.id"
+          grade_id: "REC: grade1.id"
+          grade_class_id: "REC: grade_class1.id"
+          student_id: "REC: student1.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic1"
+        values:
+          name: "AWOU1 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source1"
+        values:
+          name: "AWOU1 Funding Source"
+          code: "AWOU1FS"
+          analytic_account_id: "REC: analytic1.id"
+
+      - step: "Create the product covered by the scope line"
+        action: "create"
+        model: "product.product"
+        save_as: "product1"
+        values:
+          name: "AWOU1 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal1"
+        values:
+          name: "AWOU1 Journal"
+          code: "JAWOU1"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account1"
+        values:
+          name: "AWOU1 Discount Account"
+          code: "AWOU1DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type1"
+        values:
+          name: "AWOU1 Type"
+          code: "AWOU1TY"
+          deduction_journal_id: "REC: journal1.id"
+          discount_account_id: "REC: discount_account1.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program1"
+        values:
+          name: "AWOU1 Program"
+          code: "AWOU1PRG"
+          type_id: "REC: type1.id"
+          school_id: "REC: school1.id"
+          academic_year_id: "REC: academic_year1.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source1.id"]]]
+          deduction_journal_id: "REC: journal1.id"
+          discount_account_id: "REC: discount_account1.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product1.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Create an award without an explicit operating unit"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award1"
+        values:
+          program_id: "REC: program1.id"
+          student_id: "REC: student1.id"
+          enrollment_id: "REC: enrollment1.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+
+      - step: "Assert operating unit was derived from the enrollment's school"
+        action: "assert"
+        target: "award1"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: ou1"
+
+  - name: "Award OU Derive - onchange enrollment_id fills operating_unit_id on the form"
+    steps:
+      # ── Shared fixture chain (suffix AWOU2) ──────────────────────
+      - step: "Create partner for the school's own operating unit"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou2_partner"
+        values:
+          name: "Award Onchange OU2 Partner"
+
+      - step: "Create the school's own operating unit"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou2"
+        values:
+          name: "Award Onchange OU2"
+          code: "AWOU2"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ou2_partner.id"
+
+      - step: "Create grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type2"
+        values:
+          name: "AWOU2 Grade Type"
+          code: "AWOU2GT"
+
+      - step: "Create school with exactly one operating unit"
+        action: "create"
+        model: "school"
+        save_as: "school2"
+        values:
+          name: "AWOU2 School"
+          code: "AWOU2SC"
+          grade_type_id: "REC: grade_type2.id"
+          operating_unit_ids: [[6, 0, ["REC: ou2.id"]]]
+
+      - step: "Create grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade2"
+        values:
+          name: "AWOU2 Grade"
+          code: "AWOU2GR"
+          type_id: "REC: grade_type2.id"
+
+      - step: "Create grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class2"
+        values:
+          name: "AWOU2 Class"
+          code: "AWOU2CL"
+          school_id: "REC: school2.id"
+          grade_id: "REC: grade2.id"
+
+      - step: "Create academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year2"
+        values:
+          name: "AWOU2 Academic Year"
+          code: "AWOU2AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term2"
+        values:
+          name: "AWOU2 Term"
+          code: "AWOU2TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year2.id"
+
+      - step: "Create student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact2"
+        values:
+          name: "AWOU2 Contact"
+
+      - step: "Create student"
+        action: "create"
+        model: "school_student"
+        save_as: "student2"
+        values:
+          name: "AWOU2 Student"
+          code: "AWOU2ST"
+          contact_id: "REC: contact2.id"
+          school_id: "REC: school2.id"
+
+      - step: "Create enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment2"
+        values:
+          academic_year_id: "REC: academic_year2.id"
+          academic_term_id: "REC: academic_term2.id"
+          school_id: "REC: school2.id"
+          grade_id: "REC: grade2.id"
+          grade_class_id: "REC: grade_class2.id"
+          student_id: "REC: student2.id"
+
+      # ── Onchange (form): selecting the Enrollment ripples into the
+      # related, read-only school_id, which this module's onchange
+      # watches -- operating_unit_id follows without ever being set
+      # directly (it is never editable, unlike school_enrollment's
+      # own school_id).
+      - step: "Open a new award form and select the Enrollment"
+        action: "form"
+        model: "school_scholarship_award"
+        as_user: "base.user_admin"
+        save: false
+        values:
+          enrollment_id: "REC: enrollment2"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: ou2"
+
+  - name: "Award OU Derive - write enrollment_id moves the operating unit"
+    steps:
+      # ── Shared fixture chain (suffix AWOU3) ──────────────────────
+      - step: "Create partner for Operating Unit A"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou3_a_partner"
+        values:
+          name: "Award Write Change OU A Partner"
+
+      - step: "Create Operating Unit A"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou3_a"
+        values:
+          name: "Award Write Change OU A"
+          code: "AWOU3A"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ou3_a_partner.id"
+
+      - step: "Create partner for Operating Unit B"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou3_b_partner"
+        values:
+          name: "Award Write Change OU B Partner"
+
+      - step: "Create Operating Unit B"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou3_b"
+        values:
+          name: "Award Write Change OU B"
+          code: "AWOU3B"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ou3_b_partner.id"
+
+      - step: "Create grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type3"
+        values:
+          name: "AWOU3 Grade Type"
+          code: "AWOU3GT"
+
+      - step: "Create School A with Operating Unit A"
+        action: "create"
+        model: "school"
+        save_as: "school3_a"
+        values:
+          name: "AWOU3 School A"
+          code: "AWOU3SCA"
+          grade_type_id: "REC: grade_type3.id"
+          operating_unit_ids: [[6, 0, ["REC: ou3_a.id"]]]
+
+      - step: "Create School B with Operating Unit B"
+        action: "create"
+        model: "school"
+        save_as: "school3_b"
+        values:
+          name: "AWOU3 School B"
+          code: "AWOU3SCB"
+          grade_type_id: "REC: grade_type3.id"
+          operating_unit_ids: [[6, 0, ["REC: ou3_b.id"]]]
+
+      - step: "Create grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade3"
+        values:
+          name: "AWOU3 Grade"
+          code: "AWOU3GR"
+          type_id: "REC: grade_type3.id"
+
+      - step: "Create grade class for School A"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class3_a"
+        values:
+          name: "AWOU3 Class A"
+          code: "AWOU3CLA"
+          school_id: "REC: school3_a.id"
+          grade_id: "REC: grade3.id"
+
+      - step: "Create grade class for School B"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class3_b"
+        values:
+          name: "AWOU3 Class B"
+          code: "AWOU3CLB"
+          school_id: "REC: school3_b.id"
+          grade_id: "REC: grade3.id"
+
+      - step: "Create academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year3"
+        values:
+          name: "AWOU3 Academic Year"
+          code: "AWOU3AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term3"
+        values:
+          name: "AWOU3 Term"
+          code: "AWOU3TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year3.id"
+
+      - step: "Create student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact3"
+        values:
+          name: "AWOU3 Contact"
+
+      - step: "Create student in School A"
+        action: "create"
+        model: "school_student"
+        save_as: "student3"
+        values:
+          name: "AWOU3 Student"
+          code: "AWOU3ST"
+          contact_id: "REC: contact3.id"
+          school_id: "REC: school3_a.id"
+
+      - step: "Create enrollment A (School A)"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment3_a"
+        values:
+          academic_year_id: "REC: academic_year3.id"
+          academic_term_id: "REC: academic_term3.id"
+          school_id: "REC: school3_a.id"
+          grade_id: "REC: grade3.id"
+          grade_class_id: "REC: grade_class3_a.id"
+          student_id: "REC: student3.id"
+
+      - step: "Create enrollment B (School B), same Student"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment3_b"
+        values:
+          academic_year_id: "REC: academic_year3.id"
+          academic_term_id: "REC: academic_term3.id"
+          school_id: "REC: school3_b.id"
+          grade_id: "REC: grade3.id"
+          grade_class_id: "REC: grade_class3_b.id"
+          student_id: "REC: student3.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic3"
+        values:
+          name: "AWOU3 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source3"
+        values:
+          name: "AWOU3 Funding Source"
+          code: "AWOU3FS"
+          analytic_account_id: "REC: analytic3.id"
+
+      - step: "Create the product covered by the scope line"
+        action: "create"
+        model: "product.product"
+        save_as: "product3"
+        values:
+          name: "AWOU3 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal3"
+        values:
+          name: "AWOU3 Journal"
+          code: "JAWOU3"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account3"
+        values:
+          name: "AWOU3 Discount Account"
+          code: "AWOU3DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type3"
+        values:
+          name: "AWOU3 Type"
+          code: "AWOU3TY"
+          deduction_journal_id: "REC: journal3.id"
+          discount_account_id: "REC: discount_account3.id"
+
+      - step:
+          "Create the scholarship program (tied to School A, unrelated to the award's
+          Enrollment school)"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program3"
+        values:
+          name: "AWOU3 Program"
+          code: "AWOU3PRG"
+          type_id: "REC: type3.id"
+          school_id: "REC: school3_a.id"
+          academic_year_id: "REC: academic_year3.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source3.id"]]]
+          deduction_journal_id: "REC: journal3.id"
+          discount_account_id: "REC: discount_account3.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product3.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Create the award for Enrollment A (School A)"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award3"
+        values:
+          program_id: "REC: program3.id"
+          student_id: "REC: student3.id"
+          enrollment_id: "REC: enrollment3_a.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+
+      - step: "Assert operating unit was derived from School A"
+        action: "assert"
+        target: "award3"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: ou3_a"
+
+      - step: "Write enrollment_id to Enrollment B (School B)"
+        action: "write"
+        target: "award3"
+        values:
+          enrollment_id: "REC: enrollment3_b.id"
+
+      - step: "Assert operating unit moved to School B"
+        action: "assert"
+        target: "award3"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: ou3_b"
+
+  - name: "Scholarship Type - two operating units are stored (multiple mixin)"
+    steps:
+      - step: "Create partner for Operating Unit A"
+        action: "create"
+        model: "res.partner"
+        save_as: "ty_ou_a_partner"
+        values:
+          name: "Type OU A Partner"
+
+      - step: "Create Operating Unit A"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ty_ou_a"
+        values:
+          name: "Type OU A"
+          code: "TYOUA"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ty_ou_a_partner.id"
+
+      - step: "Create partner for Operating Unit B"
+        action: "create"
+        model: "res.partner"
+        save_as: "ty_ou_b_partner"
+        values:
+          name: "Type OU B Partner"
+
+      - step: "Create Operating Unit B"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ty_ou_b"
+        values:
+          name: "Type OU B"
+          code: "TYOUB"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ty_ou_b_partner.id"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "ty_journal"
+        values:
+          name: "Type OU Journal"
+          code: "JTYOU"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "ty_account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "ty_discount_account"
+        values:
+          name: "Type OU Discount Account"
+          code: "TYOUDA"
+          user_type_id: "REC: ty_account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type with two Operating Units"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type_two_ou"
+        values:
+          name: "Type Two OU"
+          code: "TYOUTWO"
+          deduction_journal_id: "REC: ty_journal.id"
+          discount_account_id: "REC: ty_discount_account.id"
+          operating_unit_ids: [[6, 0, ["REC: ty_ou_a.id", "REC: ty_ou_b.id"]]]
+
+      - step: "Assert both Operating Units were stored"
+        action: "assert"
+        target: "type_two_ou"
+        asserts:
+          operating_unit_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ty_ou_a"
+              - "REC: ty_ou_b"
+
+  - name: "Scholarship Funding Source - two operating units are stored (multiple mixin)"
+    steps:
+      - step: "Create partner for Operating Unit A"
+        action: "create"
+        model: "res.partner"
+        save_as: "fs_ou_a_partner"
+        values:
+          name: "Funding Source OU A Partner"
+
+      - step: "Create Operating Unit A"
+        action: "create"
+        model: "operating.unit"
+        save_as: "fs_ou_a"
+        values:
+          name: "Funding Source OU A"
+          code: "FSOUA"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: fs_ou_a_partner.id"
+
+      - step: "Create partner for Operating Unit B"
+        action: "create"
+        model: "res.partner"
+        save_as: "fs_ou_b_partner"
+        values:
+          name: "Funding Source OU B Partner"
+
+      - step: "Create Operating Unit B"
+        action: "create"
+        model: "operating.unit"
+        save_as: "fs_ou_b"
+        values:
+          name: "Funding Source OU B"
+          code: "FSOUB"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: fs_ou_b_partner.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "fs_analytic"
+        values:
+          name: "Funding Source OU Analytic"
+
+      - step: "Create the funding source with two Operating Units"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source_two_ou"
+        values:
+          name: "Funding Source Two OU"
+          code: "FSOUTWO"
+          analytic_account_id: "REC: fs_analytic.id"
+          operating_unit_ids: [[6, 0, ["REC: fs_ou_a.id", "REC: fs_ou_b.id"]]]
+
+      - step: "Assert both Operating Units were stored"
+        action: "assert"
+        target: "funding_source_two_ou"
+        asserts:
+          operating_unit_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: fs_ou_a"
+              - "REC: fs_ou_b"
+
+  - name: "Scholarship Program - two operating units are stored (multiple mixin)"
+    steps:
+      - step: "Create partner for Operating Unit A"
+        action: "create"
+        model: "res.partner"
+        save_as: "pg_ou_a_partner"
+        values:
+          name: "Program OU A Partner"
+
+      - step: "Create Operating Unit A"
+        action: "create"
+        model: "operating.unit"
+        save_as: "pg_ou_a"
+        values:
+          name: "Program OU A"
+          code: "PGOUA"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: pg_ou_a_partner.id"
+
+      - step: "Create partner for Operating Unit B"
+        action: "create"
+        model: "res.partner"
+        save_as: "pg_ou_b_partner"
+        values:
+          name: "Program OU B Partner"
+
+      - step: "Create Operating Unit B"
+        action: "create"
+        model: "operating.unit"
+        save_as: "pg_ou_b"
+        values:
+          name: "Program OU B"
+          code: "PGOUB"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: pg_ou_b_partner.id"
+
+      - step: "Create grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "pg_grade_type"
+        values:
+          name: "Program OU Grade Type"
+          code: "PGOUGT"
+
+      - step: "Create school"
+        action: "create"
+        model: "school"
+        save_as: "pg_school"
+        values:
+          name: "Program OU School"
+          code: "PGOUSC"
+          grade_type_id: "REC: pg_grade_type.id"
+
+      - step: "Create academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "pg_academic_year"
+        values:
+          name: "Program OU Academic Year"
+          code: "PGOUAY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "pg_analytic"
+        values:
+          name: "Program OU Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "pg_funding_source"
+        values:
+          name: "Program OU Funding Source"
+          code: "PGOUFS"
+          analytic_account_id: "REC: pg_analytic.id"
+
+      - step: "Create the product covered by the scope line"
+        action: "create"
+        model: "product.product"
+        save_as: "pg_product"
+        values:
+          name: "Program OU Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship program"
+        action: "create"
+        model: "account.journal"
+        save_as: "pg_journal"
+        values:
+          name: "Program OU Journal"
+          code: "JPGOU"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "pg_account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "pg_discount_account"
+        values:
+          name: "Program OU Discount Account"
+          code: "PGOUDA"
+          user_type_id: "REC: pg_account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "pg_type"
+        values:
+          name: "Program OU Type"
+          code: "PGOUTY"
+          deduction_journal_id: "REC: pg_journal.id"
+          discount_account_id: "REC: pg_discount_account.id"
+
+      - step: "Create the scholarship program with two Operating Units"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program_two_ou"
+        values:
+          name: "Program Two OU"
+          code: "PGOUTWO"
+          type_id: "REC: pg_type.id"
+          school_id: "REC: pg_school.id"
+          academic_year_id: "REC: pg_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: pg_funding_source.id"]]]
+          deduction_journal_id: "REC: pg_journal.id"
+          discount_account_id: "REC: pg_discount_account.id"
+          operating_unit_ids: [[6, 0, ["REC: pg_ou_a.id", "REC: pg_ou_b.id"]]]
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: pg_product.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Assert both Operating Units were stored"
+        action: "assert"
+        target: "program_two_ou"
+        asserts:
+          operating_unit_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: pg_ou_a"
+              - "REC: pg_ou_b"
+
+  - name: "Award OU Rule - user without matching operating unit access is denied"
+    steps:
+      # ── Shared fixture chain (suffix AWOU7) ──────────────────────
+      - step: "Create partner for the award's own operating unit"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou7_main_partner"
+        values:
+          name: "Award Rule OU7 Main Partner"
+
+      - step: "Create the award's own operating unit"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou7_main"
+        values:
+          name: "Award Rule OU7 Main"
+          code: "AWOU7M"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ou7_main_partner.id"
+
+      - step: "Create partner for the restricted user's own operating unit"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou7_restricted_partner"
+        values:
+          name: "Award Rule OU7 Restricted Partner"
+
+      - step: "Create the restricted user's own operating unit"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou7_restricted"
+        values:
+          name: "Award Rule OU7 Restricted"
+          code: "AWOU7R"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ou7_restricted_partner.id"
+
+      - step: "Create grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type7"
+        values:
+          name: "AWOU7 Grade Type"
+          code: "AWOU7GT"
+
+      - step: "Create school with exactly one operating unit (the main one)"
+        action: "create"
+        model: "school"
+        save_as: "school7"
+        values:
+          name: "AWOU7 School"
+          code: "AWOU7SC"
+          grade_type_id: "REC: grade_type7.id"
+          operating_unit_ids: [[6, 0, ["REC: ou7_main.id"]]]
+
+      - step: "Create grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade7"
+        values:
+          name: "AWOU7 Grade"
+          code: "AWOU7GR"
+          type_id: "REC: grade_type7.id"
+
+      - step: "Create grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class7"
+        values:
+          name: "AWOU7 Class"
+          code: "AWOU7CL"
+          school_id: "REC: school7.id"
+          grade_id: "REC: grade7.id"
+
+      - step: "Create academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year7"
+        values:
+          name: "AWOU7 Academic Year"
+          code: "AWOU7AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term7"
+        values:
+          name: "AWOU7 Term"
+          code: "AWOU7TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year7.id"
+
+      - step: "Create student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact7"
+        values:
+          name: "AWOU7 Contact"
+
+      - step: "Create student"
+        action: "create"
+        model: "school_student"
+        save_as: "student7"
+        values:
+          name: "AWOU7 Student"
+          code: "AWOU7ST"
+          contact_id: "REC: contact7.id"
+          school_id: "REC: school7.id"
+
+      - step: "Create enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment7"
+        values:
+          academic_year_id: "REC: academic_year7.id"
+          academic_term_id: "REC: academic_term7.id"
+          school_id: "REC: school7.id"
+          grade_id: "REC: grade7.id"
+          grade_class_id: "REC: grade_class7.id"
+          student_id: "REC: student7.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic7"
+        values:
+          name: "AWOU7 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source7"
+        values:
+          name: "AWOU7 Funding Source"
+          code: "AWOU7FS"
+          analytic_account_id: "REC: analytic7.id"
+
+      - step: "Create the product covered by the scope line"
+        action: "create"
+        model: "product.product"
+        save_as: "product7"
+        values:
+          name: "AWOU7 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal7"
+        values:
+          name: "AWOU7 Journal"
+          code: "JAWOU7"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income7"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account7"
+        values:
+          name: "AWOU7 Discount Account"
+          code: "AWOU7DA"
+          user_type_id: "REC: account_type_income7.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type7"
+        values:
+          name: "AWOU7 Type"
+          code: "AWOU7TY"
+          deduction_journal_id: "REC: journal7.id"
+          discount_account_id: "REC: discount_account7.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program7"
+        values:
+          name: "AWOU7 Program"
+          code: "AWOU7PRG"
+          type_id: "REC: type7.id"
+          school_id: "REC: school7.id"
+          academic_year_id: "REC: academic_year7.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source7.id"]]]
+          deduction_journal_id: "REC: journal7.id"
+          discount_account_id: "REC: discount_account7.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product7.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      # ``user_id`` is set explicitly to admin (not the restricted
+      # user created below) so the rejection asserted further down is
+      # unambiguously caused by the Operating Unit record rule, not by
+      # the built-in ownership record rule
+      # (``school_scholarship_award_internal_user_rule``, which OR's
+      # its own ``user_id = user.id`` domain into the same access
+      # check).
+      - step: "Create the award, owned by admin, in the main operating unit"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award7"
+        values:
+          program_id: "REC: program7.id"
+          student_id: "REC: student7.id"
+          enrollment_id: "REC: enrollment7.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          user_id: "REF: base.user_admin"
+
+      - step: "Assert the award's operating unit is the main one"
+        action: "assert"
+        target: "award7"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: ou7_main"
+
+      - step: "Create a user restricted to the OTHER operating unit"
+        action: "create"
+        model: "res.users"
+        save_as: "restricted_user7"
+        values:
+          name: "AWOU7 Restricted User"
+          login: "awou7_restricted_user@example.com"
+          groups_id:
+            - - 6
+              - 0
+              - - "REF: base.group_user"
+                - "REF: ssi_school_scholarship.school_scholarship_award_user_group"
+                - "REF:
+                  ssi_school_scholarship_operating_unit.school_scholarship_award_operating_unit_group"
+          assigned_operating_unit_ids:
+            - - 6
+              - 0
+              - - "REC: ou7_restricted.id"
+
+      - step: "Restricted user cannot read the award"
+        action: "call"
+        target: "award7"
+        method: "read"
+        args:
+          - - "date"
+        as_user: "restricted_user7"
+        expect_error:
+          type: "AccessError"
+
+      - step: "Restricted user cannot write the award"
+        action: "write"
+        target: "award7"
+        as_user: "restricted_user7"
+        expect_error:
+          type: "AccessError"
+        values:
+          date: 2026-08-10
