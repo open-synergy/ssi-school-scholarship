@@ -1,0 +1,1123 @@
+scenarios:
+  - name: "Disbursement - Create, Compute, Workflow, And Cancel"
+    steps:
+      # ── Shared fixture chain (suffix B1) ─────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "b1_grade_type"
+        values:
+          name: "B1 Grade Type"
+          code: "B1GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "b1_school"
+        values:
+          name: "B1 School"
+          code: "B1SC"
+          grade_type_id: "REC: b1_grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "b1_academic_year"
+        values:
+          name: "B1 Academic Year"
+          code: "B1AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "b1_academic_term"
+        values:
+          name: "B1 Term"
+          code: "B1TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: b1_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "b1_grade"
+        values:
+          name: "B1 Grade"
+          code: "B1GR"
+          type_id: "REC: b1_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "b1_grade_class"
+        values:
+          name: "B1 Class"
+          code: "B1CL"
+          school_id: "REC: b1_school.id"
+          grade_id: "REC: b1_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "b1_contact"
+        values:
+          name: "B1 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "b1_student"
+        values:
+          name: "B1 Student"
+          code: "B1ST"
+          contact_id: "REC: b1_contact.id"
+          school_id: "REC: b1_school.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "b1_enrollment"
+        values:
+          academic_year_id: "REC: b1_academic_year.id"
+          academic_term_id: "REC: b1_academic_term.id"
+          school_id: "REC: b1_school.id"
+          grade_id: "REC: b1_grade.id"
+          grade_class_id: "REC: b1_grade_class.id"
+          student_id: "REC: b1_student.id"
+
+      - step: "Create the analytic account for funding source A"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "b1_analytic_a"
+        values:
+          name: "B1 Analytic A"
+
+      - step: "Create the analytic account for funding source B"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "b1_analytic_b"
+        values:
+          name: "B1 Analytic B"
+
+      - step: "Create funding source A"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "b1_funding_source_a"
+        values:
+          name: "B1 Funding Source A"
+          code: "B1FSA"
+          analytic_account_id: "REC: b1_analytic_a.id"
+
+      - step: "Create funding source B"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "b1_funding_source_b"
+        values:
+          name: "B1 Funding Source B"
+          code: "B1FSB"
+          analytic_account_id: "REC: b1_analytic_b.id"
+
+      - step: "Create the product covered by the benefit lines"
+        action: "create"
+        model: "product.product"
+        save_as: "b1_product"
+        values:
+          name: "B1 Product"
+          type: "service"
+
+      - step: "Create the cash journal used for disbursement"
+        action: "create"
+        model: "account.journal"
+        save_as: "b1_journal"
+        values:
+          name: "B1 Cash Journal"
+          code: "JB1"
+          type: "cash"
+
+      - step:
+          "Create a dummy sale journal (school_scholarship_type requires a Deduction
+          Journal even though this module never posts a deduction)"
+        action: "create"
+        model: "account.journal"
+        save_as: "b1_dummy_journal"
+        values:
+          name: "B1 Dummy Deduction Journal"
+          code: "JB1D"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Get the account.account.type Expenses reference"
+        action: "ref"
+        xml_id: "account.data_account_type_expenses"
+        save_as: "account_type_expense"
+
+      - step: "Get the account.account.type Payable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_payable"
+        save_as: "account_type_payable"
+
+      - step: "Create the payable account credited by the disbursement"
+        action: "create"
+        model: "account.account"
+        save_as: "b1_payable_account"
+        values:
+          name: "B1 Payable Account"
+          code: "B1PA"
+          user_type_id: "REC: account_type_payable.id"
+          reconcile: true
+
+      - step: "Create the expense account the disbursement lines post to"
+        action: "create"
+        model: "account.account"
+        save_as: "b1_expense_account"
+        values:
+          name: "B1 Expense Account"
+          code: "B1EA"
+          user_type_id: "REC: account_type_expense.id"
+          reconcile: false
+
+      - step:
+          "Create a dummy discount account (school_scholarship_type requires one even
+          though this module never posts a deduction)"
+        action: "create"
+        model: "account.account"
+        save_as: "b1_discount_account"
+        values:
+          name: "B1 Discount Account"
+          code: "B1DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "b1_type"
+        values:
+          name: "B1 Type"
+          code: "B1TY"
+          deduction_journal_id: "REC: b1_dummy_journal.id"
+          discount_account_id: "REC: b1_discount_account.id"
+          disbursement_journal_id: "REC: b1_journal.id"
+          payable_account_id: "REC: b1_payable_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "b1_program"
+        values:
+          name: "B1 Program"
+          code: "B1PRG"
+          type_id: "REC: b1_type.id"
+          school_id: "REC: b1_school.id"
+          academic_year_id: "REC: b1_academic_year.id"
+          funding_source_ids:
+            [[6, 0, ["REC: b1_funding_source_a.id", "REC: b1_funding_source_b.id"]]]
+          deduction_journal_id: "REC: b1_dummy_journal.id"
+          discount_account_id: "REC: b1_discount_account.id"
+          disbursement_journal_id: "REC: b1_journal.id"
+          payable_account_id: "REC: b1_payable_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: b1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 100000.0
+
+      # ── Positive (transition state / accounting entry / schedule
+      # realized / cancel reversal): 500000 disbursement confirmed,
+      # approved, then cancelled ───────────────────────────────────
+      - step: "Create the award backing the single-line disbursement"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "b1_award_single"
+        values:
+          program_id: "REC: b1_program.id"
+          student_id: "REC: b1_student.id"
+          enrollment_id: "REC: b1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          expense_account_id: "REC: b1_expense_account.id"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "B1 Single Benefit"
+                product_id: "REC: b1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 500000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: b1_funding_source_a.id"
+                percentage: 100.0
+
+      - step: "Find the single award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: b1_award_single.id"]]
+        limit: 1
+        save_as: "b1_benefit_single"
+
+      - step: "Find the single award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: b1_award_single.id"]]
+        limit: 1
+        save_as: "b1_funding_single"
+
+      - step: "Create the Schedule line realizing the single Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "b1_schedule_single"
+        values:
+          benefit_id: "REC: b1_benefit_single.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Assert the Schedule line's Amount Planned matches the fixed amount"
+        action: "assert"
+        target: "b1_schedule_single"
+        asserts:
+          amount_planned:
+            type: "value"
+            expected: 500000.0
+
+      - step: "Create the single-line disbursement document"
+        action: "create"
+        model: "school_scholarship_disbursement"
+        save_as: "b1_disbursement_single"
+        values:
+          award_id: "REC: b1_award_single.id"
+          date: 2026-08-05
+          date_due: 2026-08-10
+          journal_id: "REC: b1_journal.id"
+          payable_account_id: "REC: b1_payable_account.id"
+          payment_method: "cash"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: b1_schedule_single.id"
+                funding_id: "REC: b1_funding_single.id"
+                final_account_id: "REC: b1_expense_account.id"
+                name: "B1 Single Disbursement Line"
+                uom_quantity: 1
+                price_unit: 500000.0
+
+      - step: "Assert the single disbursement's computed amounts before opening"
+        action: "assert"
+        target: "b1_disbursement_single"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          amount_total:
+            type: "value"
+            expected: 500000.0
+
+      - step: "Confirm the single disbursement as admin"
+        action: "call"
+        target: "b1_disbursement_single"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step:
+          "Assert intermediate state before approving (forces a refresh so approve_ok is
+          not read from the stale cache filled by action_confirm -- T-04)"
+        action: "assert"
+        target: "b1_disbursement_single"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the single disbursement, opening it and posting its entry"
+        action: "call"
+        target: "b1_disbursement_single"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          move_id:
+            type: "value"
+            operator: "is_truthy"
+          payable_move_line_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Assert Amount Residual equals Amount Total before any payment"
+        action: "assert"
+        target: "b1_disbursement_single"
+        refresh: true
+        asserts:
+          amount_total:
+            type: "value"
+            expected: 500000.0
+          amount_residual:
+            type: "value"
+            expected: 500000.0
+          amount_paid:
+            type: "value"
+            expected: 0.0
+
+      - step: "Find the debit journal item on the expense account"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["move_id", "=", "REC: b1_disbursement_single.move_id.id"],
+            ["account_id", "=", "REC: b1_expense_account.id"],
+          ]
+        limit: 1
+        save_as: "b1_debit_ml"
+
+      - step: "Assert the expense account debit line"
+        action: "assert"
+        target: "b1_debit_ml"
+        asserts:
+          debit:
+            type: "value"
+            expected: 500000.0
+          credit:
+            type: "value"
+            expected: 0.0
+
+      - step: "Find the credit journal item on the payable account"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["move_id", "=", "REC: b1_disbursement_single.move_id.id"],
+            ["account_id", "=", "REC: b1_payable_account.id"],
+          ]
+        limit: 1
+        save_as: "b1_credit_ml"
+
+      - step: "Assert the payable account credit line"
+        action: "assert"
+        target: "b1_credit_ml"
+        asserts:
+          credit:
+            type: "value"
+            expected: 500000.0
+          debit:
+            type: "value"
+            expected: 0.0
+
+      - step: "Assert the realized Schedule line changed state"
+        action: "assert"
+        target: "b1_schedule_single"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "realized"
+
+      - step: "Create the cancellation reason"
+        action: "create"
+        model: "base.cancel_reason"
+        save_as: "b1_reason"
+        values:
+          name: "B1 Cancel Reason"
+          code: "B1CR"
+
+      - step: "Cancel the single disbursement via the wizard"
+        action: "wizard"
+        model: "base.select_cancel_reason"
+        target: "b1_disbursement_single"
+        as_user: "base.user_admin"
+        values:
+          cancel_reason_id: "REC: b1_reason.id"
+        method: "action_confirm"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Assert cancelling deleted the accounting entry"
+        action: "assert"
+        target: "b1_disbursement_single"
+        refresh: true
+        asserts:
+          move_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Assert cancelling reset the Schedule line back to scheduled"
+        action: "assert"
+        target: "b1_schedule_single"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "scheduled"
+
+      # ── Positive (compute, empty condition): amount_total is zero
+      # without any Line ──────────────────────────────────────────────
+      - step: "Create a disbursement with no Lines yet"
+        action: "create"
+        model: "school_scholarship_disbursement"
+        save_as: "b1_disbursement_empty"
+        values:
+          award_id: "REC: b1_award_single.id"
+          date: 2026-08-05
+          date_due: 2026-08-10
+          journal_id: "REC: b1_journal.id"
+          payable_account_id: "REC: b1_payable_account.id"
+          payment_method: "cash"
+
+      - step: "Assert Amount Total is zero without any Line"
+        action: "assert"
+        target: "b1_disbursement_empty"
+        asserts:
+          amount_total:
+            type: "value"
+            expected: 0.0
+
+      # ── Positive (compute): amount_total sums two lines; residual
+      # equals total and paid is zero once opened ─────────────────────
+      - step: "Create the award backing the two-line disbursement"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "b1_award_two"
+        values:
+          program_id: "REC: b1_program.id"
+          student_id: "REC: b1_student.id"
+          enrollment_id: "REC: b1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          expense_account_id: "REC: b1_expense_account.id"
+          # Set explicitly -- onchange_disbursement_journal_id /
+          # onchange_payable_account_id (ssi_school_scholarship) only
+          # fire via the Form API, never on a plain create() call, and
+          # the "select Award" onchange form test further below reads
+          # these two fields straight off this Award.
+          disbursement_journal_id: "REC: b1_journal.id"
+          payable_account_id: "REC: b1_payable_account.id"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "B1 Two-Line Benefit A"
+                product_id: "REC: b1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 300000.0
+                periodicity: "one_time"
+            - - 0
+              - 0
+              - name: "B1 Two-Line Benefit B"
+                product_id: "REC: b1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 200000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: b1_funding_source_a.id"
+                percentage: 100.0
+
+      - step: "Find the two-line award's first Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain:
+          [
+            ["award_id", "=", "REC: b1_award_two.id"],
+            ["name", "=", "B1 Two-Line Benefit A"],
+          ]
+        limit: 1
+        save_as: "b1_benefit_two_a"
+
+      - step: "Find the two-line award's second Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain:
+          [
+            ["award_id", "=", "REC: b1_award_two.id"],
+            ["name", "=", "B1 Two-Line Benefit B"],
+          ]
+        limit: 1
+        save_as: "b1_benefit_two_b"
+
+      - step: "Find the two-line award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: b1_award_two.id"]]
+        limit: 1
+        save_as: "b1_funding_two"
+
+      - step: "Create the Schedule line for the first Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "b1_schedule_two_a"
+        values:
+          benefit_id: "REC: b1_benefit_two_a.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the Schedule line for the second Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "b1_schedule_two_b"
+        values:
+          benefit_id: "REC: b1_benefit_two_b.id"
+          date: 2026-09-01
+          state: "scheduled"
+
+      - step: "Create the two-line disbursement document"
+        action: "create"
+        model: "school_scholarship_disbursement"
+        save_as: "b1_disbursement_two"
+        values:
+          award_id: "REC: b1_award_two.id"
+          date: 2026-08-05
+          date_due: 2026-08-10
+          journal_id: "REC: b1_journal.id"
+          payable_account_id: "REC: b1_payable_account.id"
+          payment_method: "cash"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: b1_schedule_two_a.id"
+                funding_id: "REC: b1_funding_two.id"
+                final_account_id: "REC: b1_expense_account.id"
+                name: "B1 Two-Line Disbursement Line A"
+                uom_quantity: 1
+                price_unit: 300000.0
+            - - 0
+              - 0
+              - schedule_id: "REC: b1_schedule_two_b.id"
+                funding_id: "REC: b1_funding_two.id"
+                final_account_id: "REC: b1_expense_account.id"
+                name: "B1 Two-Line Disbursement Line B"
+                uom_quantity: 1
+                price_unit: 200000.0
+
+      - step: "Assert Amount Total sums both lines"
+        action: "assert"
+        target: "b1_disbursement_two"
+        asserts:
+          amount_total:
+            type: "value"
+            expected: 500000.0
+
+      - step: "Confirm the two-line disbursement as admin"
+        action: "call"
+        target: "b1_disbursement_two"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step:
+          "Assert intermediate state before approving the two-line disbursement (T-04)"
+        action: "assert"
+        target: "b1_disbursement_two"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the two-line disbursement, opening it"
+        action: "call"
+        target: "b1_disbursement_two"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert the two-line disbursement's residual and paid amounts"
+        action: "assert"
+        target: "b1_disbursement_two"
+        refresh: true
+        asserts:
+          amount_total:
+            type: "value"
+            expected: 500000.0
+          amount_residual:
+            type: "value"
+            expected: 500000.0
+          amount_paid:
+            type: "value"
+            expected: 0.0
+
+      # ── Positive: two-source funding split produces two lines with
+      # different Analytic Accounts ──────────────────────────────────
+      - step: "Create the award backing the multi-source disbursement"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "b1_award_multi"
+        values:
+          program_id: "REC: b1_program.id"
+          student_id: "REC: b1_student.id"
+          enrollment_id: "REC: b1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          expense_account_id: "REC: b1_expense_account.id"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "B1 Multi-Source Benefit"
+                product_id: "REC: b1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: b1_funding_source_a.id"
+                percentage: 60.0
+            - - 0
+              - 0
+              - funding_source_id: "REC: b1_funding_source_b.id"
+                percentage: 40.0
+
+      - step: "Find the multi-source award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: b1_award_multi.id"]]
+        limit: 1
+        save_as: "b1_benefit_multi"
+
+      - step: "Find the multi-source award's 60% Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain:
+          [
+            ["award_id", "=", "REC: b1_award_multi.id"],
+            ["funding_source_id", "=", "REC: b1_funding_source_a.id"],
+          ]
+        limit: 1
+        save_as: "b1_funding_multi_a"
+
+      - step: "Find the multi-source award's 40% Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain:
+          [
+            ["award_id", "=", "REC: b1_award_multi.id"],
+            ["funding_source_id", "=", "REC: b1_funding_source_b.id"],
+          ]
+        limit: 1
+        save_as: "b1_funding_multi_b"
+
+      - step: "Create the Schedule line realizing the multi-source Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "b1_schedule_multi"
+        values:
+          benefit_id: "REC: b1_benefit_multi.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the multi-source disbursement with one line per funding source"
+        action: "create"
+        model: "school_scholarship_disbursement"
+        save_as: "b1_disbursement_multi"
+        values:
+          award_id: "REC: b1_award_multi.id"
+          date: 2026-08-05
+          date_due: 2026-08-10
+          journal_id: "REC: b1_journal.id"
+          payable_account_id: "REC: b1_payable_account.id"
+          payment_method: "cash"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: b1_schedule_multi.id"
+                funding_id: "REC: b1_funding_multi_a.id"
+                final_account_id: "REC: b1_expense_account.id"
+                name: "B1 Multi-Source Disbursement Line A"
+                uom_quantity: 1
+                price_unit: 240000.0
+            - - 0
+              - 0
+              - schedule_id: "REC: b1_schedule_multi.id"
+                funding_id: "REC: b1_funding_multi_b.id"
+                final_account_id: "REC: b1_expense_account.id"
+                name: "B1 Multi-Source Disbursement Line B"
+                uom_quantity: 1
+                price_unit: 160000.0
+
+      - step: "Find the multi-source disbursement's line drawing from source A"
+        action: "search"
+        model: "school_scholarship_disbursement_line"
+        domain:
+          [
+            ["disbursement_id", "=", "REC: b1_disbursement_multi.id"],
+            ["funding_id", "=", "REC: b1_funding_multi_a.id"],
+          ]
+        limit: 1
+        save_as: "b1_line_multi_a"
+
+      - step: "Find the multi-source disbursement's line drawing from source B"
+        action: "search"
+        model: "school_scholarship_disbursement_line"
+        domain:
+          [
+            ["disbursement_id", "=", "REC: b1_disbursement_multi.id"],
+            ["funding_id", "=", "REC: b1_funding_multi_b.id"],
+          ]
+        limit: 1
+        save_as: "b1_line_multi_b"
+
+      - step: "Assert the source-A line's amount and Analytic Account"
+        action: "assert"
+        target: "b1_line_multi_a"
+        asserts:
+          price_subtotal:
+            type: "value"
+            expected: 240000.0
+          analytic_account_id:
+            type: "m2o"
+            expected: "REC: b1_analytic_a"
+
+      - step: "Assert the source-B line's amount and different Analytic Account"
+        action: "assert"
+        target: "b1_line_multi_b"
+        asserts:
+          price_subtotal:
+            type: "value"
+            expected: 160000.0
+          analytic_account_id:
+            type: "m2o"
+            expected: "REC: b1_analytic_b"
+
+      # ── Onchange (form): selecting Schedule fills Description,
+      # Product, and Final Account on a Disbursement line -- b1_award_two
+      # carries an Expense Account, so Final Account resolves to it,
+      # not falsy -- then adding Funding fills Price Unit ────────────
+      - step: "Open a new Disbursement line form and select the Schedule"
+        action: "form"
+        model: "school_scholarship_disbursement_line"
+        save: false
+        ops:
+          - set:
+              schedule_id: "REC: b1_schedule_two_a"
+          - assert:
+              name:
+                type: "value"
+                expected: "B1 Two-Line Benefit A"
+              product_id:
+                type: "m2o"
+                expected: "REC: b1_product"
+              final_account_id:
+                type: "m2o"
+                expected: "REC: b1_expense_account"
+          - set:
+              funding_id: "REC: b1_funding_two"
+          - assert:
+              price_unit:
+                type: "value"
+                expected: 300000.0
+
+      # ── Onchange (form): selecting Award defaults Journal and
+      # Payable Account from the Award's own program configuration ──
+      - step: "Open a new Disbursement form and select the Award"
+        action: "form"
+        model: "school_scholarship_disbursement"
+        save: false
+        ops:
+          - set:
+              award_id: "REC: b1_award_two"
+          - assert:
+              journal_id:
+                type: "m2o"
+                expected: "REC: b1_journal"
+              payable_account_id:
+                type: "m2o"
+                expected: "REC: b1_payable_account"
+
+  - name: "Disbursement - Negative Paths"
+    steps:
+      # ── Shared fixture chain (suffix B2) ─────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "b2_grade_type"
+        values:
+          name: "B2 Grade Type"
+          code: "B2GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "b2_school"
+        values:
+          name: "B2 School"
+          code: "B2SC"
+          grade_type_id: "REC: b2_grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "b2_academic_year"
+        values:
+          name: "B2 Academic Year"
+          code: "B2AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "b2_academic_term"
+        values:
+          name: "B2 Term"
+          code: "B2TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: b2_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "b2_grade"
+        values:
+          name: "B2 Grade"
+          code: "B2GR"
+          type_id: "REC: b2_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "b2_grade_class"
+        values:
+          name: "B2 Class"
+          code: "B2CL"
+          school_id: "REC: b2_school.id"
+          grade_id: "REC: b2_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "b2_contact"
+        values:
+          name: "B2 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "b2_student"
+        values:
+          name: "B2 Student"
+          code: "B2ST"
+          contact_id: "REC: b2_contact.id"
+          school_id: "REC: b2_school.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "b2_enrollment"
+        values:
+          academic_year_id: "REC: b2_academic_year.id"
+          academic_term_id: "REC: b2_academic_term.id"
+          school_id: "REC: b2_school.id"
+          grade_id: "REC: b2_grade.id"
+          grade_class_id: "REC: b2_grade_class.id"
+          student_id: "REC: b2_student.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "b2_analytic"
+        values:
+          name: "B2 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "b2_funding_source"
+        values:
+          name: "B2 Funding Source"
+          code: "B2FS"
+          analytic_account_id: "REC: b2_analytic.id"
+
+      - step: "Create the product covered by the program's Scope line"
+        action: "create"
+        model: "product.product"
+        save_as: "b2_product"
+        values:
+          name: "B2 Product"
+          type: "service"
+
+      - step: "Create the cash journal used for disbursement"
+        action: "create"
+        model: "account.journal"
+        save_as: "b2_journal"
+        values:
+          name: "B2 Cash Journal"
+          code: "JB2"
+          type: "cash"
+
+      - step: "Create a dummy sale journal for the type's required field"
+        action: "create"
+        model: "account.journal"
+        save_as: "b2_dummy_journal"
+        values:
+          name: "B2 Dummy Deduction Journal"
+          code: "JB2D"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Get the account.account.type Payable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_payable"
+        save_as: "account_type_payable"
+
+      - step: "Create the valid, reconcilable payable account"
+        action: "create"
+        model: "account.account"
+        save_as: "b2_payable_account"
+        values:
+          name: "B2 Payable Account"
+          code: "B2PA"
+          user_type_id: "REC: account_type_payable.id"
+          reconcile: true
+
+      # Odoo core itself forbids `reconcile: false` on any account
+      # whose type is receivable/payable ("You cannot have a
+      # receivable/payable account that is not reconcilable"), so a
+      # non-reconcilable Payable Account can only be reached by
+      # pointing this document's own `payable_account_id` -- a plain,
+      # undomained Many2one to `account.account` -- at an Income-type
+      # account instead, exactly like
+      # `school_scholarship_deduction`'s own equivalent negative test.
+      - step: "Create a non-reconcilable account of a different type"
+        action: "create"
+        model: "account.account"
+        save_as: "b2_no_reconcile_account"
+        values:
+          name: "B2 Non-Reconcilable Account"
+          code: "B2NRA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create a dummy discount account for the type's required field"
+        action: "create"
+        model: "account.account"
+        save_as: "b2_discount_account"
+        values:
+          name: "B2 Discount Account"
+          code: "B2DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "b2_type"
+        values:
+          name: "B2 Type"
+          code: "B2TY"
+          deduction_journal_id: "REC: b2_dummy_journal.id"
+          discount_account_id: "REC: b2_discount_account.id"
+          disbursement_journal_id: "REC: b2_journal.id"
+          payable_account_id: "REC: b2_payable_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "b2_program"
+        values:
+          name: "B2 Program"
+          code: "B2PRG"
+          type_id: "REC: b2_type.id"
+          school_id: "REC: b2_school.id"
+          academic_year_id: "REC: b2_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: b2_funding_source.id"]]]
+          deduction_journal_id: "REC: b2_dummy_journal.id"
+          discount_account_id: "REC: b2_discount_account.id"
+          disbursement_journal_id: "REC: b2_journal.id"
+          payable_account_id: "REC: b2_payable_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: b2_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 100000.0
+
+      - step: "Create the award backing the negative-path fixtures"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "b2_award"
+        values:
+          program_id: "REC: b2_program.id"
+          student_id: "REC: b2_student.id"
+          enrollment_id: "REC: b2_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+
+      # ── Negative: Payable Account does not allow reconciliation ────
+      - step: "Reject a disbursement whose Payable Account cannot reconcile"
+        action: "create"
+        model: "school_scholarship_disbursement"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "reconciliation"
+        values:
+          award_id: "REC: b2_award.id"
+          journal_id: "REC: b2_journal.id"
+          payable_account_id: "REC: b2_no_reconcile_account.id"
+          payment_method: "cash"
+          date: 2026-08-05
+          date_due: 2026-08-10
+
+      # ── Negative: Bank Transfer without a Bank Account ──────────────
+      - step: "Reject a Bank Transfer disbursement without a Bank Account"
+        action: "create"
+        model: "school_scholarship_disbursement"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "Bank Account"
+        values:
+          award_id: "REC: b2_award.id"
+          journal_id: "REC: b2_journal.id"
+          payable_account_id: "REC: b2_payable_account.id"
+          payment_method: "bank_transfer"
+          date: 2026-08-05
+          date_due: 2026-08-10
+
+      # ── Negative: Date Due earlier than Date ─────────────────────────
+      - step: "Reject a disbursement whose Date Due precedes its Date"
+        action: "create"
+        model: "school_scholarship_disbursement"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "earlier than Date"
+        values:
+          award_id: "REC: b2_award.id"
+          journal_id: "REC: b2_journal.id"
+          payable_account_id: "REC: b2_payable_account.id"
+          payment_method: "cash"
+          date: 2026-08-10
+          date_due: 2026-08-05
