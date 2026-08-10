@@ -65,6 +65,11 @@ msgid "Account"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_form
+msgid "Accounting"
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_benefit__account_id
 msgid ""
 "Accounting account this line posts to when a later document realizes it: the"
@@ -813,7 +818,6 @@ msgid "Deduction"
 msgstr ""
 
 #. module: ssi_school_scholarship
-#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_program_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_type_view_form
 msgid "Deduction Configuration"
@@ -853,7 +857,6 @@ msgid "Deferred Recognition"
 msgstr ""
 
 #. module: ssi_school_scholarship
-#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_program_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_type_view_form
 msgid "Deferred Recognition Configuration"
@@ -879,7 +882,6 @@ msgid "Disbursement"
 msgstr ""
 
 #. module: ssi_school_scholarship
-#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_program_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_type_view_form
 msgid "Disbursement Configuration"
