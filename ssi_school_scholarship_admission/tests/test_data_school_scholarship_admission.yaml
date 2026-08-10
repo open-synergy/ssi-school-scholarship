@@ -1,7 +1,8 @@
 options:
   auto_refresh: true
 scenarios:
-  - name: "Award Admission - create derives School/Grade, generate schedule from Admission"
+  - name:
+      "Award Admission - create derives School/Grade, generate schedule from Admission"
     steps:
       # ── Shared fixture chain (suffix SA1) ────────────────────────
       - step: "Create the grade type"
