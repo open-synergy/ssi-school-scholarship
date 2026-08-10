@@ -528,6 +528,7 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_customer_invoice
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__customer_invoice_id
 msgid "Customer Invoice"
 msgstr ""
@@ -674,6 +675,8 @@ msgstr ""
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_customer_invoice__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_funding__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__display_name
@@ -763,14 +766,27 @@ msgid "Funding source of the selected Funding line."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis__amount_gross
+msgid "Gross Realized"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_view_search
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_search
 msgid "Group By"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_customer_invoice__has_scholarship
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.customer_invoice_view_search_scholarship_deduction
+msgid "Has Scholarship"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_customer_invoice__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_funding__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__id
@@ -884,6 +900,8 @@ msgstr ""
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_customer_invoice____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_funding____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule____last_update
@@ -973,6 +991,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__need_validation
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__need_validation
 msgid "Need Validation"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis__amount_net
+msgid "Net Cash"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -1084,6 +1107,14 @@ msgid "Policy Template"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_customer_invoice__amount_settled_by_scholarship
+msgid ""
+"Portion of Realized Amount settled by scholarship deductions rather than an "
+"actual cash deposit. Excluded from Settled by Cash and from cash receipt "
+"reports."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__amount
 msgid ""
 "Portion of the Recognition document's own Amount released for this Deduction"
@@ -1096,6 +1127,13 @@ msgid ""
 "Portion of the deduction's own Amount Deferred released by this document. "
 "The sum of every Done Recognition's Amount may not exceed the deduction's "
 "own Amount Total."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis__amount_scholarship
+msgid ""
+"Portion of the linked invoice's Realized Amount settled by a scholarship "
+"deduction. Zero when the fee line has no linked invoice yet."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -1138,6 +1176,28 @@ msgstr ""
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__ratio
 msgid "Ratio"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_customer_invoice__amount_settled_by_cash
+msgid ""
+"Realized Amount net of the portion settled by scholarship. Cash receipt "
+"reports must use this field instead of Realized Amount, or they overstate "
+"actual deposits on invoices partly or fully covered by a scholarship."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis__amount_net
+msgid ""
+"Realized Amount of the linked invoice net of the scholarship-settled portion"
+" -- the figure fee analysis reports should use as actual cash received."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis__amount_gross
+msgid ""
+"Realized Amount of the linked invoice, before splitting off the scholarship-"
+"settled portion. Equal to ``amount_scholarship`` plus ``amount_net``."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -1311,6 +1371,11 @@ msgid "Schedule"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis__amount_scholarship
+msgid "Scholarship"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.actions.act_window,name:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_action
 #: model:ir.ui.menu,name:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_menu
 msgid "Scholarship Deduction Recognitions"
@@ -1318,6 +1383,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.actions.act_window,name:ssi_school_scholarship_deduction.school_scholarship_deduction_action
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_customer_invoice__scholarship_deduction_ids
 #: model:ir.ui.menu,name:ssi_school_scholarship_deduction.school_scholarship_deduction_menu
 msgid "Scholarship Deductions"
 msgstr ""
@@ -1325,6 +1391,19 @@ msgstr ""
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__award_id
 msgid "Scholarship award this deduction realizes."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_customer_invoice__scholarship_deduction_ids
+msgid ""
+"Scholarship deduction documents that allocate part of their own Amount Total"
+" to this invoice, traced through their own Allocation lines. Not stored -- "
+"always reflects the current set of allocations."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_enrollment_fee_analysis
+msgid "School Enrollment Fee Analysis"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -1375,6 +1454,16 @@ msgstr ""
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__sequence
 msgid "Sequence"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_customer_invoice__amount_settled_by_cash
+msgid "Settled by Cash"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_customer_invoice__amount_settled_by_scholarship
+msgid "Settled by Scholarship"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -1515,6 +1604,13 @@ msgid ""
 "  Manual number assignment can be done in 'Draft' state\n"
 "  Only user with 'Can Manualy Assign Number' policy can manually assign number.\n"
 "* Transaction with number other than '/' can not be deleted."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_customer_invoice__has_scholarship
+msgid ""
+"True once at least part of this invoice has been settled by a scholarship "
+"deduction."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
