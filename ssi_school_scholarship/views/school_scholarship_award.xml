@@ -157,6 +157,43 @@
                                  save. -->
                             <field name="name" invisible="1" />
                         </tree>
+                        <form>
+                            <group col="2">
+                                <field
+                                        name="scope_id"
+                                        domain="[('program_id', '=', parent.program_id)]"
+                                    />
+                                <field name="benefit_type" />
+                                <field name="product_id" />
+                                <field name="product_category_id" />
+                                <field name="computation" />
+                                <field
+                                        name="percentage"
+                                        attrs="{'invisible': [('computation', '!=', 'percentage')]}"
+                                    />
+                                <field
+                                        name="amount_fixed"
+                                        attrs="{'invisible': [('computation', '!=', 'fixed')]}"
+                                    />
+                                <field name="max_amount_per_period" />
+                                <field name="periodicity" />
+                                <field name="uom_quantity" />
+                                <field name="price_unit" />
+                                <field name="price_subtotal" />
+                                <field name="account_id" />
+                                <field name="currency_id" invisible="1" />
+                                <!-- Description (name, from mixin.product_line)
+                                     is only ever auto-filled by
+                                     onchange_name() when Product is picked; it
+                                     is not user-facing here, but the field
+                                     still must be present in the view so the
+                                     web client tracks the onchange's result.
+                                     Omitting it drops the value client-side,
+                                     and the required-field check fails on
+                                     save. -->
+                                <field name="name" invisible="1" />
+                            </group>
+                        </form>
                     </field>
                 </page>
                 <page name="funding" string="Funding">
@@ -174,6 +211,23 @@
                             <field name="amount_realized" />
                             <field name="currency_id" invisible="1" />
                         </tree>
+                        <form>
+                            <group col="2">
+                                <field
+                                        name="allowed_funding_source_ids"
+                                        invisible="1"
+                                    />
+                                <field
+                                        name="funding_source_id"
+                                        domain="[('id', 'in', allowed_funding_source_ids)]"
+                                    />
+                                <field name="analytic_account_id" />
+                                <field name="percentage" />
+                                <field name="amount_committed" />
+                                <field name="amount_realized" />
+                                <field name="currency_id" invisible="1" />
+                            </group>
+                        </form>
                     </field>
                 </page>
                 <page name="schedule" string="Schedule">
@@ -192,6 +246,22 @@
                             <field name="note" />
                             <field name="currency_id" invisible="1" />
                         </tree>
+                        <form>
+                            <group col="2">
+                                <field name="benefit_id" />
+                                <field name="payment_term_id" />
+                                <field name="date" />
+                                <field name="base_amount" />
+                                <field name="amount_planned" />
+                                <field name="amount_planned_manual" invisible="1" />
+                                <field name="amount_realized" />
+                                <field name="state" />
+                                <field name="payment_term_state" />
+                                <field name="customer_invoice_id" />
+                                <field name="currency_id" invisible="1" />
+                            </group>
+                            <field name="note" />
+                        </form>
                     </field>
                 </page>
                 <page name="letter" string="Letters">
@@ -202,6 +272,14 @@
                             <field name="date_signed" />
                             <field name="signed_by" />
                         </tree>
+                        <form>
+                            <group col="2">
+                                <field name="date" />
+                                <field name="letter_type" />
+                                <field name="date_signed" />
+                                <field name="signed_by" />
+                            </group>
+                        </form>
                     </field>
                 </page>
                 <page name="compliance_renewal" string="Compliance &amp; Renewal">
@@ -216,6 +294,13 @@
                             <field name="date" />
                             <field name="state" />
                         </tree>
+                        <form>
+                            <group col="2">
+                                <field name="name" />
+                                <field name="date" />
+                                <field name="state" />
+                            </group>
+                        </form>
                     </field>
                 </page>
                 <page name="accounting" string="Accounting">

@@ -115,6 +115,32 @@
                             <field name="periodicity" />
                             <field name="currency_id" invisible="1" />
                         </tree>
+                        <form>
+                            <group col="2">
+                                <field name="scope_basis" />
+                                <field
+                                        name="product_id"
+                                        attrs="{'invisible': [('scope_basis', '!=', 'product')], 'required': [('scope_basis', '=', 'product')]}"
+                                    />
+                                <field
+                                        name="product_category_id"
+                                        attrs="{'invisible': [('scope_basis', '!=', 'product_category')], 'required': [('scope_basis', '=', 'product_category')]}"
+                                    />
+                                <field name="benefit_type" />
+                                <field name="computation" />
+                                <field
+                                        name="percentage"
+                                        attrs="{'invisible': [('computation', '!=', 'percentage')]}"
+                                    />
+                                <field
+                                        name="amount_fixed"
+                                        attrs="{'invisible': [('computation', '!=', 'fixed')]}"
+                                    />
+                                <field name="max_amount_per_period" />
+                                <field name="periodicity" />
+                                <field name="currency_id" invisible="1" />
+                            </group>
+                        </form>
                     </field>
                 </page>
                 <page name="criteria" string="Criteria">
@@ -134,6 +160,22 @@
                             <field name="is_hard_requirement" />
                             <field name="weight" />
                         </tree>
+                        <form>
+                            <group col="2">
+                                <field name="name" />
+                                <field name="evaluation_method" />
+                                <field name="is_hard_requirement" />
+                                <field name="weight" />
+                            </group>
+                            <field
+                                    name="criteria_domain"
+                                    attrs="{'invisible': [('evaluation_method', '!=', 'domain')]}"
+                                />
+                            <field
+                                    name="python_code"
+                                    attrs="{'invisible': [('evaluation_method', '!=', 'python')]}"
+                                />
+                        </form>
                     </field>
                 </page>
                 <page name="deduction" string="Deduction">
