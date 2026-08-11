@@ -80,6 +80,16 @@
                             <field name="amount" widget="monetary" />
                             <field name="company_currency_id" invisible="1" />
                         </tree>
+                        <form>
+                            <group col="2">
+                                <field name="deduction_line_id" />
+                                <field name="debit_account_id" />
+                                <field name="credit_account_id" />
+                                <field name="analytic_account_id" />
+                                <field name="amount" widget="monetary" />
+                                <field name="company_currency_id" invisible="1" />
+                            </group>
+                        </form>
                     </field>
                 </page>
                 <page name="note" string="Note">
