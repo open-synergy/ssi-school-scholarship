@@ -1,0 +1,1296 @@
+options:
+  auto_refresh: true
+scenarios:
+  - name:
+      "Award Admission - create derives School/Grade, generate schedule from Admission"
+    steps:
+      # ── Shared fixture chain (suffix SA1) ────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type1"
+        values:
+          name: "SA1 Grade Type"
+          code: "SA1GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school1"
+        values:
+          name: "SA1 School"
+          code: "SA1SC"
+          grade_type_id: "REC: grade_type1.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year1"
+        values:
+          name: "SA1 Academic Year"
+          code: "SA1AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term1"
+        values:
+          name: "SA1 Term"
+          code: "SA1TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year1.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade1"
+        values:
+          name: "SA1 Grade"
+          code: "SA1GR"
+          type_id: "REC: grade_type1.id"
+
+      - step: "Create the admission student's contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "admission_contact1"
+        values:
+          name: "SA1 Admission Contact"
+
+      - step: "Create the admission"
+        action: "create"
+        model: "school_admission"
+        save_as: "admission1"
+        values:
+          academic_year_id: "REC: academic_year1.id"
+          academic_term_id: "REC: academic_term1.id"
+          school_id: "REC: school1.id"
+          grade_id: "REC: grade1.id"
+          student_id: "REC: admission_contact1.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm the admission as admin"
+        action: "call"
+        target: "admission1"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      # The Confirm step above carries `asserts`, and that is what makes
+      # this Approve work: running asserts triggers the library's
+      # _refresh(), dropping the approve_ok=False cached while
+      # action_confirm read confirm_ok (test-traps.md T-04).
+      - step: "Approve the admission as admin (auto-opens)"
+        action: "call"
+        target: "admission1"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert the admission created its School Student on Open"
+        action: "assert"
+        target: "admission1"
+        asserts:
+          school_student_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic1"
+        values:
+          name: "SA1 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source1"
+        values:
+          name: "SA1 Funding Source"
+          code: "SA1FS"
+          analytic_account_id: "REC: analytic1.id"
+
+      - step: "Create the product covered by the Benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "product1"
+        values:
+          name: "SA1 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal1"
+        values:
+          name: "SA1 Journal"
+          code: "JSA1"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account1"
+        values:
+          name: "SA1 Discount Account"
+          code: "SA1DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the income account used by the payment term detail"
+        action: "create"
+        model: "account.account"
+        save_as: "income_account1"
+        values:
+          name: "SA1 Income Account"
+          code: "SA1IA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type1"
+        values:
+          name: "SA1 Type"
+          code: "SA1TY"
+          deduction_journal_id: "REC: journal1.id"
+          discount_account_id: "REC: discount_account1.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program1"
+        values:
+          name: "SA1 Program"
+          code: "SA1PRG"
+          type_id: "REC: type1.id"
+          school_id: "REC: school1.id"
+          academic_year_id: "REC: academic_year1.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source1.id"]]]
+          deduction_journal_id: "REC: journal1.id"
+          discount_account_id: "REC: discount_account1.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product1.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Create an Admission Payment Term matching the Benefit's Product"
+        action: "create"
+        model: "school_admission_payment_term"
+        save_as: "payment_term1"
+        values:
+          admission_id: "REC: admission1.id"
+          name: "SA1 Payment Term"
+          date_invoice: 2026-08-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: product1.id"
+                name: "SA1 Payment Term Fee"
+                account_id: "REC: income_account1.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create the Admission-sourced award"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award1"
+        values:
+          program_id: "REC: program1.id"
+          source_type: "admission"
+          admission_id: "REC: admission1.id"
+          student_id: "REC: admission1.school_student_id.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account1.id"
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "SA1 Benefit Line"
+                product_id: "REC: product1.id"
+                percentage: 40.0
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source1.id"
+                percentage: 100.0
+
+      - step: "Assert School/Grade were derived from the Admission"
+        action: "assert"
+        target: "award1"
+        asserts:
+          school_id:
+            type: "m2o"
+            expected: "REC: school1"
+          grade_id:
+            type: "m2o"
+            expected: "REC: grade1"
+
+      - step: "Confirm the award as admin"
+        action: "call"
+        target: "award1"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the award as admin (auto-opens, generates schedule)"
+        action: "call"
+        target: "award1"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert opening generated exactly one Schedule line"
+        action: "search"
+        model: "school_scholarship_award_schedule"
+        domain: [["award_id", "=", "REC: award1.id"]]
+        save_as: "award1_schedule"
+        expect_count: 1
+
+      - step: "Assert the Schedule line was realized from the Admission Payment Term"
+        action: "assert"
+        target: "award1_schedule"
+        asserts:
+          admission_payment_term_id:
+            type: "m2o"
+            expected: "REC: payment_term1"
+          payment_term_id:
+            type: "value"
+            operator: "is_falsy"
+          base_amount:
+            type: "value"
+            expected: 1000000.0
+          amount_planned:
+            type: "value"
+            expected: 400000.0
+
+  - name: "Award Admission - onchange admission_id fills student_id"
+    steps:
+      # ── Shared fixture chain (suffix SA2) ────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type2"
+        values:
+          name: "SA2 Grade Type"
+          code: "SA2GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school2"
+        values:
+          name: "SA2 School"
+          code: "SA2SC"
+          grade_type_id: "REC: grade_type2.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year2"
+        values:
+          name: "SA2 Academic Year"
+          code: "SA2AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term2"
+        values:
+          name: "SA2 Term"
+          code: "SA2TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year2.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade2"
+        values:
+          name: "SA2 Grade"
+          code: "SA2GR"
+          type_id: "REC: grade_type2.id"
+
+      - step: "Create the admission student's contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "admission_contact2"
+        values:
+          name: "SA2 Admission Contact"
+
+      - step: "Create the admission"
+        action: "create"
+        model: "school_admission"
+        save_as: "admission2"
+        values:
+          academic_year_id: "REC: academic_year2.id"
+          academic_term_id: "REC: academic_term2.id"
+          school_id: "REC: school2.id"
+          grade_id: "REC: grade2.id"
+          student_id: "REC: admission_contact2.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm the admission as admin"
+        action: "call"
+        target: "admission2"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      # MANDATORY refresh point between Confirm and Approve. Every
+      # policy field (confirm_ok, approve_ok, ...) is filled by ONE
+      # compute that only re-triggers on
+      # @api.depends("policy_template_id"), so reading confirm_ok inside
+      # action_confirm -- while state is still Draft -- also caches
+      # approve_ok=False. Approve then reads that stale False and raises
+      # "Document is not allowed to approve". A step carrying `asserts`
+      # is the only thing that forces the library's _refresh()
+      # (flush + invalidate); `auto_refresh` alone does not, because it
+      # is consulted only when a step reads fields.
+      # See odoo-development-unit-test, test-traps.md T-04.
+      - step: "Assert the admission reached Confirm before approving"
+        action: "assert"
+        target: "admission2"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the admission as admin (auto-opens)"
+        action: "call"
+        target: "admission2"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      # ── Onchange (form): selecting admission_id fills the read-only
+      # student_id from admission_id.school_student_id.
+      - step: "Open a new award form and select the Admission"
+        action: form
+        model: "school_scholarship_award"
+        as_user: "base.user_admin"
+        save: false
+        values:
+          source_type: "admission"
+          admission_id: "REC: admission2"
+        asserts:
+          student_id:
+            type: "m2o"
+            expected: "REC: admission2.school_student_id"
+
+  - name: "Admission - Scholarship Amount And Count"
+    steps:
+      # ── Shared fixture chain (suffix SA3) ────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type3"
+        values:
+          name: "SA3 Grade Type"
+          code: "SA3GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school3"
+        values:
+          name: "SA3 School"
+          code: "SA3SC"
+          grade_type_id: "REC: grade_type3.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year3"
+        values:
+          name: "SA3 Academic Year"
+          code: "SA3AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term3"
+        values:
+          name: "SA3 Term"
+          code: "SA3TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year3.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade3"
+        values:
+          name: "SA3 Grade"
+          code: "SA3GR"
+          type_id: "REC: grade_type3.id"
+
+      - step: "Create the admission student's contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "admission_contact3"
+        values:
+          name: "SA3 Admission Contact"
+
+      - step: "Create the admission"
+        action: "create"
+        model: "school_admission"
+        save_as: "admission3"
+        values:
+          academic_year_id: "REC: academic_year3.id"
+          academic_term_id: "REC: academic_term3.id"
+          school_id: "REC: school3.id"
+          grade_id: "REC: grade3.id"
+          student_id: "REC: admission_contact3.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm the admission as admin"
+        action: "call"
+        target: "admission3"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      # Refresh point required before Approve -- test-traps.md T-04.
+      - step: "Assert the admission reached Confirm before approving"
+        action: "assert"
+        target: "admission3"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the admission as admin (auto-opens)"
+        action: "call"
+        target: "admission3"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic3"
+        values:
+          name: "SA3 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source3"
+        values:
+          name: "SA3 Funding Source"
+          code: "SA3FS"
+          analytic_account_id: "REC: analytic3.id"
+
+      - step: "Create the product covered by the Benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "product3"
+        values:
+          name: "SA3 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal3"
+        values:
+          name: "SA3 Journal"
+          code: "JSA3"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account3"
+        values:
+          name: "SA3 Discount Account"
+          code: "SA3DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the income account used by the payment term detail"
+        action: "create"
+        model: "account.account"
+        save_as: "income_account3"
+        values:
+          name: "SA3 Income Account"
+          code: "SA3IA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type3"
+        values:
+          name: "SA3 Type"
+          code: "SA3TY"
+          deduction_journal_id: "REC: journal3.id"
+          discount_account_id: "REC: discount_account3.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program3"
+        values:
+          name: "SA3 Program"
+          code: "SA3PRG"
+          type_id: "REC: type3.id"
+          school_id: "REC: school3.id"
+          academic_year_id: "REC: academic_year3.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source3.id"]]]
+          deduction_journal_id: "REC: journal3.id"
+          discount_account_id: "REC: discount_account3.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product3.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Create an Admission Payment Term matching the Benefit's Product"
+        action: "create"
+        model: "school_admission_payment_term"
+        save_as: "payment_term3"
+        values:
+          admission_id: "REC: admission3.id"
+          name: "SA3 Payment Term"
+          date_invoice: 2026-08-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: product3.id"
+                name: "SA3 Payment Term Fee"
+                account_id: "REC: income_account3.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create and open an Admission-sourced award"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award_open3"
+        values:
+          program_id: "REC: program3.id"
+          source_type: "admission"
+          admission_id: "REC: admission3.id"
+          student_id: "REC: admission3.school_student_id.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account3.id"
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "SA3 Benefit Line"
+                product_id: "REC: product3.id"
+                percentage: 40.0
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source3.id"
+                percentage: 100.0
+
+      - step: "Confirm the award as admin"
+        action: "call"
+        target: "award_open3"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      # Refresh point required before Approve -- test-traps.md T-04.
+      - step: "Assert the award reached Confirm before approving"
+        action: "assert"
+        target: "award_open3"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the award as admin (auto-opens, generates schedule)"
+        action: "call"
+        target: "award_open3"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          amount_awarded:
+            type: "value"
+            expected: 400000.0
+
+      # ── A second, Draft award on the same Admission -- counted by
+      # scholarship_award_count but excluded from amount_scholarship.
+      - step: "Create a second, Draft award on the same Admission"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award_draft3"
+        values:
+          program_id: "REC: program3.id"
+          source_type: "admission"
+          admission_id: "REC: admission3.id"
+          student_id: "REC: admission3.school_student_id.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account3.id"
+
+      - step: "Assert the Admission's Scholarship Amount and Award Count"
+        action: "assert"
+        target: "admission3"
+        asserts:
+          scholarship_award_count:
+            type: "value"
+            expected: 2
+          amount_scholarship:
+            type: "value"
+            expected: 400000.0
+
+  - name: "Award Enrollment - regression, still generates schedule from Enrollment"
+    steps:
+      # ── Shared fixture chain (suffix SA4) ────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type4"
+        values:
+          name: "SA4 Grade Type"
+          code: "SA4GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school4"
+        values:
+          name: "SA4 School"
+          code: "SA4SC"
+          grade_type_id: "REC: grade_type4.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year4"
+        values:
+          name: "SA4 Academic Year"
+          code: "SA4AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term4"
+        values:
+          name: "SA4 Term"
+          code: "SA4TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year4.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade4"
+        values:
+          name: "SA4 Grade"
+          code: "SA4GR"
+          type_id: "REC: grade_type4.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class4"
+        values:
+          name: "SA4 Class"
+          code: "SA4CL"
+          school_id: "REC: school4.id"
+          grade_id: "REC: grade4.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact4"
+        values:
+          name: "SA4 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "student4"
+        values:
+          name: "SA4 Student"
+          code: "SA4ST"
+          contact_id: "REC: contact4.id"
+          school_id: "REC: school4.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment4"
+        values:
+          academic_year_id: "REC: academic_year4.id"
+          academic_term_id: "REC: academic_term4.id"
+          school_id: "REC: school4.id"
+          grade_id: "REC: grade4.id"
+          grade_class_id: "REC: grade_class4.id"
+          student_id: "REC: student4.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic4"
+        values:
+          name: "SA4 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source4"
+        values:
+          name: "SA4 Funding Source"
+          code: "SA4FS"
+          analytic_account_id: "REC: analytic4.id"
+
+      - step: "Create the product covered by the Benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "product4"
+        values:
+          name: "SA4 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal4"
+        values:
+          name: "SA4 Journal"
+          code: "JSA4"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account4"
+        values:
+          name: "SA4 Discount Account"
+          code: "SA4DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the income account used by the payment term detail"
+        action: "create"
+        model: "account.account"
+        save_as: "income_account4"
+        values:
+          name: "SA4 Income Account"
+          code: "SA4IA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type4"
+        values:
+          name: "SA4 Type"
+          code: "SA4TY"
+          deduction_journal_id: "REC: journal4.id"
+          discount_account_id: "REC: discount_account4.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program4"
+        values:
+          name: "SA4 Program"
+          code: "SA4PRG"
+          type_id: "REC: type4.id"
+          school_id: "REC: school4.id"
+          academic_year_id: "REC: academic_year4.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source4.id"]]]
+          deduction_journal_id: "REC: journal4.id"
+          discount_account_id: "REC: discount_account4.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product4.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Create an Enrollment Payment Term matching the Benefit's Product"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "payment_term4"
+        values:
+          enrollment_id: "REC: enrollment4.id"
+          name: "SA4 Payment Term"
+          date_invoice: 2026-08-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: product4.id"
+                name: "SA4 Payment Term Fee"
+                account_id: "REC: income_account4.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create the Enrollment-sourced award (Billing Source default)"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award4"
+        values:
+          program_id: "REC: program4.id"
+          student_id: "REC: student4.id"
+          enrollment_id: "REC: enrollment4.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account4.id"
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "SA4 Benefit Line"
+                product_id: "REC: product4.id"
+                percentage: 40.0
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source4.id"
+                percentage: 100.0
+
+      - step: "Assert Billing Source stayed at the default Enrollment"
+        action: "assert"
+        target: "award4"
+        asserts:
+          source_type:
+            type: "value"
+            expected: "enrollment"
+
+      - step: "Confirm the award as admin"
+        action: "call"
+        target: "award4"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      # Refresh point required before Approve -- test-traps.md T-04.
+      - step: "Assert the award reached Confirm before approving"
+        action: "assert"
+        target: "award4"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the award as admin (auto-opens, generates schedule)"
+        action: "call"
+        target: "award4"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert opening generated exactly one Schedule line"
+        action: "search"
+        model: "school_scholarship_award_schedule"
+        domain: [["award_id", "=", "REC: award4.id"]]
+        save_as: "award4_schedule"
+        expect_count: 1
+
+      - step: "Assert the Schedule line was realized from the Enrollment Payment Term"
+        action: "assert"
+        target: "award4_schedule"
+        asserts:
+          payment_term_id:
+            type: "m2o"
+            expected: "REC: payment_term4"
+          admission_payment_term_id:
+            type: "value"
+            operator: "is_falsy"
+          amount_planned:
+            type: "value"
+            expected: 400000.0
+
+  - name: "Award Admission - Negative Paths"
+    steps:
+      # ── Shared fixture chain (suffix SA5) ────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type5"
+        values:
+          name: "SA5 Grade Type"
+          code: "SA5GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school5"
+        values:
+          name: "SA5 School"
+          code: "SA5SC"
+          grade_type_id: "REC: grade_type5.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year5"
+        values:
+          name: "SA5 Academic Year"
+          code: "SA5AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term5"
+        values:
+          name: "SA5 Term"
+          code: "SA5TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year5.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade5"
+        values:
+          name: "SA5 Grade"
+          code: "SA5GR"
+          type_id: "REC: grade_type5.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic5"
+        values:
+          name: "SA5 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source5"
+        values:
+          name: "SA5 Funding Source"
+          code: "SA5FS"
+          analytic_account_id: "REC: analytic5.id"
+
+      - step: "Create the product covered by the scope line"
+        action: "create"
+        model: "product.product"
+        save_as: "product5"
+        values:
+          name: "SA5 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal5"
+        values:
+          name: "SA5 Journal"
+          code: "JSA5"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account5"
+        values:
+          name: "SA5 Discount Account"
+          code: "SA5DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type5"
+        values:
+          name: "SA5 Type"
+          code: "SA5TY"
+          deduction_journal_id: "REC: journal5.id"
+          discount_account_id: "REC: discount_account5.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program5"
+        values:
+          name: "SA5 Program"
+          code: "SA5PRG"
+          type_id: "REC: type5.id"
+          school_id: "REC: school5.id"
+          academic_year_id: "REC: academic_year5.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source5.id"]]]
+          deduction_journal_id: "REC: journal5.id"
+          discount_account_id: "REC: discount_account5.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product5.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      # ── Negative: Billing Source Admission with no Admission ─────
+      - step: "Create a school_student to give the negative-path award a Student"
+        action: "create"
+        model: "res.partner"
+        save_as: "bare_contact5"
+        values:
+          name: "SA5 Bare Contact"
+
+      - step: "Create the school_student"
+        action: "create"
+        model: "school_student"
+        save_as: "bare_student5"
+        values:
+          name: "SA5 Bare Student"
+          code: "SA5BST"
+          contact_id: "REC: bare_contact5.id"
+          school_id: "REC: school5.id"
+
+      - step: "Reject an Admission-sourced award with no Admission"
+        action: "create"
+        model: "school_scholarship_award"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "billing source"
+        values:
+          program_id: "REC: program5.id"
+          student_id: "REC: bare_student5.id"
+          source_type: "admission"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account5.id"
+
+      # ── Negative: Admission has not reached Open (still Draft) ───
+      - step: "Create the admission student's contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "admission_contact5a"
+        values:
+          name: "SA5 Admission Contact A"
+
+      - step: "Create an admission left in Draft"
+        action: "create"
+        model: "school_admission"
+        save_as: "admission5a"
+        values:
+          academic_year_id: "REC: academic_year5.id"
+          academic_term_id: "REC: academic_term5.id"
+          school_id: "REC: school5.id"
+          grade_id: "REC: grade5.id"
+          student_id: "REC: admission_contact5a.id"
+
+      - step: "Reject an award billed against a still-Draft Admission"
+        action: "create"
+        model: "school_scholarship_award"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "has not reached Open"
+        values:
+          program_id: "REC: program5.id"
+          student_id: "REC: bare_student5.id"
+          source_type: "admission"
+          admission_id: "REC: admission5a.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account5.id"
+
+      # ── Negative: Admission's School Student differs from Student ─
+      - step: "Create a second admission's contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "admission_contact5b"
+        values:
+          name: "SA5 Admission Contact B"
+
+      - step: "Create a second admission, opened"
+        action: "create"
+        model: "school_admission"
+        save_as: "admission5b"
+        values:
+          academic_year_id: "REC: academic_year5.id"
+          academic_term_id: "REC: academic_term5.id"
+          school_id: "REC: school5.id"
+          grade_id: "REC: grade5.id"
+          student_id: "REC: admission_contact5b.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm the second admission as admin"
+        action: "call"
+        target: "admission5b"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      # Refresh point required before Approve -- test-traps.md T-04.
+      - step: "Assert the second admission reached Confirm before approving"
+        action: "assert"
+        target: "admission5b"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the second admission as admin (auto-opens)"
+        action: "call"
+        target: "admission5b"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Reject an award mixing an unrelated Student with Admission B"
+        action: "create"
+        model: "school_scholarship_award"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "does not belong"
+        values:
+          program_id: "REC: program5.id"
+          student_id: "REC: bare_student5.id"
+          source_type: "admission"
+          admission_id: "REC: admission5b.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account5.id"
+
+      # ── Negative: Admission currency differs from company currency ─
+      - step: "Find a currency different from the company currency"
+        action: "search"
+        model: "res.currency"
+        # ``active_test: false`` -- most non-company currencies are
+        # inactive by default, and the default search would otherwise
+        # filter them all out, leaving no candidate to pick.
+        context:
+          active_test: false
+        domain: [["id", "!=", "REC: company.currency_id.id"]]
+        limit: 1
+        save_as: "other_currency5"
+
+      - step: "Create a third admission's contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "admission_contact5c"
+        values:
+          name: "SA5 Admission Contact C"
+
+      - step: "Create a third admission, billed in the other currency, opened"
+        action: "create"
+        model: "school_admission"
+        save_as: "admission5c"
+        values:
+          academic_year_id: "REC: academic_year5.id"
+          academic_term_id: "REC: academic_term5.id"
+          school_id: "REC: school5.id"
+          grade_id: "REC: grade5.id"
+          student_id: "REC: admission_contact5c.id"
+          currency_id: "REC: other_currency5.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm the third admission as admin"
+        action: "call"
+        target: "admission5c"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      # Refresh point required before Approve -- test-traps.md T-04.
+      - step: "Assert the third admission reached Confirm before approving"
+        action: "assert"
+        target: "admission5c"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the third admission as admin (auto-opens)"
+        action: "call"
+        target: "admission5c"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Reject an award whose currency does not match the Admission"
+        action: "create"
+        model: "school_scholarship_award"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "currency"
+        values:
+          program_id: "REC: program5.id"
+          student_id: "REC: admission5c.school_student_id.id"
+          source_type: "admission"
+          admission_id: "REC: admission5c.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account5.id"

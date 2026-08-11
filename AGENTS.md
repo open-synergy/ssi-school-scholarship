@@ -11,6 +11,10 @@ human-facing rendered links.
 **must** add that module's heading and line(s) here, in the same commit as the IK files
 themselves — this index is never allowed to fall behind the modules it documents.
 
+## ssi_school_scholarship_admission
+
+- `docs/school_scholarship_award/01-create.md`
+
 ## ssi_school_scholarship_deduction_operating_unit
 
 - `docs/school_scholarship_deduction/01-create.md`
