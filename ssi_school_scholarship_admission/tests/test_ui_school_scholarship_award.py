@@ -18,7 +18,12 @@ class TestUiSchoolScholarshipAward(HttpSavepointCase):
     def setUpClass(cls):
         """Create the master data required by the create tour.
 
-        Progresses the Admission to Open (Confirm then Approve) so it
+        Every record the tour types into an m2o must already exist, since
+        a miss silently turns the pick step into a record-creation
+        dialog: a Program, a School Student for base IK Flow 3, and an
+        Admission for the delta.
+
+        The Admission is progressed to Open (Confirm then Approve) so it
         satisfies the Admission field's own domain
         (``state in ('open', 'done')``) -- the tour picks it from the
         m2o dropdown by typing its manually assigned ``name``.
@@ -65,6 +70,28 @@ class TestUiSchoolScholarshipAward(HttpSavepointCase):
         )
         tour_student_contact = cls.env["res.partner"].create(
             {"name": "TOUR ADM Award Admission Student"}
+        )
+
+        # Base IK Flow 3 has the user pick a Student before the Billing
+        # Source delta, so a School Student carrying exactly the text the
+        # tour types must EXIST. Without it the m2o dropdown offers only
+        # its "Create ..." entries, the pick step matches one of those,
+        # and -- because school_student requires contact_id and school_id
+        # -- the quick create fails and Odoo falls back to the full
+        # "Create: Student" dialog. Every later step then searches inside
+        # that modal (web_tour scopes triggers to the visible modal) and
+        # times out on a form field that is in fact rendered correctly
+        # underneath.
+        tour_award_student_contact = cls.env["res.partner"].create(
+            {"name": "TOUR ADM Award Student Contact"}
+        )
+        cls.tour_student = cls.env["school_student"].create(
+            {
+                "name": "TOUR ADM Award Student",
+                "code": "TOURADMAWST",
+                "contact_id": tour_award_student_contact.id,
+                "school_id": cls.tour_school.id,
+            }
         )
 
         cls.tour_admission = cls.env["school_admission"].create(

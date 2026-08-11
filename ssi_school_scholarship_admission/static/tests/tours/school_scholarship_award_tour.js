@@ -78,9 +78,16 @@ odoo.define("ssi_school_scholarship_admission.school_scholarship_award_tour", fu
                 run: "text TOUR ADM Award Program",
             },
             {
+                // :not(.o_m2o_dropdown_option) excludes the dropdown's
+                // own "Create ..." / "Create and Edit..." entries, whose
+                // labels quote the typed text back and would therefore
+                // satisfy a bare :contains() when no record matches.
+                // Clicking one opens a Create dialog, and web_tour then
+                // scopes every later trigger to that modal -- a failure
+                // that points at the wrong step entirely.
                 content: "Pick the Program from the dropdown",
                 trigger:
-                    ".ui-autocomplete .ui-menu-item a:contains(TOUR ADM Award Program)",
+                    ".ui-autocomplete .ui-menu-item:not(.o_m2o_dropdown_option) a:contains(TOUR ADM Award Program)",
                 in_modal: false,
             },
             {
@@ -91,7 +98,7 @@ odoo.define("ssi_school_scholarship_admission.school_scholarship_award_tour", fu
             {
                 content: "Pick the Student from the dropdown",
                 trigger:
-                    ".ui-autocomplete .ui-menu-item a:contains(TOUR ADM Award Student)",
+                    ".ui-autocomplete .ui-menu-item:not(.o_m2o_dropdown_option) a:contains(TOUR ADM Award Student)",
                 in_modal: false,
             },
 
@@ -117,7 +124,7 @@ odoo.define("ssi_school_scholarship_admission.school_scholarship_award_tour", fu
             {
                 content: "Pick the Admission from the dropdown",
                 trigger:
-                    ".ui-autocomplete .ui-menu-item a:contains(TOUR-ADM-AWARD-ADM-001)",
+                    ".ui-autocomplete .ui-menu-item:not(.o_m2o_dropdown_option) a:contains(TOUR-ADM-AWARD-ADM-001)",
                 in_modal: false,
             },
 
