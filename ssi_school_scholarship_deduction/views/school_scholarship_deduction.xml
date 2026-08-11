@@ -141,6 +141,15 @@
                             <field name="state" />
                             <field name="currency_id" invisible="1" />
                         </tree>
+                        <form>
+                            <group col="2">
+                                <field name="name" />
+                                <field name="date" />
+                                <field name="amount" widget="monetary" />
+                                <field name="state" />
+                                <field name="currency_id" invisible="1" />
+                            </group>
+                        </form>
                     </field>
                 </page>
                 <page name="line" string="Lines">
@@ -176,6 +185,38 @@
                                  check fails on save. -->
                             <field name="name" invisible="1" />
                         </tree>
+                        <form>
+                            <group col="2">
+                                <field
+                                        name="schedule_id"
+                                        domain="[('award_id', '=', parent.award_id)]"
+                                    />
+                                <field name="benefit_id" />
+                                <field
+                                        name="funding_id"
+                                        domain="[('award_id', '=', parent.award_id)]"
+                                    />
+                                <field name="funding_source_id" />
+                                <field name="product_id" />
+                                <field name="final_account_id" />
+                                <field name="account_id" />
+                                <field name="analytic_account_id" />
+                                <field name="uom_quantity" />
+                                <field name="price_unit" />
+                                <field name="price_subtotal" />
+                                <field name="currency_id" invisible="1" />
+                                <!-- Description (name, from mixin.product_line)
+                                     is only ever auto-filled by
+                                     onchange_name() when Schedule is picked;
+                                     it is not user-facing here, but the
+                                     field still must be present in the view
+                                     so the web client tracks the onchange's
+                                     result. Omitting it drops the value
+                                     client-side, and the required-field
+                                     check fails on save. -->
+                                <field name="name" invisible="1" />
+                            </group>
+                        </form>
                     </field>
                 </page>
                 <page name="allocation" string="Allocations">
@@ -188,6 +229,16 @@
                             <field name="partial_reconcile_id" />
                             <field name="currency_id" invisible="1" />
                         </tree>
+                        <form>
+                            <group col="2">
+                                <field name="customer_invoice_id" />
+                                <field name="invoice_residual" />
+                                <field name="invoice_account_id" />
+                                <field name="amount_allocated" />
+                                <field name="partial_reconcile_id" />
+                                <field name="currency_id" invisible="1" />
+                            </group>
+                        </form>
                     </field>
                 </page>
                 <page name="schedule" string="Realized Schedule">
@@ -198,6 +249,14 @@
                             <field name="amount_planned" />
                             <field name="state" />
                         </tree>
+                        <form>
+                            <group col="2">
+                                <field name="benefit_id" />
+                                <field name="date" />
+                                <field name="amount_planned" />
+                                <field name="state" />
+                            </group>
+                        </form>
                     </field>
                 </page>
             </xpath>
