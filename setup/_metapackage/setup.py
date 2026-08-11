@@ -10,6 +10,7 @@ setuptools.setup(
     install_requires=[
         'odoo14-addon-ssi_school_scholarship',
         'odoo14-addon-ssi_school_scholarship_admission',
+        'odoo14-addon-ssi_school_scholarship_admission_operating_unit',
         'odoo14-addon-ssi_school_scholarship_deduction',
         'odoo14-addon-ssi_school_scholarship_deduction_operating_unit',
         'odoo14-addon-ssi_school_scholarship_disbursement',
