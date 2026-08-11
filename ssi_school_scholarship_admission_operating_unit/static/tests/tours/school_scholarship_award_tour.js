@@ -144,7 +144,8 @@ odoo.define(
                 // (odoo-development-ui-test, scope-and-boundaries.md §2
                 // -- exact value belongs to odoo-development-unit-test).
                 {
-                    content: "Operating Unit is auto-filled from the Admission's School",
+                    content:
+                        "Operating Unit is auto-filled from the Admission's School",
                     trigger:
                         ".o_field_many2one[name='operating_unit_id'] .o_external_button",
                     run: function () {

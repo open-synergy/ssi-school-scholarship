@@ -222,8 +222,7 @@ scenarios:
             type: "m2o"
             expected: "REC: ou1"
 
-  - name:
-      "Award Admission OU - write changing admission_id moves operating_unit_id"
+  - name: "Award Admission OU - write changing admission_id moves operating_unit_id"
     steps:
       # ── Shared fixture chain (suffix AWADMOU2) ───────────────────
       - step: "Create partner for Operating Unit A"
@@ -958,8 +957,8 @@ scenarios:
             expected: "REC: ou4"
 
   - name:
-      "Award Admission OU - negative, School with zero or multiple operating
-      units leaves operating_unit_id unchanged"
+      "Award Admission OU - negative, School with zero or multiple operating units
+      leaves operating_unit_id unchanged"
     steps:
       # ── Shared fixture chain (suffix AWADMOU5) ───────────────────
       - step: "Create partner for the initial (unambiguous) operating unit"
@@ -1048,8 +1047,7 @@ scenarios:
           name: "AWADMOU5 School Multi"
           code: "AWADMOU5SCM"
           grade_type_id: "REC: grade_type5.id"
-          operating_unit_ids:
-            [[6, 0, ["REC: ou5_multi_a.id", "REC: ou5_multi_b.id"]]]
+          operating_unit_ids: [[6, 0, ["REC: ou5_multi_a.id", "REC: ou5_multi_b.id"]]]
 
       - step: "Create the grade"
         action: "create"
@@ -1247,8 +1245,8 @@ scenarios:
           reconcile: false
 
       - step:
-          "Create the scholarship type (tied to School Initial, unrelated to the
-          award's later Schools)"
+          "Create the scholarship type (tied to School Initial, unrelated to the award's
+          later Schools)"
         action: "create"
         model: "school_scholarship_type"
         save_as: "type5"
@@ -1309,8 +1307,7 @@ scenarios:
           student_id: "REC: admission5_zero.school_student_id.id"
 
       - step:
-          "Assert operating_unit_id is UNCHANGED after the zero-OU write (not
-          cleared)"
+          "Assert operating_unit_id is UNCHANGED after the zero-OU write (not cleared)"
         action: "assert"
         target: "award5"
         asserts:
@@ -1326,8 +1323,8 @@ scenarios:
           student_id: "REC: admission5_multi.school_student_id.id"
 
       - step:
-          "Assert operating_unit_id is STILL UNCHANGED after the multi-OU write
-          (not forced to either unit)"
+          "Assert operating_unit_id is STILL UNCHANGED after the multi-OU write (not
+          forced to either unit)"
         action: "assert"
         target: "award5"
         asserts:
