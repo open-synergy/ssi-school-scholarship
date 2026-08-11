@@ -1,0 +1,1333 @@
+options:
+  auto_refresh: true
+scenarios:
+  - name:
+      "Award Admission OU - create derives operating_unit_id from Admission's School"
+    steps:
+      # ── Shared fixture chain (suffix AWADMOU1) ───────────────────
+      - step: "Create partner for the school's own operating unit"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou1_partner"
+        values:
+          name: "Award Admission OU1 Partner"
+
+      - step: "Create the school's own operating unit"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou1"
+        values:
+          name: "Award Admission OU1"
+          code: "AWADMOU1"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ou1_partner.id"
+
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type1"
+        values:
+          name: "AWADMOU1 Grade Type"
+          code: "AWADMOU1GT"
+
+      - step: "Create the school with exactly one operating unit"
+        action: "create"
+        model: "school"
+        save_as: "school1"
+        values:
+          name: "AWADMOU1 School"
+          code: "AWADMOU1SC"
+          grade_type_id: "REC: grade_type1.id"
+          operating_unit_ids: [[6, 0, ["REC: ou1.id"]]]
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade1"
+        values:
+          name: "AWADMOU1 Grade"
+          code: "AWADMOU1GR"
+          type_id: "REC: grade_type1.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year1"
+        values:
+          name: "AWADMOU1 Academic Year"
+          code: "AWADMOU1AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term1"
+        values:
+          name: "AWADMOU1 Term"
+          code: "AWADMOU1TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year1.id"
+
+      - step: "Create the admission student's contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "admission_contact1"
+        values:
+          name: "AWADMOU1 Admission Contact"
+
+      - step: "Create the admission"
+        action: "create"
+        model: "school_admission"
+        save_as: "admission1"
+        values:
+          academic_year_id: "REC: academic_year1.id"
+          academic_term_id: "REC: academic_term1.id"
+          school_id: "REC: school1.id"
+          grade_id: "REC: grade1.id"
+          student_id: "REC: admission_contact1.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm the admission as admin"
+        action: "call"
+        target: "admission1"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the admission as admin (auto-opens)"
+        action: "call"
+        target: "admission1"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic1"
+        values:
+          name: "AWADMOU1 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source1"
+        values:
+          name: "AWADMOU1 Funding Source"
+          code: "AWADMOU1FS"
+          analytic_account_id: "REC: analytic1.id"
+
+      - step: "Create the product covered by the Benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "product1"
+        values:
+          name: "AWADMOU1 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal1"
+        values:
+          name: "AWADMOU1 Journal"
+          code: "JAWADMOU1"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account1"
+        values:
+          name: "AWADMOU1 Discount Account"
+          code: "AWADMOU1DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type1"
+        values:
+          name: "AWADMOU1 Type"
+          code: "AWADMOU1TY"
+          deduction_journal_id: "REC: journal1.id"
+          discount_account_id: "REC: discount_account1.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program1"
+        values:
+          name: "AWADMOU1 Program"
+          code: "AWADMOU1PRG"
+          type_id: "REC: type1.id"
+          school_id: "REC: school1.id"
+          academic_year_id: "REC: academic_year1.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source1.id"]]]
+          deduction_journal_id: "REC: journal1.id"
+          discount_account_id: "REC: discount_account1.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product1.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Create the Admission-sourced award, no explicit operating unit"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award1"
+        values:
+          program_id: "REC: program1.id"
+          source_type: "admission"
+          admission_id: "REC: admission1.id"
+          student_id: "REC: admission1.school_student_id.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account1.id"
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "AWADMOU1 Benefit Line"
+                product_id: "REC: product1.id"
+                percentage: 40.0
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source1.id"
+                percentage: 100.0
+
+      - step: "Assert operating unit was derived from the Admission's School"
+        action: "assert"
+        target: "award1"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: ou1"
+
+  - name: "Award Admission OU - write changing admission_id moves operating_unit_id"
+    steps:
+      # ── Shared fixture chain (suffix AWADMOU2) ───────────────────
+      - step: "Create partner for Operating Unit A"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou2_a_partner"
+        values:
+          name: "Award Admission Write OU A Partner"
+
+      - step: "Create Operating Unit A"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou2_a"
+        values:
+          name: "Award Admission Write OU A"
+          code: "AWADMOU2A"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ou2_a_partner.id"
+
+      - step: "Create partner for Operating Unit B"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou2_b_partner"
+        values:
+          name: "Award Admission Write OU B Partner"
+
+      - step: "Create Operating Unit B"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou2_b"
+        values:
+          name: "Award Admission Write OU B"
+          code: "AWADMOU2B"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ou2_b_partner.id"
+
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type2"
+        values:
+          name: "AWADMOU2 Grade Type"
+          code: "AWADMOU2GT"
+
+      - step: "Create School A with Operating Unit A"
+        action: "create"
+        model: "school"
+        save_as: "school2_a"
+        values:
+          name: "AWADMOU2 School A"
+          code: "AWADMOU2SCA"
+          grade_type_id: "REC: grade_type2.id"
+          operating_unit_ids: [[6, 0, ["REC: ou2_a.id"]]]
+
+      - step: "Create School B with Operating Unit B"
+        action: "create"
+        model: "school"
+        save_as: "school2_b"
+        values:
+          name: "AWADMOU2 School B"
+          code: "AWADMOU2SCB"
+          grade_type_id: "REC: grade_type2.id"
+          operating_unit_ids: [[6, 0, ["REC: ou2_b.id"]]]
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade2"
+        values:
+          name: "AWADMOU2 Grade"
+          code: "AWADMOU2GR"
+          type_id: "REC: grade_type2.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year2"
+        values:
+          name: "AWADMOU2 Academic Year"
+          code: "AWADMOU2AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term2"
+        values:
+          name: "AWADMOU2 Term"
+          code: "AWADMOU2TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year2.id"
+
+      - step: "Create Admission A's contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "admission_contact2_a"
+        values:
+          name: "AWADMOU2 Admission Contact A"
+
+      - step: "Create Admission A (School A)"
+        action: "create"
+        model: "school_admission"
+        save_as: "admission2_a"
+        values:
+          academic_year_id: "REC: academic_year2.id"
+          academic_term_id: "REC: academic_term2.id"
+          school_id: "REC: school2_a.id"
+          grade_id: "REC: grade2.id"
+          student_id: "REC: admission_contact2_a.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm Admission A as admin"
+        action: "call"
+        target: "admission2_a"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve Admission A as admin (auto-opens)"
+        action: "call"
+        target: "admission2_a"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create Admission B's contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "admission_contact2_b"
+        values:
+          name: "AWADMOU2 Admission Contact B"
+
+      - step: "Create Admission B (School B)"
+        action: "create"
+        model: "school_admission"
+        save_as: "admission2_b"
+        values:
+          academic_year_id: "REC: academic_year2.id"
+          academic_term_id: "REC: academic_term2.id"
+          school_id: "REC: school2_b.id"
+          grade_id: "REC: grade2.id"
+          student_id: "REC: admission_contact2_b.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm Admission B as admin"
+        action: "call"
+        target: "admission2_b"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve Admission B as admin (auto-opens)"
+        action: "call"
+        target: "admission2_b"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic2"
+        values:
+          name: "AWADMOU2 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source2"
+        values:
+          name: "AWADMOU2 Funding Source"
+          code: "AWADMOU2FS"
+          analytic_account_id: "REC: analytic2.id"
+
+      - step: "Create the product covered by the Benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "product2"
+        values:
+          name: "AWADMOU2 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal2"
+        values:
+          name: "AWADMOU2 Journal"
+          code: "JAWADMOU2"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income2"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account2"
+        values:
+          name: "AWADMOU2 Discount Account"
+          code: "AWADMOU2DA"
+          user_type_id: "REC: account_type_income2.id"
+          reconcile: false
+
+      - step:
+          "Create the scholarship type (tied to School A, unrelated to the award's
+          eventual School B)"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type2"
+        values:
+          name: "AWADMOU2 Type"
+          code: "AWADMOU2TY"
+          deduction_journal_id: "REC: journal2.id"
+          discount_account_id: "REC: discount_account2.id"
+
+      - step: "Create the scholarship program (tied to School A)"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program2"
+        values:
+          name: "AWADMOU2 Program"
+          code: "AWADMOU2PRG"
+          type_id: "REC: type2.id"
+          school_id: "REC: school2_a.id"
+          academic_year_id: "REC: academic_year2.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source2.id"]]]
+          deduction_journal_id: "REC: journal2.id"
+          discount_account_id: "REC: discount_account2.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product2.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Create the award for Admission A (School A)"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award2"
+        values:
+          program_id: "REC: program2.id"
+          source_type: "admission"
+          admission_id: "REC: admission2_a.id"
+          student_id: "REC: admission2_a.school_student_id.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account2.id"
+
+      - step: "Assert operating unit was derived from School A"
+        action: "assert"
+        target: "award2"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: ou2_a"
+
+      - step: "Write admission_id to Admission B (School B)"
+        action: "write"
+        target: "award2"
+        values:
+          admission_id: "REC: admission2_b.id"
+          student_id: "REC: admission2_b.school_student_id.id"
+
+      - step: "Assert operating unit moved to School B"
+        action: "assert"
+        target: "award2"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: ou2_b"
+
+  - name: "Award Admission OU - explicit operating_unit_id is never overridden"
+    steps:
+      # ── Shared fixture chain (suffix AWADMOU3) ───────────────────
+      - step: "Create partner for the school's own (derivable) operating unit"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou3_derived_partner"
+        values:
+          name: "Award Admission Explicit OU Derived Partner"
+
+      - step: "Create the school's own operating unit"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou3_derived"
+        values:
+          name: "Award Admission Explicit OU Derived"
+          code: "AWADMOU3D"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ou3_derived_partner.id"
+
+      - step: "Create partner for the explicitly-chosen operating unit"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou3_explicit_partner"
+        values:
+          name: "Award Admission Explicit OU Explicit Partner"
+
+      - step: "Create the explicitly-chosen operating unit"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou3_explicit"
+        values:
+          name: "Award Admission Explicit OU Explicit"
+          code: "AWADMOU3E"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ou3_explicit_partner.id"
+
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type3"
+        values:
+          name: "AWADMOU3 Grade Type"
+          code: "AWADMOU3GT"
+
+      - step: "Create the school with exactly one (derivable) operating unit"
+        action: "create"
+        model: "school"
+        save_as: "school3"
+        values:
+          name: "AWADMOU3 School"
+          code: "AWADMOU3SC"
+          grade_type_id: "REC: grade_type3.id"
+          operating_unit_ids: [[6, 0, ["REC: ou3_derived.id"]]]
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade3"
+        values:
+          name: "AWADMOU3 Grade"
+          code: "AWADMOU3GR"
+          type_id: "REC: grade_type3.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year3"
+        values:
+          name: "AWADMOU3 Academic Year"
+          code: "AWADMOU3AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term3"
+        values:
+          name: "AWADMOU3 Term"
+          code: "AWADMOU3TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year3.id"
+
+      - step: "Create the admission student's contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "admission_contact3"
+        values:
+          name: "AWADMOU3 Admission Contact"
+
+      - step: "Create the admission"
+        action: "create"
+        model: "school_admission"
+        save_as: "admission3"
+        values:
+          academic_year_id: "REC: academic_year3.id"
+          academic_term_id: "REC: academic_term3.id"
+          school_id: "REC: school3.id"
+          grade_id: "REC: grade3.id"
+          student_id: "REC: admission_contact3.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm the admission as admin"
+        action: "call"
+        target: "admission3"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the admission as admin (auto-opens)"
+        action: "call"
+        target: "admission3"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic3"
+        values:
+          name: "AWADMOU3 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source3"
+        values:
+          name: "AWADMOU3 Funding Source"
+          code: "AWADMOU3FS"
+          analytic_account_id: "REC: analytic3.id"
+
+      - step: "Create the product covered by the Benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "product3"
+        values:
+          name: "AWADMOU3 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal3"
+        values:
+          name: "AWADMOU3 Journal"
+          code: "JAWADMOU3"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income3"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account3"
+        values:
+          name: "AWADMOU3 Discount Account"
+          code: "AWADMOU3DA"
+          user_type_id: "REC: account_type_income3.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type3"
+        values:
+          name: "AWADMOU3 Type"
+          code: "AWADMOU3TY"
+          deduction_journal_id: "REC: journal3.id"
+          discount_account_id: "REC: discount_account3.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program3"
+        values:
+          name: "AWADMOU3 Program"
+          code: "AWADMOU3PRG"
+          type_id: "REC: type3.id"
+          school_id: "REC: school3.id"
+          academic_year_id: "REC: academic_year3.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source3.id"]]]
+          deduction_journal_id: "REC: journal3.id"
+          discount_account_id: "REC: discount_account3.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product3.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Create the Admission-sourced award WITH an explicit operating unit"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award3"
+        values:
+          program_id: "REC: program3.id"
+          source_type: "admission"
+          admission_id: "REC: admission3.id"
+          student_id: "REC: admission3.school_student_id.id"
+          operating_unit_id: "REC: ou3_explicit.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account3.id"
+
+      - step: "Assert the explicit operating unit was kept, not the derived one"
+        action: "assert"
+        target: "award3"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: ou3_explicit"
+
+  - name:
+      "Award Enrollment OU - regression, still derives operating_unit_id from
+      Enrollment's School"
+    steps:
+      # ── Shared fixture chain (suffix AWADMOU4) ───────────────────
+      - step: "Create partner for the school's own operating unit"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou4_partner"
+        values:
+          name: "Award Enrollment Regression OU4 Partner"
+
+      - step: "Create the school's own operating unit"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou4"
+        values:
+          name: "Award Enrollment Regression OU4"
+          code: "AWADMOU4"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ou4_partner.id"
+
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type4"
+        values:
+          name: "AWADMOU4 Grade Type"
+          code: "AWADMOU4GT"
+
+      - step: "Create the school with exactly one operating unit"
+        action: "create"
+        model: "school"
+        save_as: "school4"
+        values:
+          name: "AWADMOU4 School"
+          code: "AWADMOU4SC"
+          grade_type_id: "REC: grade_type4.id"
+          operating_unit_ids: [[6, 0, ["REC: ou4.id"]]]
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade4"
+        values:
+          name: "AWADMOU4 Grade"
+          code: "AWADMOU4GR"
+          type_id: "REC: grade_type4.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class4"
+        values:
+          name: "AWADMOU4 Class"
+          code: "AWADMOU4CL"
+          school_id: "REC: school4.id"
+          grade_id: "REC: grade4.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year4"
+        values:
+          name: "AWADMOU4 Academic Year"
+          code: "AWADMOU4AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term4"
+        values:
+          name: "AWADMOU4 Term"
+          code: "AWADMOU4TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year4.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact4"
+        values:
+          name: "AWADMOU4 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "student4"
+        values:
+          name: "AWADMOU4 Student"
+          code: "AWADMOU4ST"
+          contact_id: "REC: contact4.id"
+          school_id: "REC: school4.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment4"
+        values:
+          academic_year_id: "REC: academic_year4.id"
+          academic_term_id: "REC: academic_term4.id"
+          school_id: "REC: school4.id"
+          grade_id: "REC: grade4.id"
+          grade_class_id: "REC: grade_class4.id"
+          student_id: "REC: student4.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic4"
+        values:
+          name: "AWADMOU4 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source4"
+        values:
+          name: "AWADMOU4 Funding Source"
+          code: "AWADMOU4FS"
+          analytic_account_id: "REC: analytic4.id"
+
+      - step: "Create the product covered by the Benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "product4"
+        values:
+          name: "AWADMOU4 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal4"
+        values:
+          name: "AWADMOU4 Journal"
+          code: "JAWADMOU4"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income4"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account4"
+        values:
+          name: "AWADMOU4 Discount Account"
+          code: "AWADMOU4DA"
+          user_type_id: "REC: account_type_income4.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type4"
+        values:
+          name: "AWADMOU4 Type"
+          code: "AWADMOU4TY"
+          deduction_journal_id: "REC: journal4.id"
+          discount_account_id: "REC: discount_account4.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program4"
+        values:
+          name: "AWADMOU4 Program"
+          code: "AWADMOU4PRG"
+          type_id: "REC: type4.id"
+          school_id: "REC: school4.id"
+          academic_year_id: "REC: academic_year4.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source4.id"]]]
+          deduction_journal_id: "REC: journal4.id"
+          discount_account_id: "REC: discount_account4.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product4.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Create the Enrollment-sourced award (Billing Source default)"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award4"
+        values:
+          program_id: "REC: program4.id"
+          student_id: "REC: student4.id"
+          enrollment_id: "REC: enrollment4.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account4.id"
+
+      - step: "Assert Billing Source stayed at the default Enrollment"
+        action: "assert"
+        target: "award4"
+        asserts:
+          source_type:
+            type: "value"
+            expected: "enrollment"
+
+      - step: "Assert operating unit was still derived from the Enrollment's School"
+        action: "assert"
+        target: "award4"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: ou4"
+
+  - name:
+      "Award Admission OU - negative, School with zero or multiple operating units
+      leaves operating_unit_id unchanged"
+    steps:
+      # ── Shared fixture chain (suffix AWADMOU5) ───────────────────
+      - step: "Create partner for the initial (unambiguous) operating unit"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou5_initial_partner"
+        values:
+          name: "Award Admission Negative OU5 Initial Partner"
+
+      - step: "Create the initial (unambiguous) operating unit"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou5_initial"
+        values:
+          name: "Award Admission Negative OU5 Initial"
+          code: "AWADMOU5I"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ou5_initial_partner.id"
+
+      - step: "Create partner for the second operating unit (multi-OU school)"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou5_multi_a_partner"
+        values:
+          name: "Award Admission Negative OU5 Multi A Partner"
+
+      - step: "Create operating unit A (assigned to the multi-OU school)"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou5_multi_a"
+        values:
+          name: "Award Admission Negative OU5 Multi A"
+          code: "AWADMOU5MA"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ou5_multi_a_partner.id"
+
+      - step: "Create partner for the third operating unit (multi-OU school)"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou5_multi_b_partner"
+        values:
+          name: "Award Admission Negative OU5 Multi B Partner"
+
+      - step: "Create operating unit B (assigned to the multi-OU school)"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou5_multi_b"
+        values:
+          name: "Award Admission Negative OU5 Multi B"
+          code: "AWADMOU5MB"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ou5_multi_b_partner.id"
+
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type5"
+        values:
+          name: "AWADMOU5 Grade Type"
+          code: "AWADMOU5GT"
+
+      - step: "Create the initial School with exactly one operating unit"
+        action: "create"
+        model: "school"
+        save_as: "school5_initial"
+        values:
+          name: "AWADMOU5 School Initial"
+          code: "AWADMOU5SCI"
+          grade_type_id: "REC: grade_type5.id"
+          operating_unit_ids: [[6, 0, ["REC: ou5_initial.id"]]]
+
+      - step: "Create a School with ZERO operating units"
+        action: "create"
+        model: "school"
+        save_as: "school5_zero"
+        values:
+          name: "AWADMOU5 School Zero"
+          code: "AWADMOU5SCZ"
+          grade_type_id: "REC: grade_type5.id"
+
+      - step: "Create a School with TWO operating units"
+        action: "create"
+        model: "school"
+        save_as: "school5_multi"
+        values:
+          name: "AWADMOU5 School Multi"
+          code: "AWADMOU5SCM"
+          grade_type_id: "REC: grade_type5.id"
+          operating_unit_ids: [[6, 0, ["REC: ou5_multi_a.id", "REC: ou5_multi_b.id"]]]
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade5"
+        values:
+          name: "AWADMOU5 Grade"
+          code: "AWADMOU5GR"
+          type_id: "REC: grade_type5.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year5"
+        values:
+          name: "AWADMOU5 Academic Year"
+          code: "AWADMOU5AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term5"
+        values:
+          name: "AWADMOU5 Term"
+          code: "AWADMOU5TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year5.id"
+
+      - step: "Create the initial admission's contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "admission_contact5_initial"
+        values:
+          name: "AWADMOU5 Admission Contact Initial"
+
+      - step: "Create the initial admission (unambiguous School)"
+        action: "create"
+        model: "school_admission"
+        save_as: "admission5_initial"
+        values:
+          academic_year_id: "REC: academic_year5.id"
+          academic_term_id: "REC: academic_term5.id"
+          school_id: "REC: school5_initial.id"
+          grade_id: "REC: grade5.id"
+          student_id: "REC: admission_contact5_initial.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm the initial admission as admin"
+        action: "call"
+        target: "admission5_initial"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the initial admission as admin (auto-opens)"
+        action: "call"
+        target: "admission5_initial"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the zero-OU admission's contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "admission_contact5_zero"
+        values:
+          name: "AWADMOU5 Admission Contact Zero"
+
+      - step: "Create the zero-OU admission (School with zero operating units)"
+        action: "create"
+        model: "school_admission"
+        save_as: "admission5_zero"
+        values:
+          academic_year_id: "REC: academic_year5.id"
+          academic_term_id: "REC: academic_term5.id"
+          school_id: "REC: school5_zero.id"
+          grade_id: "REC: grade5.id"
+          student_id: "REC: admission_contact5_zero.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm the zero-OU admission as admin"
+        action: "call"
+        target: "admission5_zero"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the zero-OU admission as admin (auto-opens)"
+        action: "call"
+        target: "admission5_zero"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the multi-OU admission's contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "admission_contact5_multi"
+        values:
+          name: "AWADMOU5 Admission Contact Multi"
+
+      - step: "Create the multi-OU admission (School with two operating units)"
+        action: "create"
+        model: "school_admission"
+        save_as: "admission5_multi"
+        values:
+          academic_year_id: "REC: academic_year5.id"
+          academic_term_id: "REC: academic_term5.id"
+          school_id: "REC: school5_multi.id"
+          grade_id: "REC: grade5.id"
+          student_id: "REC: admission_contact5_multi.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm the multi-OU admission as admin"
+        action: "call"
+        target: "admission5_multi"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the multi-OU admission as admin (auto-opens)"
+        action: "call"
+        target: "admission5_multi"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic5"
+        values:
+          name: "AWADMOU5 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source5"
+        values:
+          name: "AWADMOU5 Funding Source"
+          code: "AWADMOU5FS"
+          analytic_account_id: "REC: analytic5.id"
+
+      - step: "Create the product covered by the Benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "product5"
+        values:
+          name: "AWADMOU5 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal5"
+        values:
+          name: "AWADMOU5 Journal"
+          code: "JAWADMOU5"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income5"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account5"
+        values:
+          name: "AWADMOU5 Discount Account"
+          code: "AWADMOU5DA"
+          user_type_id: "REC: account_type_income5.id"
+          reconcile: false
+
+      - step:
+          "Create the scholarship type (tied to School Initial, unrelated to the award's
+          later Schools)"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type5"
+        values:
+          name: "AWADMOU5 Type"
+          code: "AWADMOU5TY"
+          deduction_journal_id: "REC: journal5.id"
+          discount_account_id: "REC: discount_account5.id"
+
+      - step: "Create the scholarship program (tied to School Initial)"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program5"
+        values:
+          name: "AWADMOU5 Program"
+          code: "AWADMOU5PRG"
+          type_id: "REC: type5.id"
+          school_id: "REC: school5_initial.id"
+          academic_year_id: "REC: academic_year5.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source5.id"]]]
+          deduction_journal_id: "REC: journal5.id"
+          discount_account_id: "REC: discount_account5.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product5.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Create the award against the initial (unambiguous) Admission"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award5"
+        values:
+          program_id: "REC: program5.id"
+          source_type: "admission"
+          admission_id: "REC: admission5_initial.id"
+          student_id: "REC: admission5_initial.school_student_id.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account5.id"
+
+      - step: "Assert the baseline operating unit was derived"
+        action: "assert"
+        target: "award5"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: ou5_initial"
+
+      - step: "Write admission_id to the zero-OU Admission"
+        action: "write"
+        target: "award5"
+        values:
+          admission_id: "REC: admission5_zero.id"
+          student_id: "REC: admission5_zero.school_student_id.id"
+
+      - step:
+          "Assert operating_unit_id is UNCHANGED after the zero-OU write (not cleared)"
+        action: "assert"
+        target: "award5"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: ou5_initial"
+
+      - step: "Write admission_id to the multi-OU Admission"
+        action: "write"
+        target: "award5"
+        values:
+          admission_id: "REC: admission5_multi.id"
+          student_id: "REC: admission5_multi.school_student_id.id"
+
+      - step:
+          "Assert operating_unit_id is STILL UNCHANGED after the multi-OU write (not
+          forced to either unit)"
+        action: "assert"
+        target: "award5"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: ou5_initial"
