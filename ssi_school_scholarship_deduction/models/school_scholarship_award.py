@@ -99,13 +99,19 @@ Solution: Check create deduction policy prerequisite
     def _get_due_schedule(self, date_start=False, date_end=False):
         """Filter this Award's due, invoiced, unrealized Schedule lines.
 
-        A Schedule line is due once its own Payment Term has actually
-        been invoiced (``invoiced``) and that invoice is open
-        (``open``) -- together these two conditions make it
-        impossible for a Deduction to be created ahead of its own
-        invoice. A line already realized never matches (its own
-        ``state`` is no longer ``scheduled``), which is what makes
-        running this twice after the first Deduction opens idempotent.
+        A Schedule line is due once its own ``payment_term_state`` is
+        ``invoiced`` and its own linked ``customer_invoice_id`` is
+        open -- together these two conditions make it impossible for
+        a Deduction to be created ahead of its own invoice. Both
+        fields are stored, source-aware computes owned by
+        ``school_scholarship_award_schedule`` itself, so this filter
+        reads them directly instead of traversing into a billing
+        source's own Payment Term -- which is what lets an
+        admission-based Award's Schedule lines match here too,
+        without a source-specific branch. A line already realized
+        never matches (its own ``state`` is no longer ``scheduled``),
+        which is what makes running this twice after the first
+        Deduction opens idempotent.
 
         :param date_start: earliest Schedule Date to include, or
             ``False`` for no lower bound
@@ -117,8 +123,8 @@ Solution: Check create deduction policy prerequisite
         self.ensure_one()
         return self.schedule_ids.filtered(
             lambda schedule: schedule.state == "scheduled"
-            and schedule.payment_term_id.state == "invoiced"
-            and schedule.payment_term_id.customer_invoice_id.state == "open"
+            and schedule.payment_term_state == "invoiced"
+            and schedule.customer_invoice_id.state == "open"
             and (not date_start or schedule.date >= date_start)
             and (not date_end or schedule.date <= date_end)
         )

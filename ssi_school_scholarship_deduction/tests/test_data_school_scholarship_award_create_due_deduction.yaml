@@ -1131,3 +1131,168 @@ scenarios:
         method: "action_open_create_due_deduction_wizard"
         expect_error:
           type: "UserError"
+
+      # ══════════════════════════════════════════════════════════════
+      # Sub-case F -- negative: a Schedule line whose own Payment Term
+      # is invoiced, but whose linked invoice was since cancelled (no
+      # longer Open), never matches _get_due_schedule -- the term's
+      # customer_invoice_id link survives a cancel, so this only
+      # exercises the invoice-state half of the filter, not the
+      # payment_term_state half already covered by Sub-case A/D.
+      # ══════════════════════════════════════════════════════════════
+      - step: "F: create the Payment Term"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "cdd_f_term"
+        values:
+          enrollment_id: "REC: cdd_enrollment.id"
+          name: "CDD F Term"
+          date_invoice: 2026-08-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: cdd_product.id"
+                name: "CDD F Term Fee"
+                account_id: "REC: cdd_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "F: create the invoice"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "cdd_f_invoice"
+        values:
+          name: "CDD-F-INV-001"
+          type_id: "REC: cdd_invoice_type.id"
+          partner_id: "REC: cdd_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: cdd_journal.id"
+          receivable_account_id: "REC: cdd_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a Line to CDD F Invoice (needed to stop at Open, not Done)"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "cdd_f_invoice_line"
+        values:
+          customer_invoice_id: "REC: cdd_f_invoice.id"
+          name: "CDD F Invoice Line"
+          account_id: "REC: cdd_income_account.id"
+          uom_quantity: 1.0
+          price_unit: 1000000.0
+
+      - step: "F: confirm the invoice"
+        action: "call"
+        target: "cdd_f_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "F: approve the invoice (opens it)"
+        action: "call"
+        target: "cdd_f_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "F: link the invoice to the term"
+        action: "write"
+        target: "cdd_f_term"
+        values:
+          customer_invoice_id: "REC: cdd_f_invoice.id"
+
+      - step: "F: assert the term is now invoiced"
+        action: "assert"
+        target: "cdd_f_term"
+        asserts:
+          state:
+            type: "value"
+            expected: "invoiced"
+
+      - step: "F: cancel the invoice (no longer Open)"
+        action: "call"
+        target: "cdd_f_invoice"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "F: create the award"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "cdd_f_award"
+        values:
+          name: "CDD-F-AWARD-001"
+          program_id: "REC: cdd_program.id"
+          student_id: "REC: cdd_student.id"
+          enrollment_id: "REC: cdd_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: cdd_discount_account.id"
+          deduction_journal_id: "REC: cdd_journal.id"
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "CDD F Benefit"
+                product_id: "REC: cdd_product.id"
+                percentage: 100.0
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: cdd_funding_source_a.id"
+                percentage: 100.0
+
+      - step: "F: find the award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: cdd_f_award.id"]]
+        limit: 1
+        save_as: "cdd_f_benefit"
+
+      - step: "F: create the Schedule line (term invoiced, invoice now cancelled)"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "cdd_f_schedule"
+        values:
+          benefit_id: "REC: cdd_f_benefit.id"
+          payment_term_id: "REC: cdd_f_term.id"
+          date: "REC: cdd_f_term.date_invoice"
+          state: "scheduled"
+
+      - step: "F: assert the Schedule line mirrors invoiced/cancelled"
+        action: "assert"
+        target: "cdd_f_schedule"
+        asserts:
+          payment_term_state:
+            type: "value"
+            expected: "invoiced"
+          customer_invoice_id:
+            type: "m2o"
+            expected: "REC: cdd_f_invoice"
+
+      - step: "F: run _create_due_deduction -- no Deduction is created"
+        action: "call"
+        target: "cdd_f_award"
+        method: "_create_due_deduction"
+
+      - step: "F: assert no Deduction was created for the award"
+        action: "search"
+        model: "school_scholarship_deduction"
+        domain: [["award_id", "=", "REC: cdd_f_award.id"]]
+        save_as: "cdd_f_deductions"
+        expect_count: 0
