@@ -1,0 +1,129 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ssi_school_scholarship_admission
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award__admission_id
+#: model:ir.model.fields.selection,name:ssi_school_scholarship_admission.selection__school_scholarship_award__source_type__admission
+msgid "Admission"
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award_schedule__admission_payment_term_id
+msgid "Admission Payment Term"
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_scholarship_award_schedule__admission_payment_term_id
+msgid ""
+"Admission payment term this Schedule line realizes. Set instead of Payment "
+"Term when this line was generated from an Admission-sourced award."
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_scholarship_award__admission_id
+msgid ""
+"Admission this award is billed against. Must already be Open or Done -- an "
+"admission earlier than Open has not yet created its School Student, so it "
+"cannot be billed against. Required when Billing Source is Admission -- "
+"enforced by ``_check_billing_source``, not by this field itself."
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_admission.school_admission_view_form
+msgid "Awards"
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award__source_type
+msgid "Billing Source"
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_scholarship_award__source_type
+msgid ""
+"Billing source this award is billed against. This module only registers "
+"Enrollment -- extension modules add further values with ``selection_add`` "
+"and override the ``_get_source_*`` hooks to match."
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award_schedule__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award_schedule__id
+msgid "ID"
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award_schedule____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission__scholarship_award_count
+msgid "Number of scholarship awards linked to this admission."
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission__amount_scholarship
+msgid "Scholarship Amount"
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission__scholarship_award_count
+msgid "Scholarship Award Count"
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission__scholarship_award_ids
+msgid "Scholarship Awards"
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission__scholarship_award_ids
+msgid "Scholarship awards linked to this admission."
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model,name:ssi_school_scholarship_admission.model_school_admission
+msgid "School Admission"
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model,name:ssi_school_scholarship_admission.model_school_scholarship_award
+msgid "School Scholarship Award"
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model,name:ssi_school_scholarship_admission.model_school_scholarship_award_schedule
+msgid "School Scholarship Award Schedule"
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission__amount_scholarship
+msgid ""
+"Total amount awarded by this admission's Open or Done scholarship awards. A "
+"commitment figure, not a realization -- realization becomes available once "
+"the deduction module ships. Restricted to the Scholarship Award Viewer "
+"group."
+msgstr ""
