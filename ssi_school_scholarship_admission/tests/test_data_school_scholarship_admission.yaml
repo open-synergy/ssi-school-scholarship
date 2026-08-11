@@ -81,10 +81,10 @@ scenarios:
             type: "value"
             expected: "confirm"
 
-      # approve_ok shares its compute method with every other policy
-      # field, only re-triggered by @api.depends("policy_template_id")
-      # -- an assert alone does not force recompute (test-traps.md T-04,
-      # also seen in ssi_school_admission's own official test).
+      # The Confirm step above carries `asserts`, and that is what makes
+      # this Approve work: running asserts triggers the library's
+      # _refresh(), dropping the approve_ok=False cached while
+      # action_confirm read confirm_ok (test-traps.md T-04).
       - step: "Approve the admission as admin (auto-opens)"
         action: "call"
         target: "admission1"
@@ -366,6 +366,25 @@ scenarios:
         method: "action_confirm"
         as_user: "base.user_admin"
 
+      # MANDATORY refresh point between Confirm and Approve. Every
+      # policy field (confirm_ok, approve_ok, ...) is filled by ONE
+      # compute that only re-triggers on
+      # @api.depends("policy_template_id"), so reading confirm_ok inside
+      # action_confirm -- while state is still Draft -- also caches
+      # approve_ok=False. Approve then reads that stale False and raises
+      # "Document is not allowed to approve". A step carrying `asserts`
+      # is the only thing that forces the library's _refresh()
+      # (flush + invalidate); `auto_refresh` alone does not, because it
+      # is consulted only when a step reads fields.
+      # See odoo-development-unit-test, test-traps.md T-04.
+      - step: "Assert the admission reached Confirm before approving"
+        action: "assert"
+        target: "admission2"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
       - step: "Approve the admission as admin (auto-opens)"
         action: "call"
         target: "admission2"
@@ -465,6 +484,15 @@ scenarios:
         target: "admission3"
         method: "action_confirm"
         as_user: "base.user_admin"
+
+      # Refresh point required before Approve -- test-traps.md T-04.
+      - step: "Assert the admission reached Confirm before approving"
+        action: "assert"
+        target: "admission3"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the admission as admin (auto-opens)"
         action: "call"
@@ -614,6 +642,15 @@ scenarios:
         target: "award_open3"
         method: "action_confirm"
         as_user: "base.user_admin"
+
+      # Refresh point required before Approve -- test-traps.md T-04.
+      - step: "Assert the award reached Confirm before approving"
+        action: "assert"
+        target: "award_open3"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the award as admin (auto-opens, generates schedule)"
         action: "call"
@@ -889,6 +926,15 @@ scenarios:
         method: "action_confirm"
         as_user: "base.user_admin"
 
+      # Refresh point required before Approve -- test-traps.md T-04.
+      - step: "Assert the award reached Confirm before approving"
+        action: "assert"
+        target: "award4"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
       - step: "Approve the award as admin (auto-opens, generates schedule)"
         action: "call"
         target: "award4"
@@ -1142,6 +1188,15 @@ scenarios:
         method: "action_confirm"
         as_user: "base.user_admin"
 
+      # Refresh point required before Approve -- test-traps.md T-04.
+      - step: "Assert the second admission reached Confirm before approving"
+        action: "assert"
+        target: "admission5b"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
       - step: "Approve the second admission as admin (auto-opens)"
         action: "call"
         target: "admission5b"
@@ -1205,6 +1260,15 @@ scenarios:
         target: "admission5c"
         method: "action_confirm"
         as_user: "base.user_admin"
+
+      # Refresh point required before Approve -- test-traps.md T-04.
+      - step: "Assert the third admission reached Confirm before approving"
+        action: "assert"
+        target: "admission5c"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the third admission as admin (auto-opens)"
         action: "call"

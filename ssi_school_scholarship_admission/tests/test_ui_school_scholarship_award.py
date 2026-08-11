@@ -78,10 +78,27 @@ class TestUiSchoolScholarshipAward(HttpSavepointCase):
                 "school_id": cls.tour_school.id,
                 "grade_id": tour_grade.id,
                 "student_id": tour_student_contact.id,
+                # setUpClass runs as SUPERUSER, so without this the
+                # record would be owned by superuser and record rule
+                # school_admission_internal_user_rule
+                # ([('user_id','=',user.id)]) would hide it from the
+                # tour's own session, which logs in as admin -- the m2o
+                # dropdown would simply never offer it.
+                "user_id": cls.user_admin.id,
             }
         )
-        cls.tour_admission.action_confirm()
-        cls.tour_admission.action_approve_approval()
+        # Advancing the fixture past its policy gate is Pre-Condition
+        # setup, not the behaviour under test: the tour asserts the
+        # award form, and it only needs an Admission already Open (so
+        # school_student_id exists and the Admission field's domain
+        # accepts it). Calling the transitions bare would fail on
+        # approve_ok, which one shared compute caches as False while
+        # action_confirm reads confirm_ok with state still Draft
+        # (odoo-development-unit-test, test-traps.md T-04). Same helper
+        # shape as ssi_school_admission's own tour fixtures.
+        bypass = cls.tour_admission.with_context(bypass_policy_check=True)
+        bypass.action_confirm()
+        bypass.action_approve_approval()
 
         account_type_income = cls.env.ref("account.data_account_type_revenue")
         tour_journal = cls.env["account.journal"].create(
