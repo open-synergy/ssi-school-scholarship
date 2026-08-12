@@ -348,13 +348,21 @@ scenarios:
       # with every other policy field, and that method is only
       # re-triggered by @api.depends("policy_template_id"). Confirming
       # already cached approve_ok=False (no approver existed yet), so
-      # it must be busted explicitly before Approve reads it -- an
-      # assert alone does not force recompute (test-traps.md pattern
-      # also used by ssi_school's enrollment tests).
-      - step: "Invalidate cache before approving (avoids stale policy cache)"
-        action: "call"
+      # it must be busted explicitly before Approve reads it.
+      # WAJIB: this assert step forces the library's _refresh()
+      # (flush + invalidate) before the approval policy is read.
+      # Without it, approve_ok is read from the stale cache filled
+      # by action_confirm -- back when approval.approval did not
+      # exist yet -- and Approve fails NONDETERMINISTICALLY
+      # (test-traps.md T-04; also used by ssi_school's enrollment
+      # tests).
+      - step: "Assert the award is Confirm before approving"
+        action: "assert"
         target: "award_main"
-        method: "invalidate_cache"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the award as admin"
         action: "call"
@@ -778,6 +786,530 @@ scenarios:
               award_id: "REC: award2"
           - set:
               scope_id: "REC: scope_line2_category"
+          - assert:
+              product_category_id:
+                type: "m2o"
+                expected: "REF: product.product_category_all"
+              product_id:
+                type: "value"
+                operator: "is_falsy"
+
+  - name: "Award - Onchange Copies All Program Account Fields"
+    steps:
+      # ── Shared fixture chain (suffix AW4) ────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type4"
+        values:
+          name: "AW4 Grade Type"
+          code: "AW4GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school4"
+        values:
+          name: "AW4 School"
+          code: "AW4SC"
+          grade_type_id: "REC: grade_type4.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year4"
+        values:
+          name: "AW4 Academic Year"
+          code: "AW4AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic4"
+        values:
+          name: "AW4 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source4"
+        values:
+          name: "AW4 Funding Source"
+          code: "AW4FS"
+          analytic_account_id: "REC: analytic4.id"
+
+      - step: "Create the product covered by the baseline scope line"
+        action: "create"
+        model: "product.product"
+        save_as: "product4"
+        values:
+          name: "AW4 Product"
+          type: "service"
+
+      - step: "Create the journal used by the scholarship type's Deduction Journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "type_journal4"
+        values:
+          name: "AW4 Type Journal"
+          code: "JAW4TY"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the account used by the scholarship type's Discount Account"
+        action: "create"
+        model: "account.account"
+        save_as: "type_account4"
+        values:
+          name: "AW4 Type Discount Account"
+          code: "AW4TA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type (only used as the Program's required Type)"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type4"
+        values:
+          name: "AW4 Type"
+          code: "AW4TY"
+          deduction_journal_id: "REC: type_journal4.id"
+          discount_account_id: "REC: type_account4.id"
+
+      # ── The nine accounting fields + Is Employee Benefit that the
+      # Award's onchange_* methods copy from the Program ───────────
+      - step: "Create the Program's Deduction Journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "program_deduction_journal4"
+        values:
+          name: "AW4 Program Deduction Journal"
+          code: "JAW4PD"
+          type: "sale"
+
+      - step: "Create the Program's Discount Account"
+        action: "create"
+        model: "account.account"
+        save_as: "program_discount_account4"
+        values:
+          name: "AW4 Program Discount Account"
+          code: "AW4PAD"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the Program's Employee Benefit Account"
+        action: "create"
+        model: "account.account"
+        save_as: "program_employee_benefit_account4"
+        values:
+          name: "AW4 Program Employee Benefit Account"
+          code: "AW4PAE"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the Program's Disbursement Journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "program_disbursement_journal4"
+        values:
+          name: "AW4 Program Disbursement Journal"
+          code: "JAW4PB"
+          type: "sale"
+
+      - step: "Create the Program's Expense Account"
+        action: "create"
+        model: "account.account"
+        save_as: "program_expense_account4"
+        values:
+          name: "AW4 Program Expense Account"
+          code: "AW4PAX"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the Program's Payable Account"
+        action: "create"
+        model: "account.account"
+        save_as: "program_payable_account4"
+        values:
+          name: "AW4 Program Payable Account"
+          code: "AW4PAP"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the Program's Deferred Discount Account"
+        action: "create"
+        model: "account.account"
+        save_as: "program_deferred_discount_account4"
+        values:
+          name: "AW4 Program Deferred Discount Account"
+          code: "AW4PADD"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the Program's Deferred Expense Account"
+        action: "create"
+        model: "account.account"
+        save_as: "program_deferred_expense_account4"
+        values:
+          name: "AW4 Program Deferred Expense Account"
+          code: "AW4PADE"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the Program's Recognition Journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "program_recognition_journal4"
+        values:
+          name: "AW4 Program Recognition Journal"
+          code: "JAW4PR"
+          type: "sale"
+
+      - step: "Create the scholarship program with every accounting field set"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program4"
+        values:
+          name: "AW4 Program"
+          code: "AW4PRG"
+          type_id: "REC: type4.id"
+          school_id: "REC: school4.id"
+          academic_year_id: "REC: academic_year4.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source4.id"]]]
+          deduction_journal_id: "REC: program_deduction_journal4.id"
+          discount_account_id: "REC: program_discount_account4.id"
+          employee_benefit_account_id: "REC: program_employee_benefit_account4.id"
+          disbursement_journal_id: "REC: program_disbursement_journal4.id"
+          expense_account_id: "REC: program_expense_account4.id"
+          payable_account_id: "REC: program_payable_account4.id"
+          deferred_discount_account_id: "REC: program_deferred_discount_account4.id"
+          deferred_expense_account_id: "REC: program_deferred_expense_account4.id"
+          recognition_journal_id: "REC: program_recognition_journal4.id"
+          is_employee_benefit: true
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product4.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      # ── Onchange (form): selecting the Program on a bare Award
+      # form copies all nine accounting fields plus Is Employee
+      # Benefit.
+      - step: "Open a new award form and select the Program"
+        action: form
+        model: "school_scholarship_award"
+        save: false
+        ops:
+          - set:
+              program_id: "REC: program4"
+          - assert:
+              deduction_journal_id:
+                type: "m2o"
+                expected: "REC: program_deduction_journal4"
+              discount_account_id:
+                type: "m2o"
+                expected: "REC: program_discount_account4"
+              employee_benefit_account_id:
+                type: "m2o"
+                expected: "REC: program_employee_benefit_account4"
+              disbursement_journal_id:
+                type: "m2o"
+                expected: "REC: program_disbursement_journal4"
+              expense_account_id:
+                type: "m2o"
+                expected: "REC: program_expense_account4"
+              payable_account_id:
+                type: "m2o"
+                expected: "REC: program_payable_account4"
+              deferred_discount_account_id:
+                type: "m2o"
+                expected: "REC: program_deferred_discount_account4"
+              deferred_expense_account_id:
+                type: "m2o"
+                expected: "REC: program_deferred_expense_account4"
+              recognition_journal_id:
+                type: "m2o"
+                expected: "REC: program_recognition_journal4"
+              is_employee_benefit:
+                type: "value"
+                expected: true
+
+  - name: "Award Benefit - Onchange Copies All Scope Fields"
+    steps:
+      # ── Shared fixture chain (suffix AB1) ────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type_ab"
+        values:
+          name: "AB1 Grade Type"
+          code: "AB1GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school_ab"
+        values:
+          name: "AB1 School"
+          code: "AB1SC"
+          grade_type_id: "REC: grade_type_ab.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year_ab"
+        values:
+          name: "AB1 Academic Year"
+          code: "AB1AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term_ab"
+        values:
+          name: "AB1 Term"
+          code: "AB1TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year_ab.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade_ab"
+        values:
+          name: "AB1 Grade"
+          code: "AB1GR"
+          type_id: "REC: grade_type_ab.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class_ab"
+        values:
+          name: "AB1 Class"
+          code: "AB1CL"
+          school_id: "REC: school_ab.id"
+          grade_id: "REC: grade_ab.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact_ab"
+        values:
+          name: "AB1 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "student_ab"
+        values:
+          name: "AB1 Student"
+          code: "AB1ST"
+          contact_id: "REC: contact_ab.id"
+          school_id: "REC: school_ab.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment_ab"
+        values:
+          academic_year_id: "REC: academic_year_ab.id"
+          academic_term_id: "REC: academic_term_ab.id"
+          school_id: "REC: school_ab.id"
+          grade_id: "REC: grade_ab.id"
+          grade_class_id: "REC: grade_class_ab.id"
+          student_id: "REC: student_ab.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_ab"
+        values:
+          name: "AB1 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source_ab"
+        values:
+          name: "AB1 Funding Source"
+          code: "AB1FS"
+          analytic_account_id: "REC: analytic_ab.id"
+
+      - step: "Create the journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal_ab"
+        values:
+          name: "AB1 Journal"
+          code: "JAB1"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account_ab"
+        values:
+          name: "AB1 Discount Account"
+          code: "AB1DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type_ab"
+        values:
+          name: "AB1 Type"
+          code: "AB1TY"
+          deduction_journal_id: "REC: journal_ab.id"
+          discount_account_id: "REC: discount_account_ab.id"
+
+      - step: "Create the product covered by the Product-based scope line"
+        action: "create"
+        model: "product.product"
+        save_as: "product_ab"
+        values:
+          name: "AB1 Product"
+          type: "service"
+
+      - step:
+          "Create the scholarship program with a Product and a Product-Category scope
+          line"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program_ab"
+        values:
+          name: "AB1 Program"
+          code: "AB1PRG"
+          type_id: "REC: type_ab.id"
+          school_id: "REC: school_ab.id"
+          academic_year_id: "REC: academic_year_ab.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source_ab.id"]]]
+          deduction_journal_id: "REC: journal_ab.id"
+          discount_account_id: "REC: discount_account_ab.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product_ab.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 300000.0
+                max_amount_per_period: 500000.0
+                periodicity: "monthly"
+            - - 0
+              - 0
+              - scope_basis: "product_category"
+                product_category_id: "REF: product.product_category_all"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 35.0
+                amount_fixed: 0.0
+                max_amount_per_period: 0.0
+                periodicity: "quarterly"
+
+      - step: "Find the created Product-based scope line"
+        action: "search"
+        model: "school_scholarship_program_scope"
+        domain:
+          [["program_id", "=", "REC: program_ab.id"], ["scope_basis", "=", "product"]]
+        limit: 1
+        save_as: "scope_product_ab"
+
+      - step: "Find the created Product-Category-based scope line"
+        action: "search"
+        model: "school_scholarship_program_scope"
+        domain:
+          [
+            ["program_id", "=", "REC: program_ab.id"],
+            ["scope_basis", "=", "product_category"],
+          ]
+        limit: 1
+        save_as: "scope_category_ab"
+
+      - step: "Create a bare award to host the Benefit onchange test"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award_ab"
+        values:
+          program_id: "REC: program_ab.id"
+          student_id: "REC: student_ab.id"
+          enrollment_id: "REC: enrollment_ab.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+
+      # ── Onchange (form, Product-based Scope): Benefit Type,
+      # Product, Computation, Percentage, Fixed Amount, Max Amount
+      # per Period, and Periodicity are all copied from the scope;
+      # Product Category stays empty (this scope is not
+      # Product-Category-based).
+      - step: "Open a new Benefit line form and select the Product-based Scope"
+        action: form
+        model: "school_scholarship_award_benefit"
+        save: false
+        ops:
+          - set:
+              award_id: "REC: award_ab"
+          - set:
+              scope_id: "REC: scope_product_ab"
+          - assert:
+              benefit_type:
+                type: "value"
+                expected: "cash"
+              product_id:
+                type: "m2o"
+                expected: "REC: product_ab"
+              product_category_id:
+                type: "value"
+                operator: "is_falsy"
+              computation:
+                type: "value"
+                expected: "fixed"
+              percentage:
+                type: "value"
+                expected: 0.0
+              amount_fixed:
+                type: "value"
+                expected: 300000.0
+              max_amount_per_period:
+                type: "value"
+                expected: 500000.0
+              periodicity:
+                type: "value"
+                expected: "monthly"
+
+      # ── Onchange (form, Product-Category-based Scope): Product
+      # Category is copied; Product stays empty (this scope is not
+      # Product-based) -- the complementary branch of
+      # onchange_product_id / onchange_product_category_id.
+      - step: "Open a new Benefit line form and select the Product-Category Scope"
+        action: form
+        model: "school_scholarship_award_benefit"
+        save: false
+        ops:
+          - set:
+              award_id: "REC: award_ab"
+          - set:
+              scope_id: "REC: scope_category_ab"
           - assert:
               product_category_id:
                 type: "m2o"

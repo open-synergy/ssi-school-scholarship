@@ -440,6 +440,165 @@ scenarios:
                 type: "m2o"
                 expected: "REC: other_discount_account"
 
+  - name: "Program - Onchange Copies All Type Account Fields"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Get the account.account.type Current Assets reference"
+        action: "ref"
+        xml_id: "account.data_account_type_current_assets"
+        save_as: "account_type_asset"
+
+      - step: "Create the Deduction Journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "deduction_journal5"
+        values:
+          name: "Test Program Type 5 Deduction Journal"
+          code: "TPRGJ05"
+          type: "sale"
+
+      - step: "Create the Discount Account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account5"
+        values:
+          name: "Test Program Type 5 Discount Account"
+          code: "TPRGA05"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the Employee Benefit Account"
+        action: "create"
+        model: "account.account"
+        save_as: "employee_benefit_account5"
+        values:
+          name: "Test Program Type 5 Employee Benefit Account"
+          code: "TPRGA05E"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the Disbursement Journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "disbursement_journal5"
+        values:
+          name: "Test Program Type 5 Disbursement Journal"
+          code: "TPRGJ05B"
+          type: "sale"
+
+      - step: "Create the Expense Account"
+        action: "create"
+        model: "account.account"
+        save_as: "expense_account5"
+        values:
+          name: "Test Program Type 5 Expense Account"
+          code: "TPRGA05X"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the reconcilable Payable Account"
+        action: "create"
+        model: "account.account"
+        save_as: "payable_account5"
+        values:
+          name: "Test Program Type 5 Payable Account"
+          code: "TPRGA05P"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: true
+
+      - step: "Create the asset-type Deferred Discount Account"
+        action: "create"
+        model: "account.account"
+        save_as: "deferred_discount_account5"
+        values:
+          name: "Test Program Type 5 Deferred Discount Account"
+          code: "TPRGA05D"
+          user_type_id: "REC: account_type_asset.id"
+          reconcile: false
+
+      - step: "Create the asset-type Deferred Expense Account"
+        action: "create"
+        model: "account.account"
+        save_as: "deferred_expense_account5"
+        values:
+          name: "Test Program Type 5 Deferred Expense Account"
+          code: "TPRGA05F"
+          user_type_id: "REC: account_type_asset.id"
+          reconcile: false
+
+      - step: "Create the Recognition Journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "recognition_journal5"
+        values:
+          name: "Test Program Type 5 Recognition Journal"
+          code: "TPRGJ05R"
+          type: "sale"
+
+      - step: "Create the scholarship type with every accounting field set"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type5"
+        values:
+          name: "Test Program Type 5"
+          code: "TPRGT05"
+          deduction_journal_id: "REC: deduction_journal5.id"
+          discount_account_id: "REC: discount_account5.id"
+          employee_benefit_account_id: "REC: employee_benefit_account5.id"
+          disbursement_journal_id: "REC: disbursement_journal5.id"
+          expense_account_id: "REC: expense_account5.id"
+          payable_account_id: "REC: payable_account5.id"
+          deferred_discount_account_id: "REC: deferred_discount_account5.id"
+          deferred_expense_account_id: "REC: deferred_expense_account5.id"
+          recognition_journal_id: "REC: recognition_journal5.id"
+          is_employee_benefit: true
+
+      # ── Onchange (form): selecting the Type on a bare Program
+      # form copies all nine accounting fields plus Is Employee
+      # Benefit.
+      - step: "Open a new program form and select the Type"
+        action: form
+        model: "school_scholarship_program"
+        save: false
+        ops:
+          - set:
+              type_id: "REC: type5"
+          - assert:
+              deduction_journal_id:
+                type: "m2o"
+                expected: "REC: deduction_journal5"
+              discount_account_id:
+                type: "m2o"
+                expected: "REC: discount_account5"
+              employee_benefit_account_id:
+                type: "m2o"
+                expected: "REC: employee_benefit_account5"
+              disbursement_journal_id:
+                type: "m2o"
+                expected: "REC: disbursement_journal5"
+              expense_account_id:
+                type: "m2o"
+                expected: "REC: expense_account5"
+              payable_account_id:
+                type: "m2o"
+                expected: "REC: payable_account5"
+              deferred_discount_account_id:
+                type: "m2o"
+                expected: "REC: deferred_discount_account5"
+              deferred_expense_account_id:
+                type: "m2o"
+                expected: "REC: deferred_expense_account5"
+              recognition_journal_id:
+                type: "m2o"
+                expected: "REC: recognition_journal5"
+              is_employee_benefit:
+                type: "value"
+                expected: true
+
   - name: "Program - No Scope Rejected"
     steps:
       - step: "Get the account.account.type Income reference"

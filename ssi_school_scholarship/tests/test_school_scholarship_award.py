@@ -26,8 +26,9 @@ class TestSchoolScholarshipAward(YamlTransactionCase):
         model (mirroring the toggle ``mixin.transaction`` itself
         defaults to ``False``), so no business flow can ever reach
         the ``False`` branch on this concrete model -- exercised
-        directly with ``mock.patch.object`` instead (P: mock,
-        odoo-development-unit-test references/python-escape-hatch.md).
+        directly with ``mock.patch.object`` instead. Pure Python --
+        trigger P6 (L-15: odoo-yaml-test has no mock/patch support),
+        odoo-development-unit-test references/python-escape-hatch.md.
         """
         award = self.env["school_scholarship_award"]
         view_arch = "<form><header/></form>"
