@@ -23,6 +23,7 @@
         "web_tour",
     ],
     "data": [
+        "security/ir_module_category/school_scholarship_deduction.xml",
         "security/res_groups/school_scholarship_deduction.xml",
         "security/ir_model_access/school_scholarship_deduction.xml",
         "security/ir_model_access/school_scholarship_deduction_line.xml",
