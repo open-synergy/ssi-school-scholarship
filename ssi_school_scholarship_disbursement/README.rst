@@ -23,6 +23,11 @@ Scholarship Disbursement
 * `Approve Scholarship Disbursement <docs/school_scholarship_disbursement/05-approve.html>`_
 * `Cancel Scholarship Disbursement <docs/school_scholarship_disbursement/10-cancel.html>`_
 
+Scholarship Award
+------------------------
+
+* `Create Due Disbursement - Scholarship Award <docs/school_scholarship_award/08-create-due-disbursement.html>`_
+
 
 Installation
 ============
