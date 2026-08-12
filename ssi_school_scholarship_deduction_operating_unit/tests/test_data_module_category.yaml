@@ -18,8 +18,8 @@ scenarios:
             expected: "Operating Unit"
 
   - name:
-      "Deduction Recognition Operating Unit group points to its own recognition
-      data ownership category"
+      "Deduction Recognition Operating Unit group points to its own recognition data
+      ownership category"
     steps:
       - step:
           "Get school_scholarship_deduction_recognition_operating_unit_group by XML ID"
@@ -27,8 +27,8 @@ scenarios:
         xml_id: "ssi_school_scholarship_deduction_operating_unit.school_scholarship_deduction_recognition_operating_unit_group"
         save_as: "deduction_recognition_operating_unit_group"
       - step:
-          "Assert deduction_recognition_operating_unit_group points at the
-          recognition data ownership category"
+          "Assert deduction_recognition_operating_unit_group points at the recognition
+          data ownership category"
         action: "assert"
         target: "deduction_recognition_operating_unit_group"
         asserts:
