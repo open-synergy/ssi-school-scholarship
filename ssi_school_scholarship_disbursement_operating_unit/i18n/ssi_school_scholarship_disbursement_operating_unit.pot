@@ -14,11 +14,6 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: ssi_school_scholarship_disbursement_operating_unit
-#: model:res.groups,name:ssi_school_scholarship_disbursement_operating_unit.school_scholarship_disbursement_operating_unit_group
-msgid "Disbursement Operating Unit"
-msgstr ""
-
-#. module: ssi_school_scholarship_disbursement_operating_unit
 #: model:ir.model.fields,field_description:ssi_school_scholarship_disbursement_operating_unit.field_school_scholarship_disbursement__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_disbursement_operating_unit.field_school_scholarship_disbursement_line__display_name
 msgid "Display Name"
@@ -38,6 +33,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship_disbursement_operating_unit
 #: model:ir.model.fields,field_description:ssi_school_scholarship_disbursement_operating_unit.field_school_scholarship_disbursement__operating_unit_id
+#: model:res.groups,name:ssi_school_scholarship_disbursement_operating_unit.school_scholarship_disbursement_operating_unit_group
 msgid "Operating Unit"
 msgstr ""
 
