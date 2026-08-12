@@ -122,6 +122,14 @@ class SchoolScholarshipAward(models.Model):
         Extension point: override to carry extra header fields into
         a newly created document.
 
+        Always sets ``payment_method`` to ``cash`` and leaves
+        ``bank_account_id`` empty, so the created document satisfies
+        ``_check_bank_account_required`` unconditionally -- neither
+        the wizard button nor a plain call site has a safe source for
+        a Bank Account. The document is still created in ``draft``,
+        so ``payment_method``/``bank_account_id`` remain editable by
+        the user afterwards.
+
         :param schedules: the due ``school_scholarship_award_schedule``
             recordset this document realizes
         :return: dict of ``school_scholarship_disbursement`` values,
@@ -145,6 +153,7 @@ class SchoolScholarshipAward(models.Model):
             "date_due": today,
             "journal_id": self.disbursement_journal_id.id,
             "payable_account_id": self.payable_account_id.id,
+            "payment_method": "cash",
             "line_ids": line_values,
         }
 

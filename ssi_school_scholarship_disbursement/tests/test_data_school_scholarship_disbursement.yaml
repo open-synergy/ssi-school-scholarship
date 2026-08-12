@@ -1396,18 +1396,14 @@ scenarios:
           date_end: 2026-12-31
 
       - step:
-          "Run the wizard, realizing the due Cash Schedule line. Neither
-          _prepare_due_disbursement_data nor the wizard itself sets
-          payment_method/bank_account_id on the new document, so the field's own default
-          (bank_transfer) would otherwise trip _check_bank_account_required for want of
-          a Bank Account -- default_payment_method steers the created document to cash
-          instead, matching the Cash Benefit/Cash Schedule line it realizes, without
-          touching production code."
+          "Run the wizard, realizing the due Cash Schedule line. No payment/bank field
+          is set anywhere on this call -- neither on the wizard nor via context -- so
+          this exercises _prepare_due_disbursement_data's own fix: it now sets
+          payment_method to cash on the dict it returns, which is what lets the created
+          document satisfy _check_bank_account_required without a Bank Account."
         action: "call"
         target: "b3_wizard_due"
         method: "action_create_due_disbursement"
-        context:
-          default_payment_method: "cash"
 
       - step: "Assert exactly one Disbursement document was created"
         action: "search"
@@ -1424,6 +1420,19 @@ scenarios:
             type: "value"
             expected: "draft"
 
+      - step:
+          "Assert the created Disbursement defaults to Payment Method cash, with no Bank
+          Account -- confirming the fix without relying on any caller-supplied context"
+        action: "assert"
+        target: "b3_disbursement_due"
+        asserts:
+          payment_method:
+            type: "value"
+            expected: "cash"
+          bank_account_id:
+            type: "value"
+            operator: "is_falsy"
+
       - step: "Find the created Disbursement's own line"
         action: "search"
         model: "school_scholarship_disbursement_line"
@@ -1438,6 +1447,37 @@ scenarios:
           schedule_id:
             type: "m2o"
             expected: "REC: b3_schedule_due"
+
+      # ── Regression: payment_method/bank_account_id must remain
+      # manually editable while the document is still draft -- the
+      # fix must not turn either field permanently readonly ─────────
+      - step: "Create the Bank Account used by the manual switch below"
+        action: "create"
+        model: "res.partner.bank"
+        save_as: "b3_bank_account"
+        values:
+          acc_number: "B3-ACC-0001"
+          partner_id: "REC: b3_contact.id"
+
+      - step:
+          "Switch the still-draft Disbursement to Bank Transfer with a Bank Account,
+          proving the field the fix defaults to cash is not locked read-only afterwards"
+        action: "write"
+        target: "b3_disbursement_due"
+        values:
+          payment_method: "bank_transfer"
+          bank_account_id: "REC: b3_bank_account.id"
+
+      - step: "Assert the manual switch to Bank Transfer took effect"
+        action: "assert"
+        target: "b3_disbursement_due"
+        asserts:
+          payment_method:
+            type: "value"
+            expected: "bank_transfer"
+          bank_account_id:
+            type: "m2o"
+            expected: "REC: b3_bank_account"
 
       # ── Negative: an Award with no Schedule line at all raises
       # UserError and creates no Disbursement document ───────────────
