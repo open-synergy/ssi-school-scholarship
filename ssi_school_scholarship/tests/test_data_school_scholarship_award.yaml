@@ -359,6 +359,16 @@ scenarios:
       - step: "Assert the award is Confirm before approving"
         action: "assert"
         target: "award_main"
+        # WAJIB: without this the assert reads fields without forcing
+        # _refresh() first, so the flush+invalidate below never runs and
+        # approve_ok stays stale (case.py `_should_refresh`: default
+        # `auto_refresh` is False, so a bare assert step is a no-op read
+        # unless `refresh: true` is set here). This is a *per-step* flag,
+        # not `options: {auto_refresh: true}` (forbidden by design -- that
+        # would re-read every asserted record in the file under the
+        # current env and trip the internal_user_rule AccessError from
+        # T-05).
+        refresh: true
         asserts:
           state:
             type: "value"
@@ -1225,7 +1235,13 @@ scenarios:
                 percentage: 35.0
                 amount_fixed: 0.0
                 max_amount_per_period: 0.0
-                periodicity: "quarterly"
+                # Fee Reduction is pinned to Per Payment Term --
+                # _check_fee_reduction_periodicity rejects any other
+                # value. This scope line's periodicity is never asserted
+                # below (only product_category_id/product_id are), so
+                # this satisfies the constraint without weakening the
+                # onchange coverage.
+                periodicity: "per_payment_term"
 
       - step: "Find the created Product-based scope line"
         action: "search"
