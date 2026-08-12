@@ -524,6 +524,7 @@ scenarios:
       - step: "Assert e2_deduction still confirmed before approving (forces refresh)"
         action: "assert"
         target: "e2_deduction"
+        refresh: true
         asserts:
           state:
             type: "value"
@@ -1022,6 +1023,7 @@ scenarios:
       - step: "Assert e3_deduction still confirmed before approving (forces refresh)"
         action: "assert"
         target: "e3_deduction"
+        refresh: true
         asserts:
           state:
             type: "value"

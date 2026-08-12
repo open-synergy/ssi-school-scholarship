@@ -385,9 +385,11 @@ scenarios:
             type: "value"
             expected: "confirm"
 
-      - step: "Assert d1_deduction_partial still confirmed before approving (forces refresh)"
+      - step:
+          "Assert d1_deduction_partial still confirmed before approving (forces refresh)"
         action: "assert"
         target: "d1_deduction_partial"
+        refresh: true
         asserts:
           state:
             type: "value"
@@ -607,9 +609,11 @@ scenarios:
         as_user: "base.user_admin"
         refresh: true
 
-      - step: "Assert d1_deduction_full still confirmed before approving (forces refresh)"
+      - step:
+          "Assert d1_deduction_full still confirmed before approving (forces refresh)"
         action: "assert"
         target: "d1_deduction_full"
+        refresh: true
         asserts:
           state:
             type: "value"
@@ -1541,9 +1545,12 @@ scenarios:
         as_user: "base.user_admin"
         refresh: true
 
-      - step: "Assert d2_deduction_mismatch still confirmed before approving (forces refresh)"
+      - step:
+          "Assert d2_deduction_mismatch still confirmed before approving (forces
+          refresh)"
         action: "assert"
         target: "d2_deduction_mismatch"
+        refresh: true
         asserts:
           state:
             type: "value"
@@ -1590,9 +1597,12 @@ scenarios:
         as_user: "base.user_admin"
         refresh: true
 
-      - step: "Assert d2_deduction_unallocated still confirmed before approving (forces refresh)"
+      - step:
+          "Assert d2_deduction_unallocated still confirmed before approving (forces
+          refresh)"
         action: "assert"
         target: "d2_deduction_unallocated"
+        refresh: true
         asserts:
           state:
             type: "value"
@@ -1716,9 +1726,12 @@ scenarios:
         as_user: "base.user_admin"
         refresh: true
 
-      - step: "Assert d2_deduction_no_reconcile still confirmed before approving (forces refresh)"
+      - step:
+          "Assert d2_deduction_no_reconcile still confirmed before approving (forces
+          refresh)"
         action: "assert"
         target: "d2_deduction_no_reconcile"
+        refresh: true
         asserts:
           state:
             type: "value"
@@ -1820,9 +1833,12 @@ scenarios:
         as_user: "base.user_admin"
         refresh: true
 
-      - step: "Assert d2_deduction_partner_mismatch still confirmed before approving (forces refresh)"
+      - step:
+          "Assert d2_deduction_partner_mismatch still confirmed before approving (forces
+          refresh)"
         action: "assert"
         target: "d2_deduction_partner_mismatch"
+        refresh: true
         asserts:
           state:
             type: "value"
@@ -1917,9 +1933,12 @@ scenarios:
         as_user: "base.user_admin"
         refresh: true
 
-      - step: "Assert d2_deduction_currency_mismatch still confirmed before approving (forces refresh)"
+      - step:
+          "Assert d2_deduction_currency_mismatch still confirmed before approving
+          (forces refresh)"
         action: "assert"
         target: "d2_deduction_currency_mismatch"
+        refresh: true
         asserts:
           state:
             type: "value"
@@ -2044,9 +2063,12 @@ scenarios:
         as_user: "base.user_admin"
         refresh: true
 
-      - step: "Assert d2_deduction_shared_first still confirmed before approving (forces refresh)"
+      - step:
+          "Assert d2_deduction_shared_first still confirmed before approving (forces
+          refresh)"
         action: "assert"
         target: "d2_deduction_shared_first"
+        refresh: true
         asserts:
           state:
             type: "value"
@@ -2079,9 +2101,12 @@ scenarios:
         as_user: "base.user_admin"
         refresh: true
 
-      - step: "Assert d2_deduction_shared_second still confirmed before approving (forces refresh)"
+      - step:
+          "Assert d2_deduction_shared_second still confirmed before approving (forces
+          refresh)"
         action: "assert"
         target: "d2_deduction_shared_second"
+        refresh: true
         asserts:
           state:
             type: "value"
