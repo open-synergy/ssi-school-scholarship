@@ -3,7 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
     "name": "School Scholarship Deduction",
-    "version": "14.0.1.4.3",
+    "version": "14.0.1.4.4",
     "website": "https://simetri-sinergi.id",
     # pylint: disable=line-too-long
     "author": "PT. Simetri Sinergi Indonesia, OpenSynergy Indonesia, Odoo Community Association (OCA)",  # noqa: B950
@@ -24,7 +24,9 @@
     ],
     "data": [
         "security/ir_module_category/school_scholarship_deduction.xml",
+        "security/ir_module_category/school_scholarship_deduction_recognition.xml",
         "security/res_groups/school_scholarship_deduction.xml",
+        "security/res_groups/school_scholarship_deduction_recognition.xml",
         "security/ir_model_access/school_scholarship_deduction.xml",
         "security/ir_model_access/school_scholarship_deduction_line.xml",
         "security/ir_model_access/school_scholarship_deduction_allocation.xml",

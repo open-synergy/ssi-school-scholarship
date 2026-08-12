@@ -20,7 +20,7 @@
     >
     <field name="name">school_scholarship_deduction_recognition - user</field>
     <field name="model_id" ref="model_school_scholarship_deduction_recognition" />
-    <field name="group_id" ref="school_scholarship_deduction_user_group" />
+    <field name="group_id" ref="school_scholarship_deduction_recognition_user_group" />
     <field name="perm_read" eval="1" />
     <field name="perm_create" eval="1" />
     <field name="perm_write" eval="1" />
