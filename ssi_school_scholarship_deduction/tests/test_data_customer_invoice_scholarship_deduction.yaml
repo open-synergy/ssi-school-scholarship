@@ -521,10 +521,14 @@ scenarios:
             type: "value"
             expected: "confirm"
 
-      - step: "Invalidate cache before approving (avoids stale policy cache)"
-        action: "call"
+      - step: "Assert e2_deduction still confirmed before approving (forces refresh)"
+        action: "assert"
         target: "e2_deduction"
-        method: "invalidate_cache"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the deduction, reconciling 400000 off the invoice"
         action: "call"
@@ -1016,10 +1020,14 @@ scenarios:
         as_user: "base.user_admin"
         refresh: true
 
-      - step: "Invalidate cache before approving the full deduction"
-        action: "call"
+      - step: "Assert e3_deduction still confirmed before approving (forces refresh)"
+        action: "assert"
         target: "e3_deduction"
-        method: "invalidate_cache"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the full deduction, fully reconciling the invoice"
         action: "call"
