@@ -1,0 +1,394 @@
+options:
+  auto_refresh: true
+
+# Shared fixture: one Deduction, owned by admin, replayed fresh before
+# every scenario below. Deliberately has no Lines -- creating a
+# Recognition only needs an existing Deduction id, not a fully worked
+# Deduction -- so the chain stops at the minimum required to satisfy
+# Award/Program/Deduction's own required fields.
+setup:
+  steps:
+    - step: "Get the admin user reference"
+      action: "ref"
+      xml_id: "base.user_admin"
+      save_as: "sec_admin"
+
+    - step: "Create the grade type"
+      action: "create"
+      model: "school_grade_type"
+      save_as: "sec_grade_type"
+      values:
+        name: "SEC Grade Type"
+        code: "SECGT"
+
+    - step: "Create the school"
+      action: "create"
+      model: "school"
+      save_as: "sec_school"
+      values:
+        name: "SEC School"
+        code: "SECSC"
+        grade_type_id: "REC: sec_grade_type.id"
+
+    - step: "Create the academic year"
+      action: "create"
+      model: "school_academic_year"
+      save_as: "sec_academic_year"
+      values:
+        name: "SEC Academic Year"
+        code: "SECAY"
+        date_start: 2026-07-01
+        date_end: 2027-06-30
+
+    - step: "Create the student contact"
+      action: "create"
+      model: "res.partner"
+      save_as: "sec_contact"
+      values:
+        name: "SEC Contact"
+
+    - step: "Create the student"
+      action: "create"
+      model: "school_student"
+      save_as: "sec_student"
+      values:
+        name: "SEC Student"
+        code: "SECST"
+        contact_id: "REC: sec_contact.id"
+        school_id: "REC: sec_school.id"
+
+    - step: "Create the analytic account for the funding source"
+      action: "create"
+      model: "account.analytic.account"
+      save_as: "sec_analytic"
+      values:
+        name: "SEC Analytic"
+
+    - step: "Create the funding source"
+      action: "create"
+      model: "school_scholarship_funding_source"
+      save_as: "sec_funding_source"
+      values:
+        name: "SEC Funding Source"
+        code: "SECFS"
+        analytic_account_id: "REC: sec_analytic.id"
+
+    - step: "Create the journal"
+      action: "create"
+      model: "account.journal"
+      save_as: "sec_journal"
+      values:
+        name: "SEC Journal"
+        code: "SECJ"
+        type: "sale"
+
+    - step: "Get the account.account.type Income reference"
+      action: "ref"
+      xml_id: "account.data_account_type_revenue"
+      save_as: "sec_account_type_income"
+
+    - step: "Create the discount (final) account"
+      action: "create"
+      model: "account.account"
+      save_as: "sec_discount_account"
+      values:
+        name: "SEC Discount Account"
+        code: "SECDA"
+        user_type_id: "REC: sec_account_type_income.id"
+        reconcile: false
+
+    - step: "Get the account.account.type Receivable reference"
+      action: "ref"
+      xml_id: "account.data_account_type_receivable"
+      save_as: "sec_account_type_receivable"
+
+    - step: "Create the receivable account"
+      action: "create"
+      model: "account.account"
+      save_as: "sec_receivable_account"
+      values:
+        name: "SEC Receivable Account"
+        code: "SECRA"
+        user_type_id: "REC: sec_account_type_receivable.id"
+        reconcile: true
+
+    - step: "Create the scholarship type"
+      action: "create"
+      model: "school_scholarship_type"
+      save_as: "sec_type"
+      values:
+        name: "SEC Type"
+        code: "SECTY"
+        deduction_journal_id: "REC: sec_journal.id"
+        discount_account_id: "REC: sec_discount_account.id"
+
+    - step: "Create the scholarship program"
+      action: "create"
+      model: "school_scholarship_program"
+      save_as: "sec_program"
+      values:
+        name: "SEC Program"
+        code: "SECPRG"
+        type_id: "REC: sec_type.id"
+        school_id: "REC: sec_school.id"
+        academic_year_id: "REC: sec_academic_year.id"
+        funding_source_ids: [[6, 0, ["REC: sec_funding_source.id"]]]
+        deduction_journal_id: "REC: sec_journal.id"
+        discount_account_id: "REC: sec_discount_account.id"
+
+    - step: "Create the award, owned by admin"
+      action: "create"
+      model: "school_scholarship_award"
+      save_as: "sec_award"
+      values:
+        program_id: "REC: sec_program.id"
+        student_id: "REC: sec_student.id"
+        date_start: 2026-07-01
+        date_end: 2026-12-31
+        user_id: "REC: sec_admin.id"
+
+    - step: "Create the deduction, owned by admin"
+      action: "create"
+      model: "school_scholarship_deduction"
+      save_as: "sec_deduction"
+      values:
+        award_id: "REC: sec_award.id"
+        date: 2026-03-01
+        journal_id: "REC: sec_journal.id"
+        receivable_account_id: "REC: sec_receivable_account.id"
+        user_id: "REC: sec_admin.id"
+
+scenarios:
+  - name:
+      "Recognition workflow and data ownership groups form their own
+      ladders"
+    steps:
+      - step: "Get school_scholarship_deduction_recognition_viewer_group"
+        action: "ref"
+        xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_viewer_group"
+        save_as: "recognition_viewer_group"
+      - step: "Get school_scholarship_deduction_recognition_user_group"
+        action: "ref"
+        xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_user_group"
+        save_as: "recognition_user_group"
+      - step: "Get school_scholarship_deduction_recognition_validator_group"
+        action: "ref"
+        xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_validator_group"
+        save_as: "recognition_validator_group"
+      - step: "Get school_scholarship_deduction_recognition_company_group"
+        action: "ref"
+        xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_company_group"
+        save_as: "recognition_company_group"
+      - step: "Get school_scholarship_deduction_recognition_company_child_group"
+        action: "ref"
+        xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_company_child_group"
+        save_as: "recognition_company_child_group"
+      - step: "Get school_scholarship_deduction_recognition_all_group"
+        action: "ref"
+        xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_all_group"
+        save_as: "recognition_all_group"
+
+      - step: "Assert viewer group's category and literal name"
+        action: "assert"
+        target: "recognition_viewer_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_workflow_module_category"
+          name:
+            type: "value"
+            expected: "Viewer"
+
+      - step: "Assert user group's category, name, and implied viewer group"
+        action: "assert"
+        target: "recognition_user_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_workflow_module_category"
+          name:
+            type: "value"
+            expected: "User"
+          implied_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: recognition_viewer_group"
+
+      - step:
+          "Assert validator group's category, name, and implied user
+          group"
+        action: "assert"
+        target: "recognition_validator_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_workflow_module_category"
+          name:
+            type: "value"
+            expected: "Validator"
+          implied_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: recognition_user_group"
+
+      - step: "Assert company group's category and literal name"
+        action: "assert"
+        target: "recognition_company_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_data_ownership_module_category"
+          name:
+            type: "value"
+            expected: "Company"
+
+      - step:
+          "Assert company_child group's category, name, and implied
+          company group"
+        action: "assert"
+        target: "recognition_company_child_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_data_ownership_module_category"
+          name:
+            type: "value"
+            expected: "Company and All Child Companies"
+          implied_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: recognition_company_group"
+
+      - step:
+          "Assert all group's category, name, and implied
+          company_child group"
+        action: "assert"
+        target: "recognition_all_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_data_ownership_module_category"
+          name:
+            type: "value"
+            expected: "All"
+          implied_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: recognition_company_child_group"
+
+  - name: "ACL for the recognition model points at its own User group"
+    steps:
+      - step: "Get the school_scholarship_deduction_recognition_user_access ACL"
+        action: "ref"
+        xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_user_access"
+        save_as: "recognition_user_access"
+      - step: "Assert the ACL's group_id"
+        action: "assert"
+        target: "recognition_user_access"
+        asserts:
+          group_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_user_group"
+
+  - name:
+      "A user holding only the Recognition User + Company groups can
+      create a Recognition"
+    steps:
+      - step: "Create a user restricted to the Recognition groups"
+        action: "create"
+        model: "res.users"
+        save_as: "recognition_scoped_user"
+        values:
+          name: "SEC Recognition Scoped User"
+          login: "sec_recognition_scoped_user@example.com"
+          groups_id:
+            - - 6
+              - 0
+              - - "REF: base.group_user"
+                - "REF:
+                  ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_user_group"
+                - "REF:
+                  ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_company_group"
+
+      - step: "Recognition-scoped user creates a Recognition"
+        action: "create"
+        model: "school_scholarship_deduction_recognition"
+        save_as: "recognition_by_scoped_user"
+        as_user: "recognition_scoped_user"
+        values:
+          deduction_id: "REC: sec_deduction.id"
+          date: 2026-03-15
+          amount: 100000.0
+          journal_id: "REC: sec_journal.id"
+
+      - step: "Assert the Recognition was created in draft"
+        action: "assert"
+        target: "recognition_by_scoped_user"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  - name: "A user holding only base.group_user cannot create a Recognition"
+    steps:
+      - step: "Create a plain internal user"
+        action: "create"
+        model: "res.users"
+        save_as: "plain_internal_user"
+        values:
+          name: "SEC Plain Internal User"
+          login: "sec_plain_internal_user@example.com"
+          groups_id:
+            - - 6
+              - 0
+              - - "REF: base.group_user"
+
+      - step: "Plain internal user cannot create a Recognition"
+        action: "create"
+        model: "school_scholarship_deduction_recognition"
+        as_user: "plain_internal_user"
+        expect_error:
+          type: "AccessError"
+        values:
+          deduction_id: "REC: sec_deduction.id"
+          date: 2026-03-15
+          amount: 100000.0
+          journal_id: "REC: sec_journal.id"
+
+  - name:
+      "A user holding only the Deduction's own User + Company groups
+      (not Recognition's) cannot create a Recognition"
+    steps:
+      - step: "Create a user restricted to the Deduction groups"
+        action: "create"
+        model: "res.users"
+        save_as: "deduction_scoped_user"
+        values:
+          name: "SEC Deduction Scoped User"
+          login: "sec_deduction_scoped_user@example.com"
+          groups_id:
+            - - 6
+              - 0
+              - - "REF: base.group_user"
+                - "REF:
+                  ssi_school_scholarship_deduction.school_scholarship_deduction_user_group"
+                - "REF:
+                  ssi_school_scholarship_deduction.school_scholarship_deduction_company_group"
+
+      - step:
+          "Deduction-scoped user cannot create a Recognition -- this is
+          the authorization separation this module change introduces"
+        action: "create"
+        model: "school_scholarship_deduction_recognition"
+        as_user: "deduction_scoped_user"
+        expect_error:
+          type: "AccessError"
+        values:
+          deduction_id: "REC: sec_deduction.id"
+          date: 2026-03-15
+          amount: 100000.0
+          journal_id: "REC: sec_journal.id"

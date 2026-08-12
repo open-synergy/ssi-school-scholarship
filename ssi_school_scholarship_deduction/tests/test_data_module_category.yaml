@@ -136,19 +136,9 @@ scenarios:
         save_as: "orphan_workflow_groups"
         expect_count: 0
 
-  - name:
-      "Only the out-of-scope Deduction Recognition group still points at the shared data
-      ownership category"
+  - name: "No res.groups still points at the shared data ownership category"
     steps:
-      - step:
-          "Get the deliberately out-of-scope Deduction Recognition Operating Unit
-          group's id"
-        action: "ref"
-        xml_id: "ssi_school_scholarship_deduction_operating_unit.school_scholarship_deduction_recognition_operating_unit_group"
-        save_as: "recognition_ou_group"
-      - step:
-          "Search res.groups on the shared data ownership category, excluding the
-          deliberately out-of-scope Recognition group"
+      - step: "Search res.groups on the shared data ownership category"
         action: "search"
         model: "res.groups"
         domain:
@@ -159,7 +149,6 @@ scenarios:
               "REF:
               ssi_school_scholarship.school_scholarship_data_ownership_module_category",
             ],
-            ["id", "!=", "REC: recognition_ou_group.id"],
           ]
         save_as: "orphan_data_ownership_groups"
         expect_count: 0

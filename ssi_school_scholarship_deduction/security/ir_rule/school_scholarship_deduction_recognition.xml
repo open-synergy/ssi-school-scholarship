@@ -26,7 +26,7 @@
     <field name="model_id" ref="model_school_scholarship_deduction_recognition" />
     <field
             name="groups"
-            eval="[(4, ref('school_scholarship_deduction_company_group'))]"
+            eval="[(4, ref('school_scholarship_deduction_recognition_company_group'))]"
         />
     <field name="domain_force">[('company_id','=',user.company_id.id)]</field>
     <field name="perm_unlink" eval="1" />
@@ -42,7 +42,7 @@
     <field name="model_id" ref="model_school_scholarship_deduction_recognition" />
     <field
             name="groups"
-            eval="[(4, ref('school_scholarship_deduction_company_child_group'))]"
+            eval="[(4, ref('school_scholarship_deduction_recognition_company_child_group'))]"
         />
     <field name="domain_force">[('company_id','in',user.company_ids.ids)]</field>
     <field name="perm_unlink" eval="1" />
@@ -54,7 +54,10 @@
 <record id="school_scholarship_deduction_recognition_all_rule" model="ir.rule">
     <field name="name">School Scholarship Deduction Recognition - All</field>
     <field name="model_id" ref="model_school_scholarship_deduction_recognition" />
-    <field name="groups" eval="[(4, ref('school_scholarship_deduction_all_group'))]" />
+    <field
+            name="groups"
+            eval="[(4, ref('school_scholarship_deduction_recognition_all_group'))]"
+        />
     <field name="domain_force">[(1,'=',1)]</field>
     <field name="perm_unlink" eval="1" />
     <field name="perm_write" eval="1" />

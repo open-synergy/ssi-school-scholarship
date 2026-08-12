@@ -115,7 +115,7 @@
         name="Scholarship Deduction Recognitions"
         parent="ssi_school_scholarship.menu_school_scholarship"
         action="school_scholarship_deduction_recognition_action"
-        groups="school_scholarship_deduction_viewer_group"
+        groups="school_scholarship_deduction_recognition_viewer_group"
         sequence="21"
     />
 </odoo>
