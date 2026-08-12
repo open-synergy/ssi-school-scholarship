@@ -21,6 +21,7 @@ Scholarship Deduction
 * `Create Scholarship Deduction <docs/school_scholarship_deduction/01-create.html>`_
 * `Confirm Scholarship Deduction <docs/school_scholarship_deduction/04-confirm.html>`_
 * `Approve Scholarship Deduction <docs/school_scholarship_deduction/05-approve.html>`_
+* `Create Due Recognition - Scholarship Deduction <docs/school_scholarship_deduction/06-create-due-recognition.html>`_
 * `Cancel Scholarship Deduction <docs/school_scholarship_deduction/10-cancel.html>`_
 
 Scholarship Award

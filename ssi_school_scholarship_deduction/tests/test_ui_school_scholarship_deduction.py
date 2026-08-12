@@ -21,6 +21,7 @@ class TestUiSchoolScholarshipDeduction(HttpSavepointCase):
         admin = cls.env.ref("base.user_admin")
         account_type_income = cls.env.ref("account.data_account_type_revenue")
         account_type_receivable = cls.env.ref("account.data_account_type_receivable")
+        account_type_asset = cls.env.ref("account.data_account_type_current_assets")
 
         # Pre-Condition -- School/Academic Year/Grade/Grade
         # Class/Student, so an Enrollment can be created for the tour
@@ -189,19 +190,21 @@ class TestUiSchoolScholarshipDeduction(HttpSavepointCase):
             }
         )
 
-        def _make_award(name, amount):
+        def _make_award(name, amount, program=None):
             """Build an Award with one Cash Benefit and Funding line.
 
             :param name: unique name assigned to the Award
             :param amount: fixed amount of the Award's own Benefit
                 line, also its Schedule line's Amount Planned
+            :param program: ``school_scholarship_program`` to link;
+                defaults to ``tour_program`` when not given
             :return: the created ``school_scholarship_award`` record,
                 its Benefit, Funding, and Schedule lines
             """
             award = cls.env["school_scholarship_award"].create(
                 {
                     "name": name,
-                    "program_id": tour_program.id,
+                    "program_id": (program or tour_program).id,
                     "student_id": tour_student.id,
                     "enrollment_id": tour_enrollment.id,
                     "date_start": "2026-07-01",
@@ -461,6 +464,120 @@ class TestUiSchoolScholarshipDeduction(HttpSavepointCase):
             }
         )
 
+        # Pre-Condition for 06-create-due-recognition -- an Open
+        # Deduction whose own Recognition Method computes to Deferred
+        # (its own Date is earlier than its Award's Start Date) and
+        # is still Pending (nothing recognized yet), so the wizard's
+        # own due-search picks it up. A dedicated Program with
+        # ``allow_asymmetric_recognition`` is needed because the
+        # allocated invoice below still books straight to an
+        # Income-type account -- otherwise
+        # ``_check_recognition_symmetry`` rejects a Deferred deduction
+        # outright (mirrors the identical fixture already proven in
+        # ``test_school_scholarship_deduction_recognition.py``'s own
+        # ``test_wizard_create_due_recognition``).
+        tour_deferred_account = cls.env["account.account"].create(
+            {
+                "name": "TOUR Deduction Deferred Account",
+                "code": "TOURDDFA",
+                "user_type_id": account_type_asset.id,
+                "reconcile": False,
+            }
+        )
+        tour_program_recognition = cls.env["school_scholarship_program"].create(
+            {
+                "name": "TOUR Deduction Recognition Program",
+                "code": "TOURDDRPRG",
+                "type_id": tour_type.id,
+                "school_id": tour_school.id,
+                "academic_year_id": tour_academic_year.id,
+                "funding_source_ids": [(6, 0, [tour_funding_source.id])],
+                "deduction_journal_id": tour_journal.id,
+                "discount_account_id": tour_discount_account.id,
+                "allow_asymmetric_recognition": True,
+                "scope_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "scope_basis": "product",
+                            "product_id": tour_product.id,
+                            "benefit_type": "cash",
+                            "computation": "fixed",
+                            "amount_fixed": 100000.0,
+                        },
+                    )
+                ],
+            }
+        )
+        (
+            tour_award_recognition,
+            _tour_benefit_recognition,
+            tour_funding_recognition,
+            tour_schedule_recognition,
+        ) = _make_award(
+            "TOUR-DEDUCTION-AWARD-RECOGNITION-001",
+            400000.0,
+            program=tour_program_recognition,
+        )
+        tour_invoice_recognition = _make_open_invoice(
+            "TOUR-DEDUCTION-RECOGNITION-INV-001", 1000000.0
+        )
+        cls.tour_deduction_recognition = cls.env["school_scholarship_deduction"].create(
+            {
+                "name": "TOUR-DEDUCTION-RECOGNITION-001",
+                "award_id": tour_award_recognition.id,
+                # Earlier than the Award's own Start Date (2026-07-01,
+                # hardcoded in ``_make_award``) so
+                # ``_compute_recognition_date`` picks the Award's
+                # Start Date instead, landing after this document's
+                # own Date and making ``_compute_recognition_method``
+                # resolve to Deferred.
+                "date": "2026-01-01",
+                "journal_id": tour_journal.id,
+                "receivable_account_id": tour_receivable_account.id,
+                "deferred_account_id": tour_deferred_account.id,
+                "recognition_journal_id": tour_journal.id,
+                "user_id": admin.id,
+                "line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "schedule_id": tour_schedule_recognition.id,
+                            "funding_id": tour_funding_recognition.id,
+                            "final_account_id": tour_discount_account.id,
+                            "name": "TOUR Deduction Recognition Line",
+                            "uom_quantity": 1,
+                            "price_unit": 400000.0,
+                        },
+                    )
+                ],
+                "allocation_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "customer_invoice_id": tour_invoice_recognition.id,
+                            "amount_allocated": 400000.0,
+                        },
+                    )
+                ],
+            }
+        )
+        cls.tour_deduction_recognition.action_confirm()
+        # Same cache-busting need as the 05-approve fixture above --
+        # ``approve_ok`` is cached from confirming before an approver
+        # existed. ``with_user(admin)`` is required too, same as the
+        # invoice fixture above: the policy expression backing
+        # ``approve_ok`` (policy_template/school_scholarship_deduction
+        # .xml) reads ``env.user.id in
+        # document.active_approver_user_ids.ids``, so it must be
+        # recomputed as the approver, not as whichever user
+        # ``cls.env`` defaults to.
+        cls.tour_deduction_recognition.invalidate_cache()
+        cls.tour_deduction_recognition.with_user(admin).action_approve_approval()
+
     def test_create(self):
         """Run the create tour for ``school_scholarship_deduction``.
 
@@ -502,5 +619,17 @@ class TestUiSchoolScholarshipDeduction(HttpSavepointCase):
         self.start_tour(
             "/web",
             "ssi_school_scholarship_deduction_school_scholarship_deduction_cancel",
+            login="admin",
+        )
+
+    def test_create_due_recognition(self):
+        """Run the due-recognition tour for ``school_scholarship_deduction``.
+
+        IK: docs/school_scholarship_deduction/06-create-due-recognition.md
+        """
+        self.start_tour(
+            "/web",
+            "ssi_school_scholarship_deduction_school_scholarship_deduction_"
+            "create_due_recognition",
             login="admin",
         )
