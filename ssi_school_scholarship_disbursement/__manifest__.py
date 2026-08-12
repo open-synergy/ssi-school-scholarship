@@ -21,6 +21,7 @@
         "web_tour",
     ],
     "data": [
+        "security/ir_module_category/school_scholarship_disbursement.xml",
         "security/res_groups/school_scholarship_disbursement.xml",
         "security/ir_model_access/school_scholarship_disbursement.xml",
         "security/ir_model_access/school_scholarship_disbursement_line.xml",

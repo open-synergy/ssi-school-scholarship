@@ -4,3 +4,4 @@
 
 from . import test_school_scholarship_disbursement  # noqa: F401
 from . import test_ui_school_scholarship_disbursement  # noqa: F401
+from . import test_module_category  # noqa: F401
