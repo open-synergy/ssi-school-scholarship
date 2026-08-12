@@ -49,10 +49,7 @@
         />
 </record>
 
-<record
-        id="school_scholarship_disbursement_company_child_group"
-        model="res.groups"
-    >
+<record id="school_scholarship_disbursement_company_child_group" model="res.groups">
     <field name="name">Company and All Child Companies</field>
     <field
             name="category_id"

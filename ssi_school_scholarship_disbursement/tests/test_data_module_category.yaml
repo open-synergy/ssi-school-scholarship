@@ -1,6 +1,6 @@
 scenarios:
-  - name: "Disbursement workflow/data ownership groups point to their own
-      model category"
+  - name:
+      "Disbursement workflow/data ownership groups point to their own model category"
     steps:
       - step: "Get school_scholarship_disbursement_viewer_group by XML ID"
         action: "ref"
@@ -18,8 +18,7 @@ scenarios:
         action: "ref"
         xml_id: "ssi_school_scholarship_disbursement.school_scholarship_disbursement_company_group"
         save_as: "disbursement_company_group"
-      - step: "Get school_scholarship_disbursement_company_child_group by XML
-          ID"
+      - step: "Get school_scholarship_disbursement_company_child_group by XML ID"
         action: "ref"
         xml_id: "ssi_school_scholarship_disbursement.school_scholarship_disbursement_company_child_group"
         save_as: "disbursement_company_child_group"
@@ -27,8 +26,7 @@ scenarios:
         action: "ref"
         xml_id: "ssi_school_scholarship_disbursement.school_scholarship_disbursement_all_group"
         save_as: "disbursement_all_group"
-      - step: "Assert disbursement_viewer_group category_id and literal
-          name"
+      - step: "Assert disbursement_viewer_group category_id and literal name"
         action: "assert"
         target: "disbursement_viewer_group"
         asserts:
@@ -48,8 +46,7 @@ scenarios:
           name:
             type: "value"
             expected: "User"
-      - step: "Assert disbursement_validator_group category_id and literal
-          name"
+      - step: "Assert disbursement_validator_group category_id and literal name"
         action: "assert"
         target: "disbursement_validator_group"
         asserts:
@@ -59,8 +56,7 @@ scenarios:
           name:
             type: "value"
             expected: "Validator"
-      - step: "Assert disbursement_company_group category_id and literal
-          name"
+      - step: "Assert disbursement_company_group category_id and literal name"
         action: "assert"
         target: "disbursement_company_group"
         asserts:
@@ -70,8 +66,7 @@ scenarios:
           name:
             type: "value"
             expected: "Company"
-      - step: "Assert disbursement_company_child_group category_id and
-          literal name"
+      - step: "Assert disbursement_company_child_group category_id and literal name"
         action: "assert"
         target: "disbursement_company_child_group"
         asserts:
@@ -92,17 +87,16 @@ scenarios:
             type: "value"
             expected: "All"
 
-  - name: "New disbursement categories are parented under the shared School
-      Scholarship categories"
+  - name:
+      "New disbursement categories are parented under the shared School Scholarship
+      categories"
     steps:
-      - step: "Get
-          school_scholarship_disbursement_workflow_module_category by XML ID"
+      - step: "Get school_scholarship_disbursement_workflow_module_category by XML ID"
         action: "ref"
         xml_id: "ssi_school_scholarship_disbursement.school_scholarship_disbursement_workflow_module_category"
         save_as: "disbursement_workflow_category"
-      - step: "Get
-          school_scholarship_disbursement_data_ownership_module_category by
-          XML ID"
+      - step:
+          "Get school_scholarship_disbursement_data_ownership_module_category by XML ID"
         action: "ref"
         xml_id: "ssi_school_scholarship_disbursement.school_scholarship_disbursement_data_ownership_module_category"
         save_as: "disbursement_data_ownership_category"
@@ -116,8 +110,7 @@ scenarios:
           name:
             type: "value"
             expected: "Scholarship Disbursement"
-      - step: "Assert disbursement_data_ownership_category parent_id and
-          name"
+      - step: "Assert disbursement_data_ownership_category parent_id and name"
         action: "assert"
         target: "disbursement_data_ownership_category"
         asserts:
@@ -154,7 +147,8 @@ scenarios:
             [
               "category_id",
               "=",
-              "REF: ssi_school_scholarship.school_scholarship_data_ownership_module_category",
+              "REF:
+              ssi_school_scholarship.school_scholarship_data_ownership_module_category",
             ],
           ]
         save_as: "orphan_data_ownership_groups"
