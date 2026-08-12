@@ -157,6 +157,11 @@ msgid "Agreement"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:res.groups,name:ssi_school_scholarship.school_scholarship_award_all_group
+msgid "All"
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__allow_asymmetric_recognition
 msgid "Allow Asymmetric Recognition"
 msgstr ""
@@ -366,21 +371,6 @@ msgid "Award"
 msgstr ""
 
 #. module: ssi_school_scholarship
-#: model:res.groups,name:ssi_school_scholarship.school_scholarship_award_all_group
-msgid "Award All"
-msgstr ""
-
-#. module: ssi_school_scholarship
-#: model:res.groups,name:ssi_school_scholarship.school_scholarship_award_company_group
-msgid "Award Company"
-msgstr ""
-
-#. module: ssi_school_scholarship
-#: model:res.groups,name:ssi_school_scholarship.school_scholarship_award_company_child_group
-msgid "Award Company and All Child Companies"
-msgstr ""
-
-#. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__award_funding_ids
 msgid "Award Fundings"
 msgstr ""
@@ -388,21 +378,6 @@ msgstr ""
 #. module: ssi_school_scholarship
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_letter__letter_type__award_letter
 msgid "Award Letter"
-msgstr ""
-
-#. module: ssi_school_scholarship
-#: model:res.groups,name:ssi_school_scholarship.school_scholarship_award_user_group
-msgid "Award User"
-msgstr ""
-
-#. module: ssi_school_scholarship
-#: model:res.groups,name:ssi_school_scholarship.school_scholarship_award_validator_group
-msgid "Award Validator"
-msgstr ""
-
-#. module: ssi_school_scholarship
-#: model:res.groups,name:ssi_school_scholarship.school_scholarship_award_viewer_group
-msgid "Award Viewer"
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -638,6 +613,7 @@ msgstr ""
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__company_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_funding_source__company_id
+#: model:res.groups,name:ssi_school_scholarship.school_scholarship_award_company_group
 msgid "Company"
 msgstr ""
 
@@ -649,6 +625,11 @@ msgstr ""
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__company_partner_id
 msgid "Company Partner"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:res.groups,name:ssi_school_scholarship.school_scholarship_award_company_child_group
+msgid "Company and All Child Companies"
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -2236,6 +2217,12 @@ msgid "Scholarship Amount"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.module.category,name:ssi_school_scholarship.school_scholarship_award_data_ownership_module_category
+#: model:ir.module.category,name:ssi_school_scholarship.school_scholarship_award_workflow_module_category
+msgid "Scholarship Award"
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment__scholarship_award_count
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_student__scholarship_award_count
 msgid "Scholarship Award Count"
@@ -2709,6 +2696,11 @@ msgid "Usage"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:res.groups,name:ssi_school_scholarship.school_scholarship_award_user_group
+msgid "User"
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__user_id
 msgid ""
 "User that responsible for document\n"
@@ -2729,6 +2721,16 @@ msgstr ""
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__active_approver_user_ids
 msgid "Users that can approve/reject document"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:res.groups,name:ssi_school_scholarship.school_scholarship_award_validator_group
+msgid "Validator"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:res.groups,name:ssi_school_scholarship.school_scholarship_award_viewer_group
+msgid "Viewer"
 msgstr ""
 
 #. module: ssi_school_scholarship
