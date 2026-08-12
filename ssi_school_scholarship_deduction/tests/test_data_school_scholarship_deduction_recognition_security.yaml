@@ -1,167 +1,20 @@
 options:
   auto_refresh: true
 
-# Shared fixture: one Deduction, owned by admin, replayed fresh before
-# every scenario below. Deliberately has no Lines -- creating a
-# Recognition only needs an existing Deduction id, not a fully worked
-# Deduction -- so the chain stops at the minimum required to satisfy
-# Award/Program/Deduction's own required fields.
-setup:
-  steps:
-    - step: "Get the admin user reference"
-      action: "ref"
-      xml_id: "base.user_admin"
-      save_as: "sec_admin"
-
-    - step: "Create the grade type"
-      action: "create"
-      model: "school_grade_type"
-      save_as: "sec_grade_type"
-      values:
-        name: "SEC Grade Type"
-        code: "SECGT"
-
-    - step: "Create the school"
-      action: "create"
-      model: "school"
-      save_as: "sec_school"
-      values:
-        name: "SEC School"
-        code: "SECSC"
-        grade_type_id: "REC: sec_grade_type.id"
-
-    - step: "Create the academic year"
-      action: "create"
-      model: "school_academic_year"
-      save_as: "sec_academic_year"
-      values:
-        name: "SEC Academic Year"
-        code: "SECAY"
-        date_start: 2026-07-01
-        date_end: 2027-06-30
-
-    - step: "Create the student contact"
-      action: "create"
-      model: "res.partner"
-      save_as: "sec_contact"
-      values:
-        name: "SEC Contact"
-
-    - step: "Create the student"
-      action: "create"
-      model: "school_student"
-      save_as: "sec_student"
-      values:
-        name: "SEC Student"
-        code: "SECST"
-        contact_id: "REC: sec_contact.id"
-        school_id: "REC: sec_school.id"
-
-    - step: "Create the analytic account for the funding source"
-      action: "create"
-      model: "account.analytic.account"
-      save_as: "sec_analytic"
-      values:
-        name: "SEC Analytic"
-
-    - step: "Create the funding source"
-      action: "create"
-      model: "school_scholarship_funding_source"
-      save_as: "sec_funding_source"
-      values:
-        name: "SEC Funding Source"
-        code: "SECFS"
-        analytic_account_id: "REC: sec_analytic.id"
-
-    - step: "Create the journal"
-      action: "create"
-      model: "account.journal"
-      save_as: "sec_journal"
-      values:
-        name: "SEC Journal"
-        code: "SECJ"
-        type: "sale"
-
-    - step: "Get the account.account.type Income reference"
-      action: "ref"
-      xml_id: "account.data_account_type_revenue"
-      save_as: "sec_account_type_income"
-
-    - step: "Create the discount (final) account"
-      action: "create"
-      model: "account.account"
-      save_as: "sec_discount_account"
-      values:
-        name: "SEC Discount Account"
-        code: "SECDA"
-        user_type_id: "REC: sec_account_type_income.id"
-        reconcile: false
-
-    - step: "Get the account.account.type Receivable reference"
-      action: "ref"
-      xml_id: "account.data_account_type_receivable"
-      save_as: "sec_account_type_receivable"
-
-    - step: "Create the receivable account"
-      action: "create"
-      model: "account.account"
-      save_as: "sec_receivable_account"
-      values:
-        name: "SEC Receivable Account"
-        code: "SECRA"
-        user_type_id: "REC: sec_account_type_receivable.id"
-        reconcile: true
-
-    - step: "Create the scholarship type"
-      action: "create"
-      model: "school_scholarship_type"
-      save_as: "sec_type"
-      values:
-        name: "SEC Type"
-        code: "SECTY"
-        deduction_journal_id: "REC: sec_journal.id"
-        discount_account_id: "REC: sec_discount_account.id"
-
-    - step: "Create the scholarship program"
-      action: "create"
-      model: "school_scholarship_program"
-      save_as: "sec_program"
-      values:
-        name: "SEC Program"
-        code: "SECPRG"
-        type_id: "REC: sec_type.id"
-        school_id: "REC: sec_school.id"
-        academic_year_id: "REC: sec_academic_year.id"
-        funding_source_ids: [[6, 0, ["REC: sec_funding_source.id"]]]
-        deduction_journal_id: "REC: sec_journal.id"
-        discount_account_id: "REC: sec_discount_account.id"
-
-    - step: "Create the award, owned by admin"
-      action: "create"
-      model: "school_scholarship_award"
-      save_as: "sec_award"
-      values:
-        program_id: "REC: sec_program.id"
-        student_id: "REC: sec_student.id"
-        date_start: 2026-07-01
-        date_end: 2026-12-31
-        user_id: "REC: sec_admin.id"
-
-    - step: "Create the deduction, owned by admin"
-      action: "create"
-      model: "school_scholarship_deduction"
-      save_as: "sec_deduction"
-      values:
-        award_id: "REC: sec_award.id"
-        date: 2026-03-01
-        journal_id: "REC: sec_journal.id"
-        receivable_account_id: "REC: sec_receivable_account.id"
-        user_id: "REC: sec_admin.id"
+# No shared `setup:` block here on purpose. Every scenario in this file
+# runs inside the SAME database transaction (odoo-yaml-test replays
+# `setup:` in full for every scenario, without a savepoint -- see
+# odoo-development-unit-test T-01), so a fixture shared across
+# scenarios via `setup:` would recreate the same unique codes on every
+# replay and fail with "Duplicate code" from the second scenario
+# onward. Instead, each scenario that needs a Deduction to point
+# `deduction_id` at builds its own self-contained fixture chain with a
+# scenario-unique code prefix -- the same pattern already used by
+# test_data_school_scholarship_deduction_recognition.yaml (r1_/r2_)
+# in this module.
 
 scenarios:
-  - name:
-      "Recognition workflow and data ownership groups form their own
-      ladders"
+  - name: "Recognition workflow and data ownership groups form their own ladders"
     steps:
       - step: "Get school_scholarship_deduction_recognition_viewer_group"
         action: "ref"
@@ -215,9 +68,7 @@ scenarios:
             expected_records:
               - "REC: recognition_viewer_group"
 
-      - step:
-          "Assert validator group's category, name, and implied user
-          group"
+      - step: "Assert validator group's category, name, and implied user group"
         action: "assert"
         target: "recognition_validator_group"
         asserts:
@@ -244,9 +95,7 @@ scenarios:
             type: "value"
             expected: "Company"
 
-      - step:
-          "Assert company_child group's category, name, and implied
-          company group"
+      - step: "Assert company_child group's category, name, and implied company group"
         action: "assert"
         target: "recognition_company_child_group"
         asserts:
@@ -262,9 +111,7 @@ scenarios:
             expected_records:
               - "REC: recognition_company_group"
 
-      - step:
-          "Assert all group's category, name, and implied
-          company_child group"
+      - step: "Assert all group's category, name, and implied company_child group"
         action: "assert"
         target: "recognition_all_group"
         asserts:
@@ -295,9 +142,218 @@ scenarios:
             expected_xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_user_group"
 
   - name:
-      "A user holding only the Recognition User + Company groups can
-      create a Recognition"
+      "A user holding only the Recognition User + Company groups can create a
+      Recognition"
     steps:
+      # ── Self-contained fixture chain (prefix SEC3) ─────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "sec3_grade_type"
+        values:
+          name: "SEC3 Grade Type"
+          code: "SEC3GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "sec3_school"
+        values:
+          name: "SEC3 School"
+          code: "SEC3SC"
+          grade_type_id: "REC: sec3_grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "sec3_academic_year"
+        values:
+          name: "SEC3 Academic Year"
+          code: "SEC3AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "sec3_academic_term"
+        values:
+          name: "SEC3 Term"
+          code: "SEC3TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: sec3_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "sec3_grade"
+        values:
+          name: "SEC3 Grade"
+          code: "SEC3GR"
+          type_id: "REC: sec3_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "sec3_grade_class"
+        values:
+          name: "SEC3 Class"
+          code: "SEC3CL"
+          school_id: "REC: sec3_school.id"
+          grade_id: "REC: sec3_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "sec3_contact"
+        values:
+          name: "SEC3 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "sec3_student"
+        values:
+          name: "SEC3 Student"
+          code: "SEC3ST"
+          contact_id: "REC: sec3_contact.id"
+          school_id: "REC: sec3_school.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "sec3_enrollment"
+        values:
+          academic_year_id: "REC: sec3_academic_year.id"
+          academic_term_id: "REC: sec3_academic_term.id"
+          school_id: "REC: sec3_school.id"
+          grade_id: "REC: sec3_grade.id"
+          grade_class_id: "REC: sec3_grade_class.id"
+          student_id: "REC: sec3_student.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "sec3_analytic"
+        values:
+          name: "SEC3 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "sec3_funding_source"
+        values:
+          name: "SEC3 Funding Source"
+          code: "SEC3FS"
+          analytic_account_id: "REC: sec3_analytic.id"
+
+      - step: "Create the product covered by the program's scope line"
+        action: "create"
+        model: "product.product"
+        save_as: "sec3_product"
+        values:
+          name: "SEC3 Product"
+          type: "service"
+
+      - step: "Create the journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sec3_journal"
+        values:
+          name: "SEC3 Journal"
+          code: "SEC3J"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "sec3_account_type_income"
+
+      - step: "Create the discount (final) account"
+        action: "create"
+        model: "account.account"
+        save_as: "sec3_discount_account"
+        values:
+          name: "SEC3 Discount Account"
+          code: "SEC3DA"
+          user_type_id: "REC: sec3_account_type_income.id"
+          reconcile: false
+
+      - step: "Get the account.account.type Receivable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "sec3_account_type_receivable"
+
+      - step: "Create the receivable account"
+        action: "create"
+        model: "account.account"
+        save_as: "sec3_receivable_account"
+        values:
+          name: "SEC3 Receivable Account"
+          code: "SEC3RA"
+          user_type_id: "REC: sec3_account_type_receivable.id"
+          reconcile: true
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "sec3_type"
+        values:
+          name: "SEC3 Type"
+          code: "SEC3TY"
+          deduction_journal_id: "REC: sec3_journal.id"
+          discount_account_id: "REC: sec3_discount_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "sec3_program"
+        values:
+          name: "SEC3 Program"
+          code: "SEC3PRG"
+          type_id: "REC: sec3_type.id"
+          school_id: "REC: sec3_school.id"
+          academic_year_id: "REC: sec3_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: sec3_funding_source.id"]]]
+          deduction_journal_id: "REC: sec3_journal.id"
+          discount_account_id: "REC: sec3_discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: sec3_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 100000.0
+
+      - step: "Create the award, owned by admin, immediate recognition"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "sec3_award"
+        values:
+          program_id: "REC: sec3_program.id"
+          student_id: "REC: sec3_student.id"
+          enrollment_id: "REC: sec3_enrollment.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          user_id: "REF: base.user_admin"
+
+      - step:
+          "Create the deduction, owned by admin, Date after the Award's Start Date so it
+          stays Immediate (no Deferred Account needed)"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "sec3_deduction"
+        values:
+          award_id: "REC: sec3_award.id"
+          date: 2026-03-01
+          journal_id: "REC: sec3_journal.id"
+          receivable_account_id: "REC: sec3_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      # ── Scenario body ────────────────────────────────────────────
       - step: "Create a user restricted to the Recognition groups"
         action: "create"
         model: "res.users"
@@ -320,10 +376,10 @@ scenarios:
         save_as: "recognition_by_scoped_user"
         as_user: "recognition_scoped_user"
         values:
-          deduction_id: "REC: sec_deduction.id"
+          deduction_id: "REC: sec3_deduction.id"
           date: 2026-03-15
           amount: 100000.0
-          journal_id: "REC: sec_journal.id"
+          journal_id: "REC: sec3_journal.id"
 
       - step: "Assert the Recognition was created in draft"
         action: "assert"
@@ -335,6 +391,215 @@ scenarios:
 
   - name: "A user holding only base.group_user cannot create a Recognition"
     steps:
+      # ── Self-contained fixture chain (prefix SEC4) ─────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "sec4_grade_type"
+        values:
+          name: "SEC4 Grade Type"
+          code: "SEC4GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "sec4_school"
+        values:
+          name: "SEC4 School"
+          code: "SEC4SC"
+          grade_type_id: "REC: sec4_grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "sec4_academic_year"
+        values:
+          name: "SEC4 Academic Year"
+          code: "SEC4AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "sec4_academic_term"
+        values:
+          name: "SEC4 Term"
+          code: "SEC4TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: sec4_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "sec4_grade"
+        values:
+          name: "SEC4 Grade"
+          code: "SEC4GR"
+          type_id: "REC: sec4_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "sec4_grade_class"
+        values:
+          name: "SEC4 Class"
+          code: "SEC4CL"
+          school_id: "REC: sec4_school.id"
+          grade_id: "REC: sec4_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "sec4_contact"
+        values:
+          name: "SEC4 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "sec4_student"
+        values:
+          name: "SEC4 Student"
+          code: "SEC4ST"
+          contact_id: "REC: sec4_contact.id"
+          school_id: "REC: sec4_school.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "sec4_enrollment"
+        values:
+          academic_year_id: "REC: sec4_academic_year.id"
+          academic_term_id: "REC: sec4_academic_term.id"
+          school_id: "REC: sec4_school.id"
+          grade_id: "REC: sec4_grade.id"
+          grade_class_id: "REC: sec4_grade_class.id"
+          student_id: "REC: sec4_student.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "sec4_analytic"
+        values:
+          name: "SEC4 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "sec4_funding_source"
+        values:
+          name: "SEC4 Funding Source"
+          code: "SEC4FS"
+          analytic_account_id: "REC: sec4_analytic.id"
+
+      - step: "Create the product covered by the program's scope line"
+        action: "create"
+        model: "product.product"
+        save_as: "sec4_product"
+        values:
+          name: "SEC4 Product"
+          type: "service"
+
+      - step: "Create the journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sec4_journal"
+        values:
+          name: "SEC4 Journal"
+          code: "SEC4J"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "sec4_account_type_income"
+
+      - step: "Create the discount (final) account"
+        action: "create"
+        model: "account.account"
+        save_as: "sec4_discount_account"
+        values:
+          name: "SEC4 Discount Account"
+          code: "SEC4DA"
+          user_type_id: "REC: sec4_account_type_income.id"
+          reconcile: false
+
+      - step: "Get the account.account.type Receivable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "sec4_account_type_receivable"
+
+      - step: "Create the receivable account"
+        action: "create"
+        model: "account.account"
+        save_as: "sec4_receivable_account"
+        values:
+          name: "SEC4 Receivable Account"
+          code: "SEC4RA"
+          user_type_id: "REC: sec4_account_type_receivable.id"
+          reconcile: true
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "sec4_type"
+        values:
+          name: "SEC4 Type"
+          code: "SEC4TY"
+          deduction_journal_id: "REC: sec4_journal.id"
+          discount_account_id: "REC: sec4_discount_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "sec4_program"
+        values:
+          name: "SEC4 Program"
+          code: "SEC4PRG"
+          type_id: "REC: sec4_type.id"
+          school_id: "REC: sec4_school.id"
+          academic_year_id: "REC: sec4_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: sec4_funding_source.id"]]]
+          deduction_journal_id: "REC: sec4_journal.id"
+          discount_account_id: "REC: sec4_discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: sec4_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 100000.0
+
+      - step: "Create the award, owned by admin, immediate recognition"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "sec4_award"
+        values:
+          program_id: "REC: sec4_program.id"
+          student_id: "REC: sec4_student.id"
+          enrollment_id: "REC: sec4_enrollment.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          user_id: "REF: base.user_admin"
+
+      - step:
+          "Create the deduction, owned by admin, Date after the Award's Start Date so it
+          stays Immediate (no Deferred Account needed)"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "sec4_deduction"
+        values:
+          award_id: "REC: sec4_award.id"
+          date: 2026-03-01
+          journal_id: "REC: sec4_journal.id"
+          receivable_account_id: "REC: sec4_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      # ── Scenario body ────────────────────────────────────────────
       - step: "Create a plain internal user"
         action: "create"
         model: "res.users"
@@ -354,15 +619,224 @@ scenarios:
         expect_error:
           type: "AccessError"
         values:
-          deduction_id: "REC: sec_deduction.id"
+          deduction_id: "REC: sec4_deduction.id"
           date: 2026-03-15
           amount: 100000.0
-          journal_id: "REC: sec_journal.id"
+          journal_id: "REC: sec4_journal.id"
 
   - name:
-      "A user holding only the Deduction's own User + Company groups
-      (not Recognition's) cannot create a Recognition"
+      "A user holding only the Deduction's own User + Company groups (not Recognition's)
+      cannot create a Recognition"
     steps:
+      # ── Self-contained fixture chain (prefix SEC5) ─────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "sec5_grade_type"
+        values:
+          name: "SEC5 Grade Type"
+          code: "SEC5GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "sec5_school"
+        values:
+          name: "SEC5 School"
+          code: "SEC5SC"
+          grade_type_id: "REC: sec5_grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "sec5_academic_year"
+        values:
+          name: "SEC5 Academic Year"
+          code: "SEC5AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "sec5_academic_term"
+        values:
+          name: "SEC5 Term"
+          code: "SEC5TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: sec5_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "sec5_grade"
+        values:
+          name: "SEC5 Grade"
+          code: "SEC5GR"
+          type_id: "REC: sec5_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "sec5_grade_class"
+        values:
+          name: "SEC5 Class"
+          code: "SEC5CL"
+          school_id: "REC: sec5_school.id"
+          grade_id: "REC: sec5_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "sec5_contact"
+        values:
+          name: "SEC5 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "sec5_student"
+        values:
+          name: "SEC5 Student"
+          code: "SEC5ST"
+          contact_id: "REC: sec5_contact.id"
+          school_id: "REC: sec5_school.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "sec5_enrollment"
+        values:
+          academic_year_id: "REC: sec5_academic_year.id"
+          academic_term_id: "REC: sec5_academic_term.id"
+          school_id: "REC: sec5_school.id"
+          grade_id: "REC: sec5_grade.id"
+          grade_class_id: "REC: sec5_grade_class.id"
+          student_id: "REC: sec5_student.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "sec5_analytic"
+        values:
+          name: "SEC5 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "sec5_funding_source"
+        values:
+          name: "SEC5 Funding Source"
+          code: "SEC5FS"
+          analytic_account_id: "REC: sec5_analytic.id"
+
+      - step: "Create the product covered by the program's scope line"
+        action: "create"
+        model: "product.product"
+        save_as: "sec5_product"
+        values:
+          name: "SEC5 Product"
+          type: "service"
+
+      - step: "Create the journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sec5_journal"
+        values:
+          name: "SEC5 Journal"
+          code: "SEC5J"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "sec5_account_type_income"
+
+      - step: "Create the discount (final) account"
+        action: "create"
+        model: "account.account"
+        save_as: "sec5_discount_account"
+        values:
+          name: "SEC5 Discount Account"
+          code: "SEC5DA"
+          user_type_id: "REC: sec5_account_type_income.id"
+          reconcile: false
+
+      - step: "Get the account.account.type Receivable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "sec5_account_type_receivable"
+
+      - step: "Create the receivable account"
+        action: "create"
+        model: "account.account"
+        save_as: "sec5_receivable_account"
+        values:
+          name: "SEC5 Receivable Account"
+          code: "SEC5RA"
+          user_type_id: "REC: sec5_account_type_receivable.id"
+          reconcile: true
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "sec5_type"
+        values:
+          name: "SEC5 Type"
+          code: "SEC5TY"
+          deduction_journal_id: "REC: sec5_journal.id"
+          discount_account_id: "REC: sec5_discount_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "sec5_program"
+        values:
+          name: "SEC5 Program"
+          code: "SEC5PRG"
+          type_id: "REC: sec5_type.id"
+          school_id: "REC: sec5_school.id"
+          academic_year_id: "REC: sec5_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: sec5_funding_source.id"]]]
+          deduction_journal_id: "REC: sec5_journal.id"
+          discount_account_id: "REC: sec5_discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: sec5_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 100000.0
+
+      - step: "Create the award, owned by admin, immediate recognition"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "sec5_award"
+        values:
+          program_id: "REC: sec5_program.id"
+          student_id: "REC: sec5_student.id"
+          enrollment_id: "REC: sec5_enrollment.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          user_id: "REF: base.user_admin"
+
+      - step:
+          "Create the deduction, owned by admin, Date after the Award's Start Date so it
+          stays Immediate (no Deferred Account needed)"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "sec5_deduction"
+        values:
+          award_id: "REC: sec5_award.id"
+          date: 2026-03-01
+          journal_id: "REC: sec5_journal.id"
+          receivable_account_id: "REC: sec5_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      # ── Scenario body ────────────────────────────────────────────
       - step: "Create a user restricted to the Deduction groups"
         action: "create"
         model: "res.users"
@@ -380,15 +854,15 @@ scenarios:
                   ssi_school_scholarship_deduction.school_scholarship_deduction_company_group"
 
       - step:
-          "Deduction-scoped user cannot create a Recognition -- this is
-          the authorization separation this module change introduces"
+          "Deduction-scoped user cannot create a Recognition -- this is the
+          authorization separation this module change introduces"
         action: "create"
         model: "school_scholarship_deduction_recognition"
         as_user: "deduction_scoped_user"
         expect_error:
           type: "AccessError"
         values:
-          deduction_id: "REC: sec_deduction.id"
+          deduction_id: "REC: sec5_deduction.id"
           date: 2026-03-15
           amount: 100000.0
-          journal_id: "REC: sec_journal.id"
+          journal_id: "REC: sec5_journal.id"
