@@ -1395,10 +1395,19 @@ scenarios:
           award_ids: [[6, 0, ["REC: b3_award_due.id"]]]
           date_end: 2026-12-31
 
-      - step: "Run the wizard, realizing the due Cash Schedule line"
+      - step:
+          "Run the wizard, realizing the due Cash Schedule line. Neither
+          _prepare_due_disbursement_data nor the wizard itself sets
+          payment_method/bank_account_id on the new document, so the field's own default
+          (bank_transfer) would otherwise trip _check_bank_account_required for want of
+          a Bank Account -- default_payment_method steers the created document to cash
+          instead, matching the Cash Benefit/Cash Schedule line it realizes, without
+          touching production code."
         action: "call"
         target: "b3_wizard_due"
         method: "action_create_due_disbursement"
+        context:
+          default_payment_method: "cash"
 
       - step: "Assert exactly one Disbursement document was created"
         action: "search"

@@ -408,14 +408,8 @@ class TestSchoolScholarshipDisbursement(YamlTransactionCase):
 
         action = awards.action_open_create_due_disbursement_wizard()
 
-        self.assertEqual(
-            action["res_model"], "create_due_scholarship_disbursement"
-        )
+        self.assertEqual(action["res_model"], "create_due_scholarship_disbursement")
         self.assertEqual(action["type"], "ir.actions.act_window")
         self.assertEqual(action["target"], "new")
-        self.assertEqual(
-            action["context"]["active_model"], "school_scholarship_award"
-        )
-        self.assertEqual(
-            set(action["context"]["active_ids"]), {award_1.id, award_2.id}
-        )
+        self.assertEqual(action["context"]["active_model"], "school_scholarship_award")
+        self.assertEqual(set(action["context"]["active_ids"]), {award_1.id, award_2.id})
