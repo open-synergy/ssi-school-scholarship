@@ -146,6 +146,11 @@ msgid "Activity Type Icon"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_all_group
+msgid "All"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__allocation_ids
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_form
 msgid "Allocations"
@@ -398,6 +403,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__company_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__company_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__company_id
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_company_group
 msgid "Company"
 msgstr ""
 
@@ -413,6 +419,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__company_partner_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__company_partner_id
 msgid "Company Partner"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_company_child_group
+msgid "Company and All Child Companies"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -571,21 +582,6 @@ msgid "Deduction"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
-#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_all_group
-msgid "Deduction All"
-msgstr ""
-
-#. module: ssi_school_scholarship_deduction
-#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_company_group
-msgid "Deduction Company"
-msgstr ""
-
-#. module: ssi_school_scholarship_deduction
-#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_company_child_group
-msgid "Deduction Company and All Child Companies"
-msgstr ""
-
-#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__deduction_line_id
 msgid "Deduction Line"
 msgstr ""
@@ -593,21 +589,6 @@ msgstr ""
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__deduction_line_id
 msgid "Deduction Line released by this Recognition Line."
-msgstr ""
-
-#. module: ssi_school_scholarship_deduction
-#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_user_group
-msgid "Deduction User"
-msgstr ""
-
-#. module: ssi_school_scholarship_deduction
-#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_validator_group
-msgid "Deduction Validator"
-msgstr ""
-
-#. module: ssi_school_scholarship_deduction
-#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_viewer_group
-msgid "Deduction Viewer"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -1376,6 +1357,12 @@ msgid "Scholarship"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.module.category,name:ssi_school_scholarship_deduction.school_scholarship_deduction_data_ownership_module_category
+#: model:ir.module.category,name:ssi_school_scholarship_deduction.school_scholarship_deduction_workflow_module_category
+msgid "Scholarship Deduction"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.actions.act_window,name:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_action
 #: model:ir.ui.menu,name:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_menu
 msgid "Scholarship Deduction Recognitions"
@@ -1647,6 +1634,11 @@ msgid "Usage"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_user_group
+msgid "User"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__user_id
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__user_id
 msgid ""
@@ -1670,6 +1662,16 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__active_approver_user_ids
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__active_approver_user_ids
 msgid "Users that can approve/reject document"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_validator_group
+msgid "Validator"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_viewer_group
+msgid "Viewer"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
