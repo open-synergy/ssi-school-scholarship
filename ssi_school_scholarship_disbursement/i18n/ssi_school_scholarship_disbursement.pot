@@ -111,6 +111,11 @@ msgid "Activity Type Icon"
 msgstr ""
 
 #. module: ssi_school_scholarship_disbursement
+#: model:res.groups,name:ssi_school_scholarship_disbursement.school_scholarship_disbursement_all_group
+msgid "All"
+msgstr ""
+
+#. module: ssi_school_scholarship_disbursement
 #: model:ir.model.fields,field_description:ssi_school_scholarship_disbursement.field_school_scholarship_disbursement__allowed_policy_template_ids
 msgid "Allowed Policy Templates"
 msgstr ""
@@ -331,6 +336,7 @@ msgstr ""
 #. module: ssi_school_scholarship_disbursement
 #: model:ir.model.fields,field_description:ssi_school_scholarship_disbursement.field_school_scholarship_disbursement__company_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_disbursement.field_school_scholarship_disbursement_line__company_id
+#: model:res.groups,name:ssi_school_scholarship_disbursement.school_scholarship_disbursement_company_group
 msgid "Company"
 msgstr ""
 
@@ -343,6 +349,11 @@ msgstr ""
 #. module: ssi_school_scholarship_disbursement
 #: model:ir.model.fields,field_description:ssi_school_scholarship_disbursement.field_school_scholarship_disbursement__company_partner_id
 msgid "Company Partner"
+msgstr ""
+
+#. module: ssi_school_scholarship_disbursement
+#: model:res.groups,name:ssi_school_scholarship_disbursement.school_scholarship_disbursement_company_child_group
+msgid "Company and All Child Companies"
 msgstr ""
 
 #. module: ssi_school_scholarship_disbursement
@@ -437,36 +448,6 @@ msgstr ""
 #. module: ssi_school_scholarship_disbursement
 #: model:ir.model.fields,field_description:ssi_school_scholarship_disbursement.field_school_scholarship_disbursement_line__name
 msgid "Description"
-msgstr ""
-
-#. module: ssi_school_scholarship_disbursement
-#: model:res.groups,name:ssi_school_scholarship_disbursement.school_scholarship_disbursement_all_group
-msgid "Disbursement All"
-msgstr ""
-
-#. module: ssi_school_scholarship_disbursement
-#: model:res.groups,name:ssi_school_scholarship_disbursement.school_scholarship_disbursement_company_group
-msgid "Disbursement Company"
-msgstr ""
-
-#. module: ssi_school_scholarship_disbursement
-#: model:res.groups,name:ssi_school_scholarship_disbursement.school_scholarship_disbursement_company_child_group
-msgid "Disbursement Company and All Child Companies"
-msgstr ""
-
-#. module: ssi_school_scholarship_disbursement
-#: model:res.groups,name:ssi_school_scholarship_disbursement.school_scholarship_disbursement_user_group
-msgid "Disbursement User"
-msgstr ""
-
-#. module: ssi_school_scholarship_disbursement
-#: model:res.groups,name:ssi_school_scholarship_disbursement.school_scholarship_disbursement_validator_group
-msgid "Disbursement Validator"
-msgstr ""
-
-#. module: ssi_school_scholarship_disbursement
-#: model:res.groups,name:ssi_school_scholarship_disbursement.school_scholarship_disbursement_viewer_group
-msgid "Disbursement Viewer"
 msgstr ""
 
 #. module: ssi_school_scholarship_disbursement
@@ -939,6 +920,12 @@ msgid "Schedule"
 msgstr ""
 
 #. module: ssi_school_scholarship_disbursement
+#: model:ir.module.category,name:ssi_school_scholarship_disbursement.school_scholarship_disbursement_data_ownership_module_category
+#: model:ir.module.category,name:ssi_school_scholarship_disbursement.school_scholarship_disbursement_workflow_module_category
+msgid "Scholarship Disbursement"
+msgstr ""
+
+#. module: ssi_school_scholarship_disbursement
 #: model:ir.actions.act_window,name:ssi_school_scholarship_disbursement.school_scholarship_disbursement_action
 #: model:ir.ui.menu,name:ssi_school_scholarship_disbursement.school_scholarship_disbursement_menu
 msgid "Scholarship Disbursements"
@@ -1109,6 +1096,11 @@ msgid "Usage"
 msgstr ""
 
 #. module: ssi_school_scholarship_disbursement
+#: model:res.groups,name:ssi_school_scholarship_disbursement.school_scholarship_disbursement_user_group
+msgid "User"
+msgstr ""
+
+#. module: ssi_school_scholarship_disbursement
 #: model:ir.model.fields,help:ssi_school_scholarship_disbursement.field_school_scholarship_disbursement__user_id
 msgid ""
 "User that responsible for document\n"
@@ -1129,6 +1121,16 @@ msgstr ""
 #. module: ssi_school_scholarship_disbursement
 #: model:ir.model.fields,help:ssi_school_scholarship_disbursement.field_school_scholarship_disbursement__active_approver_user_ids
 msgid "Users that can approve/reject document"
+msgstr ""
+
+#. module: ssi_school_scholarship_disbursement
+#: model:res.groups,name:ssi_school_scholarship_disbursement.school_scholarship_disbursement_validator_group
+msgid "Validator"
+msgstr ""
+
+#. module: ssi_school_scholarship_disbursement
+#: model:res.groups,name:ssi_school_scholarship_disbursement.school_scholarship_disbursement_viewer_group
+msgid "Viewer"
 msgstr ""
 
 #. module: ssi_school_scholarship_disbursement
