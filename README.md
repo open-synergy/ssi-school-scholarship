@@ -24,7 +24,7 @@ addon | version | maintainers | summary
 [ssi_school_scholarship](ssi_school_scholarship/) | 14.0.1.6.3 |  | School Scholarship
 [ssi_school_scholarship_admission](ssi_school_scholarship_admission/) | 14.0.1.0.1 |  | School Scholarship - Admission
 [ssi_school_scholarship_admission_operating_unit](ssi_school_scholarship_admission_operating_unit/) | 14.0.1.1.0 |  | School Scholarship - Admission - Operating Unit
-[ssi_school_scholarship_deduction](ssi_school_scholarship_deduction/) | 14.0.1.4.4 |  | School Scholarship Deduction
+[ssi_school_scholarship_deduction](ssi_school_scholarship_deduction/) | 14.0.1.4.5 |  | School Scholarship Deduction
 [ssi_school_scholarship_deduction_operating_unit](ssi_school_scholarship_deduction_operating_unit/) | 14.0.1.0.1 |  | School Scholarship Deduction - Operating Unit
 [ssi_school_scholarship_disbursement](ssi_school_scholarship_disbursement/) | 14.0.1.0.2 |  | School Scholarship Disbursement
 [ssi_school_scholarship_disbursement_operating_unit](ssi_school_scholarship_disbursement_operating_unit/) | 14.0.1.0.1 |  | School Scholarship Disbursement - Operating Unit
