@@ -3,7 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
     "name": "School Scholarship",
-    "version": "14.0.1.6.2",
+    "version": "14.0.1.6.3",
     "website": "https://simetri-sinergi.id",
     # pylint: disable=line-too-long
     "author": "PT. Simetri Sinergi Indonesia, OpenSynergy Indonesia, Odoo Community Association (OCA)",  # noqa: B950
