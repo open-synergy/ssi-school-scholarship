@@ -238,3 +238,184 @@ class TestSchoolScholarshipDisbursement(YamlTransactionCase):
         ):
             result = disbursement._insert_form_element(view_arch)
         self.assertEqual(result, view_arch)
+
+    def test_action_open_create_due_disbursement_wizard_returns_action(self):
+        """``action_open_create_due_disbursement_wizard`` must return a
+        window action pre-filling the wizard with the selected Awards.
+
+        Built directly in Python (P1: nilai balik method; L-01,
+        odoo-development-unit-test references/python-escape-hatch.md)
+        because ``action: call`` in the YAML DSL discards a method's
+        return value, and this method's return value -- an
+        ``ir.actions.act_window`` dict targeting ``new`` with every
+        selected Award id in ``context['active_ids']`` -- is exactly
+        what is under test. Called on two Awards at once, mirroring
+        the multi-select entry point from the Awards list view.
+        """
+        grade_type = self.env["school_grade_type"].create(
+            {"name": "P1 Grade Type", "code": "P1GT"}
+        )
+        school = self.env["school"].create(
+            {
+                "name": "P1 School",
+                "code": "P1SC",
+                "grade_type_id": grade_type.id,
+            }
+        )
+        academic_year = self.env["school_academic_year"].create(
+            {
+                "name": "P1 Academic Year",
+                "code": "P1AY",
+                "date_start": "2026-07-01",
+                "date_end": "2027-06-30",
+            }
+        )
+        academic_term = self.env["school_academic_term"].create(
+            {
+                "name": "P1 Term",
+                "code": "P1TM",
+                "date_start": "2026-07-01",
+                "date_end": "2026-12-31",
+                "year_id": academic_year.id,
+            }
+        )
+        grade = self.env["school_grade"].create(
+            {"name": "P1 Grade", "code": "P1GR", "type_id": grade_type.id}
+        )
+        grade_class = self.env["school_grade_class"].create(
+            {
+                "name": "P1 Class",
+                "code": "P1CL",
+                "school_id": school.id,
+                "grade_id": grade.id,
+            }
+        )
+        contact_1 = self.env["res.partner"].create({"name": "P1 Contact A"})
+        contact_2 = self.env["res.partner"].create({"name": "P1 Contact B"})
+        student_1 = self.env["school_student"].create(
+            {
+                "name": "P1 Student A",
+                "code": "P1STA",
+                "contact_id": contact_1.id,
+                "school_id": school.id,
+            }
+        )
+        student_2 = self.env["school_student"].create(
+            {
+                "name": "P1 Student B",
+                "code": "P1STB",
+                "contact_id": contact_2.id,
+                "school_id": school.id,
+            }
+        )
+        enrollment_1 = self.env["school_enrollment"].create(
+            {
+                "academic_year_id": academic_year.id,
+                "academic_term_id": academic_term.id,
+                "school_id": school.id,
+                "grade_id": grade.id,
+                "grade_class_id": grade_class.id,
+                "student_id": student_1.id,
+            }
+        )
+        enrollment_2 = self.env["school_enrollment"].create(
+            {
+                "academic_year_id": academic_year.id,
+                "academic_term_id": academic_term.id,
+                "school_id": school.id,
+                "grade_id": grade.id,
+                "grade_class_id": grade_class.id,
+                "student_id": student_2.id,
+            }
+        )
+        analytic_account = self.env["account.analytic.account"].create(
+            {"name": "P1 Analytic"}
+        )
+        funding_source = self.env["school_scholarship_funding_source"].create(
+            {
+                "name": "P1 Funding Source",
+                "code": "P1FS",
+                "analytic_account_id": analytic_account.id,
+            }
+        )
+        product = self.env["product.product"].create(
+            {"name": "P1 Product", "type": "service"}
+        )
+        deduction_journal = self.env["account.journal"].create(
+            {"name": "P1 Deduction Journal", "code": "P1DJ", "type": "sale"}
+        )
+        account_type_income = self.env.ref("account.data_account_type_revenue")
+        discount_account = self.env["account.account"].create(
+            {
+                "name": "P1 Discount Account",
+                "code": "P1DA",
+                "user_type_id": account_type_income.id,
+                "reconcile": False,
+            }
+        )
+        scholarship_type = self.env["school_scholarship_type"].create(
+            {
+                "name": "P1 Type",
+                "code": "P1TY",
+                "deduction_journal_id": deduction_journal.id,
+                "discount_account_id": discount_account.id,
+            }
+        )
+        program = self.env["school_scholarship_program"].create(
+            {
+                "name": "P1 Program",
+                "code": "P1PRG",
+                "type_id": scholarship_type.id,
+                "school_id": school.id,
+                "academic_year_id": academic_year.id,
+                "funding_source_ids": [(6, 0, [funding_source.id])],
+                "deduction_journal_id": deduction_journal.id,
+                "discount_account_id": discount_account.id,
+                "scope_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "scope_basis": "product",
+                            "product_id": product.id,
+                            "benefit_type": "cash",
+                            "computation": "fixed",
+                            "amount_fixed": 100000.0,
+                        },
+                    )
+                ],
+            }
+        )
+        award_1 = self.env["school_scholarship_award"].create(
+            {
+                "program_id": program.id,
+                "student_id": student_1.id,
+                "enrollment_id": enrollment_1.id,
+                "date_start": "2026-07-01",
+                "date_end": "2026-12-31",
+            }
+        )
+        award_2 = self.env["school_scholarship_award"].create(
+            {
+                "program_id": program.id,
+                "student_id": student_2.id,
+                "enrollment_id": enrollment_2.id,
+                "date_start": "2026-07-01",
+                "date_end": "2026-12-31",
+            }
+        )
+        awards = award_1 | award_2
+
+        action = awards.action_open_create_due_disbursement_wizard()
+
+        self.assertEqual(
+            action["res_model"], "create_due_scholarship_disbursement"
+        )
+        self.assertEqual(action["type"], "ir.actions.act_window")
+        self.assertEqual(action["target"], "new")
+        self.assertEqual(
+            action["context"]["active_model"], "school_scholarship_award"
+        )
+        self.assertEqual(
+            set(action["context"]["active_ids"]), {award_1.id, award_2.id}
+        )
