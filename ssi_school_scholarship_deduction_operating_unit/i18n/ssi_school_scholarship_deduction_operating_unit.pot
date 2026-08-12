@@ -19,11 +19,6 @@ msgid "Customer Invoice"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction_operating_unit
-#: model:res.groups,name:ssi_school_scholarship_deduction_operating_unit.school_scholarship_deduction_operating_unit_group
-msgid "Deduction Operating Unit"
-msgstr ""
-
-#. module: ssi_school_scholarship_deduction_operating_unit
 #: model:res.groups,name:ssi_school_scholarship_deduction_operating_unit.school_scholarship_deduction_recognition_operating_unit_group
 msgid "Deduction Recognition Operating Unit"
 msgstr ""
@@ -65,6 +60,7 @@ msgstr ""
 #. module: ssi_school_scholarship_deduction_operating_unit
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction_operating_unit.field_school_scholarship_deduction__operating_unit_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction_operating_unit.field_school_scholarship_deduction_recognition__operating_unit_id
+#: model:res.groups,name:ssi_school_scholarship_deduction_operating_unit.school_scholarship_deduction_operating_unit_group
 msgid "Operating Unit"
 msgstr ""
 
