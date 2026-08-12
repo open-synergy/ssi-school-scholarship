@@ -425,5 +425,87 @@ odoo.define(
                 },
             ])
         );
+
+        // IK: docs/school_scholarship_deduction/06-create-due-recognition.md
+        tour.register(
+            "ssi_school_scholarship_deduction_school_scholarship_deduction_create_due_recognition",
+            {
+                test: true,
+                url: "/web",
+            },
+            [].concat(openScholarshipDeductionsList(), [
+                // Flow 2 — Select at least one Deduction row. The header
+                // only renders the Create Due Recognition button once the
+                // list has a non-empty selection (web/list_controller.js
+                // ListController._renderHeaderButtons: "if
+                // (!this.headerButtons.length || !this.selectedRecords
+                // .length) { return; }").
+                {
+                    content: "Select the Deduction row",
+                    trigger:
+                        ".o_data_row:contains(TOUR-DEDUCTION-RECOGNITION-001) .o_list_record_selector input",
+                    run: "click",
+                },
+
+                // Flow 3 — Click the Create Due Recognition button in the
+                // list header. It is a `type="action"` button, so its
+                // `name` attribute is a numeric action id in the DOM;
+                // target it by label instead (odoo-development-ui-test,
+                // selectors.md §4) -- the same reason 10-cancel.md's own
+                // tour above targets its Cancel button this way.
+                {
+                    content: "Click the Create Due Recognition button",
+                    trigger:
+                        ".o_list_buttons button:contains('Create Due Recognition')",
+                },
+
+                // ── Flow 4 — The wizard opens with Date already defaulted
+                // to today and Deductions already filled (both computed
+                // server-side by default_get, independently of the row
+                // selected in Flow 2). Nothing needs to be typed here.
+                // 14.0 does not prefix in-modal triggers with `.modal`
+                // (odoo-development-ui-test, patterns.md §H note).
+                {
+                    content: "Wizard is open",
+                    trigger: ".o_field_widget[name='deduction_ids']",
+                    run: function () {
+                        // Assertion only; do not trigger the default click.
+                    },
+                },
+
+                // Flow 5 — Click Create Due Recognition in the wizard
+                // footer.
+                {
+                    content: "Click Create Due Recognition in the wizard",
+                    trigger:
+                        ".modal-footer button[name='action_create_due_recognition']",
+                },
+
+                // ── Post-Condition — the newly created Recognition
+                // document is listed in the Scholarship Deduction
+                // Recognitions list. Waiting for the source Deduction's
+                // own name in the list is the only gate here that is
+                // guaranteed false until the wizard's own RPC actually
+                // finishes (patterns.md §P): no such row exists before
+                // this wizard is run.
+                {
+                    content: "Scholarship Deduction Recognitions list is displayed",
+                    trigger:
+                        ".o_control_panel .breadcrumb-item.active:contains(Scholarship Deduction Recognitions)",
+                    extra_trigger: ".o_list_view",
+                    run: function () {
+                        // Assertion only; do not trigger the default click.
+                    },
+                },
+                {
+                    content: "A Recognition for the Deduction appears in Draft",
+                    trigger:
+                        ".o_data_row:contains(TOUR-DEDUCTION-RECOGNITION-001)",
+                    run: function () {
+                        // Assertion only; do not trigger the default click.
+                    },
+                },
+            ])
+        );
     }
 );
