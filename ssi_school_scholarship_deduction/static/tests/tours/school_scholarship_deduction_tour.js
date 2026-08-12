@@ -499,8 +499,7 @@ odoo.define(
                 },
                 {
                     content: "A Recognition for the Deduction appears in Draft",
-                    trigger:
-                        ".o_data_row:contains(TOUR-DEDUCTION-RECOGNITION-001)",
+                    trigger: ".o_data_row:contains(TOUR-DEDUCTION-RECOGNITION-001)",
                     run: function () {
                         // Assertion only; do not trigger the default click.
                     },

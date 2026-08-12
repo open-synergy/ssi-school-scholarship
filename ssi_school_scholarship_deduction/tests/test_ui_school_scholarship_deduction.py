@@ -568,9 +568,15 @@ class TestUiSchoolScholarshipDeduction(HttpSavepointCase):
         cls.tour_deduction_recognition.action_confirm()
         # Same cache-busting need as the 05-approve fixture above --
         # ``approve_ok`` is cached from confirming before an approver
-        # existed.
+        # existed. ``with_user(admin)`` is required too, same as the
+        # invoice fixture above: the policy expression backing
+        # ``approve_ok`` (policy_template/school_scholarship_deduction
+        # .xml) reads ``env.user.id in
+        # document.active_approver_user_ids.ids``, so it must be
+        # recomputed as the approver, not as whichever user
+        # ``cls.env`` defaults to.
         cls.tour_deduction_recognition.invalidate_cache()
-        cls.tour_deduction_recognition.action_approve_approval()
+        cls.tour_deduction_recognition.with_user(admin).action_approve_approval()
 
     def test_create(self):
         """Run the create tour for ``school_scholarship_deduction``.
