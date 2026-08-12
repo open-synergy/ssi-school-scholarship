@@ -222,6 +222,21 @@ class TestUiSchoolScholarshipAwardCreateDueDisbursement(HttpSavepointCase):
                 # disbursement Line's own Final Account -- would
                 # compute to False.
                 "expense_account_id": tour_expense_account.id,
+                # school_scholarship_award._prepare_due_disbursement_data
+                # (ssi_school_scholarship_disbursement) reads these two
+                # fields directly off the Award to build the new
+                # Disbursement document's own required journal_id/
+                # payable_account_id. In the real web client they are
+                # defaulted by onchange_disbursement_journal_id /
+                # onchange_payable_account_id (ssi_school_scholarship)
+                # as soon as Program is selected -- onchange handlers
+                # never fire on a plain create() call, so without this
+                # the wizard's own Create Due Disbursement button would
+                # fail with a mandatory-field error on journal_id
+                # (same class of gap already tracked for
+                # payment_method/bank_account_id in issue #53).
+                "disbursement_journal_id": tour_journal.id,
+                "payable_account_id": tour_payable_account.id,
                 "benefit_ids": [
                     (
                         0,
