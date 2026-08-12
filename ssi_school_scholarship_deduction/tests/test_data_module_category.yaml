@@ -1,6 +1,5 @@
 scenarios:
-  - name: "Deduction workflow/data ownership groups point to their own model
-      category"
+  - name: "Deduction workflow/data ownership groups point to their own model category"
     steps:
       - step: "Get school_scholarship_deduction_viewer_group by XML ID"
         action: "ref"
@@ -66,8 +65,7 @@ scenarios:
           name:
             type: "value"
             expected: "Company"
-      - step: "Assert deduction_company_child_group category_id and literal
-          name"
+      - step: "Assert deduction_company_child_group category_id and literal name"
         action: "assert"
         target: "deduction_company_child_group"
         asserts:
@@ -88,16 +86,16 @@ scenarios:
             type: "value"
             expected: "All"
 
-  - name: "New deduction categories are parented under the shared School
-      Scholarship categories"
+  - name:
+      "New deduction categories are parented under the shared School Scholarship
+      categories"
     steps:
-      - step: "Get school_scholarship_deduction_workflow_module_category by
-          XML ID"
+      - step: "Get school_scholarship_deduction_workflow_module_category by XML ID"
         action: "ref"
         xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_workflow_module_category"
         save_as: "deduction_workflow_category"
-      - step: "Get school_scholarship_deduction_data_ownership_module_category
-          by XML ID"
+      - step:
+          "Get school_scholarship_deduction_data_ownership_module_category by XML ID"
         action: "ref"
         xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_data_ownership_module_category"
         save_as: "deduction_data_ownership_category"
@@ -148,7 +146,8 @@ scenarios:
             [
               "category_id",
               "=",
-              "REF: ssi_school_scholarship.school_scholarship_data_ownership_module_category",
+              "REF:
+              ssi_school_scholarship.school_scholarship_data_ownership_module_category",
             ],
           ]
         save_as: "orphan_data_ownership_groups"
