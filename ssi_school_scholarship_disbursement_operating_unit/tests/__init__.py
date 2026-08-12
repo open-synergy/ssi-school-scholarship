@@ -5,4 +5,5 @@
 from . import (
     test_school_scholarship_disbursement_operating_unit,
     test_ui_school_scholarship_disbursement,
+    test_module_category,
 )

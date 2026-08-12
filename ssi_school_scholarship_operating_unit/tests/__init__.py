@@ -8,4 +8,5 @@ from . import (
     test_ui_school_scholarship_funding_source,
     test_ui_school_scholarship_program,
     test_ui_school_scholarship_award,
+    test_module_category,
 )

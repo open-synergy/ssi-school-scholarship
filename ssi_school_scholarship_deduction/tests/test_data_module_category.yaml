@@ -1,0 +1,165 @@
+scenarios:
+  - name: "Deduction workflow/data ownership groups point to their own model category"
+    steps:
+      - step: "Get school_scholarship_deduction_viewer_group by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_viewer_group"
+        save_as: "deduction_viewer_group"
+      - step: "Get school_scholarship_deduction_user_group by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_user_group"
+        save_as: "deduction_user_group"
+      - step: "Get school_scholarship_deduction_validator_group by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_validator_group"
+        save_as: "deduction_validator_group"
+      - step: "Get school_scholarship_deduction_company_group by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_company_group"
+        save_as: "deduction_company_group"
+      - step: "Get school_scholarship_deduction_company_child_group by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_company_child_group"
+        save_as: "deduction_company_child_group"
+      - step: "Get school_scholarship_deduction_all_group by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_all_group"
+        save_as: "deduction_all_group"
+      - step: "Assert deduction_viewer_group category_id and literal name"
+        action: "assert"
+        target: "deduction_viewer_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_workflow_module_category"
+          name:
+            type: "value"
+            expected: "Viewer"
+      - step: "Assert deduction_user_group category_id and literal name"
+        action: "assert"
+        target: "deduction_user_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_workflow_module_category"
+          name:
+            type: "value"
+            expected: "User"
+      - step: "Assert deduction_validator_group category_id and literal name"
+        action: "assert"
+        target: "deduction_validator_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_workflow_module_category"
+          name:
+            type: "value"
+            expected: "Validator"
+      - step: "Assert deduction_company_group category_id and literal name"
+        action: "assert"
+        target: "deduction_company_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_data_ownership_module_category"
+          name:
+            type: "value"
+            expected: "Company"
+      - step: "Assert deduction_company_child_group category_id and literal name"
+        action: "assert"
+        target: "deduction_company_child_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_data_ownership_module_category"
+          name:
+            type: "value"
+            expected: "Company and All Child Companies"
+      - step: "Assert deduction_all_group category_id and literal name"
+        action: "assert"
+        target: "deduction_all_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_data_ownership_module_category"
+          name:
+            type: "value"
+            expected: "All"
+
+  - name:
+      "New deduction categories are parented under the shared School Scholarship
+      categories"
+    steps:
+      - step: "Get school_scholarship_deduction_workflow_module_category by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_workflow_module_category"
+        save_as: "deduction_workflow_category"
+      - step:
+          "Get school_scholarship_deduction_data_ownership_module_category by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship_deduction.school_scholarship_deduction_data_ownership_module_category"
+        save_as: "deduction_data_ownership_category"
+      - step: "Assert deduction_workflow_category parent_id and name"
+        action: "assert"
+        target: "deduction_workflow_category"
+        asserts:
+          parent_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship.school_scholarship_workflow_module_category"
+          name:
+            type: "value"
+            expected: "Scholarship Deduction"
+      - step: "Assert deduction_data_ownership_category parent_id and name"
+        action: "assert"
+        target: "deduction_data_ownership_category"
+        asserts:
+          parent_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship.school_scholarship_data_ownership_module_category"
+          name:
+            type: "value"
+            expected: "Scholarship Deduction"
+
+  - name: "No res.groups still points at the shared workflow category"
+    steps:
+      - step: "Search res.groups on the shared workflow category"
+        action: "search"
+        model: "res.groups"
+        domain:
+          [
+            [
+              "category_id",
+              "=",
+              "REF: ssi_school_scholarship.school_scholarship_workflow_module_category",
+            ],
+          ]
+        save_as: "orphan_workflow_groups"
+        expect_count: 0
+
+  - name:
+      "Only the out-of-scope Deduction Recognition group still points at the shared data
+      ownership category"
+    steps:
+      - step:
+          "Get the deliberately out-of-scope Deduction Recognition Operating Unit
+          group's id"
+        action: "ref"
+        xml_id: "ssi_school_scholarship_deduction_operating_unit.school_scholarship_deduction_recognition_operating_unit_group"
+        save_as: "recognition_ou_group"
+      - step:
+          "Search res.groups on the shared data ownership category, excluding the
+          deliberately out-of-scope Recognition group"
+        action: "search"
+        model: "res.groups"
+        domain:
+          [
+            [
+              "category_id",
+              "=",
+              "REF:
+              ssi_school_scholarship.school_scholarship_data_ownership_module_category",
+            ],
+            ["id", "!=", "REC: recognition_ou_group.id"],
+          ]
+        save_as: "orphan_data_ownership_groups"
+        expect_count: 0

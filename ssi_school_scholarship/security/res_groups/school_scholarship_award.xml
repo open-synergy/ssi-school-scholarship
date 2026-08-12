@@ -5,13 +5,13 @@
 <odoo>
 <!-- Workflow -->
 <record id="school_scholarship_award_viewer_group" model="res.groups">
-    <field name="name">Award Viewer</field>
-    <field name="category_id" ref="school_scholarship_workflow_module_category" />
+    <field name="name">Viewer</field>
+    <field name="category_id" ref="school_scholarship_award_workflow_module_category" />
 </record>
 
 <record id="school_scholarship_award_user_group" model="res.groups">
-    <field name="name">Award User</field>
-    <field name="category_id" ref="school_scholarship_workflow_module_category" />
+    <field name="name">User</field>
+    <field name="category_id" ref="school_scholarship_award_workflow_module_category" />
     <field
             name="implied_ids"
             eval="[(4, ref('school_scholarship_award_viewer_group'))]"
@@ -19,8 +19,8 @@
 </record>
 
 <record id="school_scholarship_award_validator_group" model="res.groups">
-    <field name="name">Award Validator</field>
-    <field name="category_id" ref="school_scholarship_workflow_module_category" />
+    <field name="name">Validator</field>
+    <field name="category_id" ref="school_scholarship_award_workflow_module_category" />
     <field
             name="implied_ids"
             eval="[(4, ref('school_scholarship_award_user_group'))]"
@@ -33,13 +33,19 @@
 
 <!-- Data Ownership -->
 <record id="school_scholarship_award_company_group" model="res.groups">
-    <field name="name">Award Company</field>
-    <field name="category_id" ref="school_scholarship_data_ownership_module_category" />
+    <field name="name">Company</field>
+    <field
+            name="category_id"
+            ref="school_scholarship_award_data_ownership_module_category"
+        />
 </record>
 
 <record id="school_scholarship_award_company_child_group" model="res.groups">
-    <field name="name">Award Company and All Child Companies</field>
-    <field name="category_id" ref="school_scholarship_data_ownership_module_category" />
+    <field name="name">Company and All Child Companies</field>
+    <field
+            name="category_id"
+            ref="school_scholarship_award_data_ownership_module_category"
+        />
     <field
             name="implied_ids"
             eval="[(4, ref('school_scholarship_award_company_group'))]"
@@ -47,8 +53,11 @@
 </record>
 
 <record id="school_scholarship_award_all_group" model="res.groups">
-    <field name="name">Award All</field>
-    <field name="category_id" ref="school_scholarship_data_ownership_module_category" />
+    <field name="name">All</field>
+    <field
+            name="category_id"
+            ref="school_scholarship_award_data_ownership_module_category"
+        />
     <field
             name="implied_ids"
             eval="[(4, ref('school_scholarship_award_company_child_group'))]"

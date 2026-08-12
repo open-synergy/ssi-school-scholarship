@@ -5,18 +5,18 @@
 <odoo>
 <!-- Workflow -->
 <record id="school_scholarship_disbursement_viewer_group" model="res.groups">
-    <field name="name">Disbursement Viewer</field>
+    <field name="name">Viewer</field>
     <field
             name="category_id"
-            ref="ssi_school_scholarship.school_scholarship_workflow_module_category"
+            ref="school_scholarship_disbursement_workflow_module_category"
         />
 </record>
 
 <record id="school_scholarship_disbursement_user_group" model="res.groups">
-    <field name="name">Disbursement User</field>
+    <field name="name">User</field>
     <field
             name="category_id"
-            ref="ssi_school_scholarship.school_scholarship_workflow_module_category"
+            ref="school_scholarship_disbursement_workflow_module_category"
         />
     <field
             name="implied_ids"
@@ -25,10 +25,10 @@
 </record>
 
 <record id="school_scholarship_disbursement_validator_group" model="res.groups">
-    <field name="name">Disbursement Validator</field>
+    <field name="name">Validator</field>
     <field
             name="category_id"
-            ref="ssi_school_scholarship.school_scholarship_workflow_module_category"
+            ref="school_scholarship_disbursement_workflow_module_category"
         />
     <field
             name="implied_ids"
@@ -42,18 +42,18 @@
 
 <!-- Data Ownership -->
 <record id="school_scholarship_disbursement_company_group" model="res.groups">
-    <field name="name">Disbursement Company</field>
+    <field name="name">Company</field>
     <field
             name="category_id"
-            ref="ssi_school_scholarship.school_scholarship_data_ownership_module_category"
+            ref="school_scholarship_disbursement_data_ownership_module_category"
         />
 </record>
 
 <record id="school_scholarship_disbursement_company_child_group" model="res.groups">
-    <field name="name">Disbursement Company and All Child Companies</field>
+    <field name="name">Company and All Child Companies</field>
     <field
             name="category_id"
-            ref="ssi_school_scholarship.school_scholarship_data_ownership_module_category"
+            ref="school_scholarship_disbursement_data_ownership_module_category"
         />
     <field
             name="implied_ids"
@@ -62,10 +62,10 @@
 </record>
 
 <record id="school_scholarship_disbursement_all_group" model="res.groups">
-    <field name="name">Disbursement All</field>
+    <field name="name">All</field>
     <field
             name="category_id"
-            ref="ssi_school_scholarship.school_scholarship_data_ownership_module_category"
+            ref="school_scholarship_disbursement_data_ownership_module_category"
         />
     <field
             name="implied_ids"

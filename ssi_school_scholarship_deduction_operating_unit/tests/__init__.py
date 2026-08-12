@@ -6,4 +6,5 @@ from . import (
     test_school_scholarship_deduction_operating_unit,
     test_ui_school_scholarship_deduction,
     test_ui_school_scholarship_deduction_recognition,
+    test_module_category,
 )

@@ -1,0 +1,17 @@
+scenarios:
+  - name: "Award Operating Unit group points to the award data ownership category"
+    steps:
+      - step: "Get school_scholarship_award_operating_unit_group by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship_operating_unit.school_scholarship_award_operating_unit_group"
+        save_as: "award_operating_unit_group"
+      - step: "Assert award_operating_unit_group category_id and literal name"
+        action: "assert"
+        target: "award_operating_unit_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship.school_scholarship_award_data_ownership_module_category"
+          name:
+            type: "value"
+            expected: "Operating Unit"

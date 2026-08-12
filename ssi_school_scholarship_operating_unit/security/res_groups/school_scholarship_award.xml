@@ -8,7 +8,7 @@
     <field name="name">Operating Unit</field>
     <field
             name="category_id"
-            ref="ssi_school_scholarship.school_scholarship_data_ownership_module_category"
+            ref="ssi_school_scholarship.school_scholarship_award_data_ownership_module_category"
         />
 </record>
 
