@@ -6,18 +6,12 @@
 <!-- Workflow -->
 <record id="school_scholarship_award_viewer_group" model="res.groups">
     <field name="name">Viewer</field>
-    <field
-            name="category_id"
-            ref="school_scholarship_award_workflow_module_category"
-        />
+    <field name="category_id" ref="school_scholarship_award_workflow_module_category" />
 </record>
 
 <record id="school_scholarship_award_user_group" model="res.groups">
     <field name="name">User</field>
-    <field
-            name="category_id"
-            ref="school_scholarship_award_workflow_module_category"
-        />
+    <field name="category_id" ref="school_scholarship_award_workflow_module_category" />
     <field
             name="implied_ids"
             eval="[(4, ref('school_scholarship_award_viewer_group'))]"
@@ -26,10 +20,7 @@
 
 <record id="school_scholarship_award_validator_group" model="res.groups">
     <field name="name">Validator</field>
-    <field
-            name="category_id"
-            ref="school_scholarship_award_workflow_module_category"
-        />
+    <field name="category_id" ref="school_scholarship_award_workflow_module_category" />
     <field
             name="implied_ids"
             eval="[(4, ref('school_scholarship_award_user_group'))]"

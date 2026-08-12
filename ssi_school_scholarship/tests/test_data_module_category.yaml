@@ -86,8 +86,8 @@ scenarios:
             type: "value"
             expected: "All"
 
-  - name: "New award categories are parented under the shared School Scholarship
-      categories"
+  - name:
+      "New award categories are parented under the shared School Scholarship categories"
     steps:
       - step: "Get school_scholarship_award_workflow_module_category by XML ID"
         action: "ref"
@@ -169,7 +169,8 @@ scenarios:
             [
               "category_id",
               "=",
-              "REF: ssi_school_scholarship.school_scholarship_data_ownership_module_category",
+              "REF:
+              ssi_school_scholarship.school_scholarship_data_ownership_module_category",
             ],
           ]
         save_as: "orphan_data_ownership_groups"

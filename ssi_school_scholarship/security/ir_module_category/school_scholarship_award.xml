@@ -16,9 +16,6 @@
         model="ir.module.category"
     >
     <field name="name">Scholarship Award</field>
-    <field
-            name="parent_id"
-            ref="school_scholarship_data_ownership_module_category"
-        />
+    <field name="parent_id" ref="school_scholarship_data_ownership_module_category" />
 </record>
 </odoo>
