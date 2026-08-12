@@ -1,0 +1,176 @@
+scenarios:
+  - name: "Award workflow/data ownership groups point to their own model category"
+    steps:
+      - step: "Get school_scholarship_award_viewer_group by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship.school_scholarship_award_viewer_group"
+        save_as: "award_viewer_group"
+      - step: "Get school_scholarship_award_user_group by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship.school_scholarship_award_user_group"
+        save_as: "award_user_group"
+      - step: "Get school_scholarship_award_validator_group by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship.school_scholarship_award_validator_group"
+        save_as: "award_validator_group"
+      - step: "Get school_scholarship_award_company_group by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship.school_scholarship_award_company_group"
+        save_as: "award_company_group"
+      - step: "Get school_scholarship_award_company_child_group by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship.school_scholarship_award_company_child_group"
+        save_as: "award_company_child_group"
+      - step: "Get school_scholarship_award_all_group by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship.school_scholarship_award_all_group"
+        save_as: "award_all_group"
+      - step: "Assert award_viewer_group category_id and literal name"
+        action: "assert"
+        target: "award_viewer_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship.school_scholarship_award_workflow_module_category"
+          name:
+            type: "value"
+            expected: "Viewer"
+      - step: "Assert award_user_group category_id and literal name"
+        action: "assert"
+        target: "award_user_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship.school_scholarship_award_workflow_module_category"
+          name:
+            type: "value"
+            expected: "User"
+      - step: "Assert award_validator_group category_id and literal name"
+        action: "assert"
+        target: "award_validator_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship.school_scholarship_award_workflow_module_category"
+          name:
+            type: "value"
+            expected: "Validator"
+      - step: "Assert award_company_group category_id and literal name"
+        action: "assert"
+        target: "award_company_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship.school_scholarship_award_data_ownership_module_category"
+          name:
+            type: "value"
+            expected: "Company"
+      - step: "Assert award_company_child_group category_id and literal name"
+        action: "assert"
+        target: "award_company_child_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship.school_scholarship_award_data_ownership_module_category"
+          name:
+            type: "value"
+            expected: "Company and All Child Companies"
+      - step: "Assert award_all_group category_id and literal name"
+        action: "assert"
+        target: "award_all_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship.school_scholarship_award_data_ownership_module_category"
+          name:
+            type: "value"
+            expected: "All"
+
+  - name: "New award categories are parented under the shared School Scholarship
+      categories"
+    steps:
+      - step: "Get school_scholarship_award_workflow_module_category by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship.school_scholarship_award_workflow_module_category"
+        save_as: "award_workflow_category"
+      - step: "Get school_scholarship_award_data_ownership_module_category by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship.school_scholarship_award_data_ownership_module_category"
+        save_as: "award_data_ownership_category"
+      - step: "Assert award_workflow_category parent_id and name"
+        action: "assert"
+        target: "award_workflow_category"
+        asserts:
+          parent_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship.school_scholarship_workflow_module_category"
+          name:
+            type: "value"
+            expected: "Scholarship Award"
+      - step: "Assert award_data_ownership_category parent_id and name"
+        action: "assert"
+        target: "award_data_ownership_category"
+        asserts:
+          parent_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school_scholarship.school_scholarship_data_ownership_module_category"
+          name:
+            type: "value"
+            expected: "Scholarship Award"
+
+  - name: "Old shared workflow/data ownership categories still exist as parents"
+    steps:
+      - step: "Get the old shared workflow category by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship.school_scholarship_workflow_module_category"
+        save_as: "shared_workflow_category"
+      - step: "Get the old shared data ownership category by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship.school_scholarship_data_ownership_module_category"
+        save_as: "shared_data_ownership_category"
+      - step: "Assert the shared categories are still named as before"
+        action: "assert"
+        target: "shared_workflow_category"
+        asserts:
+          name:
+            type: "value"
+            expected: "School - Scholarship - Workflow"
+      - step: "Assert the shared data ownership category is still named as before"
+        action: "assert"
+        target: "shared_data_ownership_category"
+        asserts:
+          name:
+            type: "value"
+            expected: "School - Scholarship - Data Ownership"
+
+  - name: "No res.groups still points at the shared workflow category"
+    steps:
+      - step: "Search res.groups on the shared workflow category"
+        action: "search"
+        model: "res.groups"
+        domain:
+          [
+            [
+              "category_id",
+              "=",
+              "REF: ssi_school_scholarship.school_scholarship_workflow_module_category",
+            ],
+          ]
+        save_as: "orphan_workflow_groups"
+        expect_count: 0
+
+  - name: "No res.groups still points at the shared data ownership category"
+    steps:
+      - step: "Search res.groups on the shared data ownership category"
+        action: "search"
+        model: "res.groups"
+        domain:
+          [
+            [
+              "category_id",
+              "=",
+              "REF: ssi_school_scholarship.school_scholarship_data_ownership_module_category",
+            ],
+          ]
+        save_as: "orphan_data_ownership_groups"
+        expect_count: 0

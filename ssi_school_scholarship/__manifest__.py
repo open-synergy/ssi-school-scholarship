@@ -30,6 +30,7 @@
     ],
     "data": [
         "security/ir_module_category_data.xml",
+        "security/ir_module_category/school_scholarship_award.xml",
         "security/res_groups/school_scholarship_type.xml",
         "security/res_groups/school_scholarship_funding_source.xml",
         "security/res_groups/school_scholarship_program.xml",
