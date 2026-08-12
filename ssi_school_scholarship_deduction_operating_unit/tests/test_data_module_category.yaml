@@ -1,14 +1,12 @@
 scenarios:
-  - name: "Deduction Operating Unit group points to the deduction data
-      ownership category"
+  - name:
+      "Deduction Operating Unit group points to the deduction data ownership category"
     steps:
-      - step: "Get school_scholarship_deduction_operating_unit_group by XML
-          ID"
+      - step: "Get school_scholarship_deduction_operating_unit_group by XML ID"
         action: "ref"
         xml_id: "ssi_school_scholarship_deduction_operating_unit.school_scholarship_deduction_operating_unit_group"
         save_as: "deduction_operating_unit_group"
-      - step: "Assert deduction_operating_unit_group category_id and
-          literal name"
+      - step: "Assert deduction_operating_unit_group category_id and literal name"
         action: "assert"
         target: "deduction_operating_unit_group"
         asserts:
@@ -19,16 +17,17 @@ scenarios:
             type: "value"
             expected: "Operating Unit"
 
-  - name: "Deduction Recognition Operating Unit group is intentionally left
-      out of scope"
+  - name:
+      "Deduction Recognition Operating Unit group is intentionally left out of scope"
     steps:
-      - step: "Get school_scholarship_deduction_recognition_operating_unit_group
-          by XML ID"
+      - step:
+          "Get school_scholarship_deduction_recognition_operating_unit_group by XML ID"
         action: "ref"
         xml_id: "ssi_school_scholarship_deduction_operating_unit.school_scholarship_deduction_recognition_operating_unit_group"
         save_as: "deduction_recognition_operating_unit_group"
-      - step: "Assert deduction_recognition_operating_unit_group still points
-          at the old shared data ownership category"
+      - step:
+          "Assert deduction_recognition_operating_unit_group still points at the old
+          shared data ownership category"
         action: "assert"
         target: "deduction_recognition_operating_unit_group"
         asserts:
@@ -52,15 +51,17 @@ scenarios:
         save_as: "orphan_workflow_groups"
         expect_count: 0
 
-  - name: "Only the out-of-scope Deduction Recognition group still points at
-      the shared data ownership category"
+  - name:
+      "Only the out-of-scope Deduction Recognition group still points at the shared data
+      ownership category"
     steps:
       - step: "Get deduction_recognition_operating_unit_group's id"
         action: "ref"
         xml_id: "ssi_school_scholarship_deduction_operating_unit.school_scholarship_deduction_recognition_operating_unit_group"
         save_as: "recognition_ou_group"
-      - step: "Search res.groups on the shared data ownership category,
-          excluding the deliberately out-of-scope Recognition group"
+      - step:
+          "Search res.groups on the shared data ownership category, excluding the
+          deliberately out-of-scope Recognition group"
         action: "search"
         model: "res.groups"
         domain:
@@ -68,7 +69,8 @@ scenarios:
             [
               "category_id",
               "=",
-              "REF: ssi_school_scholarship.school_scholarship_data_ownership_module_category",
+              "REF:
+              ssi_school_scholarship.school_scholarship_data_ownership_module_category",
             ],
             ["id", "!=", "REC: recognition_ou_group.id"],
           ]
