@@ -385,10 +385,13 @@ scenarios:
             type: "value"
             expected: "confirm"
 
-      - step: "Invalidate cache before approving (avoids stale policy cache)"
-        action: "call"
+      - step: "Assert d1_deduction_partial still confirmed before approving (forces refresh)"
+        action: "assert"
         target: "d1_deduction_partial"
-        method: "invalidate_cache"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the partial deduction, opening it"
         action: "call"
@@ -604,10 +607,13 @@ scenarios:
         as_user: "base.user_admin"
         refresh: true
 
-      - step: "Invalidate cache before approving the full deduction"
-        action: "call"
+      - step: "Assert d1_deduction_full still confirmed before approving (forces refresh)"
+        action: "assert"
         target: "d1_deduction_full"
-        method: "invalidate_cache"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the full deduction, fully reconciling the invoice"
         action: "call"
@@ -1535,10 +1541,13 @@ scenarios:
         as_user: "base.user_admin"
         refresh: true
 
-      - step: "Invalidate cache before approving the mismatched deduction"
-        action: "call"
+      - step: "Assert d2_deduction_mismatch still confirmed before approving (forces refresh)"
+        action: "assert"
         target: "d2_deduction_mismatch"
-        method: "invalidate_cache"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approving is rejected by the Receivable Account mismatch"
         action: "call"
@@ -1581,10 +1590,13 @@ scenarios:
         as_user: "base.user_admin"
         refresh: true
 
-      - step: "Invalidate cache before approving the under-allocated deduction"
-        action: "call"
+      - step: "Assert d2_deduction_unallocated still confirmed before approving (forces refresh)"
+        action: "assert"
         target: "d2_deduction_unallocated"
-        method: "invalidate_cache"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approving is rejected by the nonzero Amount Unallocated"
         action: "call"
@@ -1704,10 +1716,13 @@ scenarios:
         as_user: "base.user_admin"
         refresh: true
 
-      - step: "Invalidate cache before approving the non-reconcilable deduction"
-        action: "call"
+      - step: "Assert d2_deduction_no_reconcile still confirmed before approving (forces refresh)"
+        action: "assert"
         target: "d2_deduction_no_reconcile"
-        method: "invalidate_cache"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approving is rejected because the Receivable Account cannot reconcile"
         action: "call"
@@ -1805,10 +1820,13 @@ scenarios:
         as_user: "base.user_admin"
         refresh: true
 
-      - step: "Invalidate cache before approving the partner-mismatch deduction"
-        action: "call"
+      - step: "Assert d2_deduction_partner_mismatch still confirmed before approving (forces refresh)"
+        action: "assert"
         target: "d2_deduction_partner_mismatch"
-        method: "invalidate_cache"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approving is rejected by the Partner mismatch"
         action: "call"
@@ -1899,10 +1917,13 @@ scenarios:
         as_user: "base.user_admin"
         refresh: true
 
-      - step: "Invalidate cache before approving the currency-mismatch deduction"
-        action: "call"
+      - step: "Assert d2_deduction_currency_mismatch still confirmed before approving (forces refresh)"
+        action: "assert"
         target: "d2_deduction_currency_mismatch"
-        method: "invalidate_cache"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approving is rejected by the Currency mismatch"
         action: "call"
@@ -2023,10 +2044,13 @@ scenarios:
         as_user: "base.user_admin"
         refresh: true
 
-      - step: "Invalidate cache before approving the first shared deduction"
-        action: "call"
+      - step: "Assert d2_deduction_shared_first still confirmed before approving (forces refresh)"
+        action: "assert"
         target: "d2_deduction_shared_first"
-        method: "invalidate_cache"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step: "Approve the first shared deduction, shrinking the invoice's residual"
         action: "call"
@@ -2055,10 +2079,13 @@ scenarios:
         as_user: "base.user_admin"
         refresh: true
 
-      - step: "Invalidate cache before approving the second shared deduction"
-        action: "call"
+      - step: "Assert d2_deduction_shared_second still confirmed before approving (forces refresh)"
+        action: "assert"
         target: "d2_deduction_shared_second"
-        method: "invalidate_cache"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
 
       - step:
           "Approving is rejected because the first deduction already used up the

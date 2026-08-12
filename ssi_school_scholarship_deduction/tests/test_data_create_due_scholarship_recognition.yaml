@@ -1,0 +1,328 @@
+scenarios:
+  - name: "Create Due Scholarship Recognition - Onchange Deduction Ids"
+    steps:
+      # ── Shared fixture chain (prefix WF1) ────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "wf1_grade_type"
+        values:
+          name: "WF1 Grade Type"
+          code: "WF1GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "wf1_school"
+        values:
+          name: "WF1 School"
+          code: "WF1SC"
+          grade_type_id: "REC: wf1_grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "wf1_academic_year"
+        values:
+          name: "WF1 Academic Year"
+          code: "WF1AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "wf1_academic_term"
+        values:
+          name: "WF1 Term"
+          code: "WF1TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: wf1_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "wf1_grade"
+        values:
+          name: "WF1 Grade"
+          code: "WF1GR"
+          type_id: "REC: wf1_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "wf1_grade_class"
+        values:
+          name: "WF1 Class"
+          code: "WF1CL"
+          school_id: "REC: wf1_school.id"
+          grade_id: "REC: wf1_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "wf1_contact"
+        values:
+          name: "WF1 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "wf1_student"
+        values:
+          name: "WF1 Student"
+          code: "WF1ST"
+          contact_id: "REC: wf1_contact.id"
+          school_id: "REC: wf1_school.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "wf1_enrollment"
+        values:
+          academic_year_id: "REC: wf1_academic_year.id"
+          academic_term_id: "REC: wf1_academic_term.id"
+          school_id: "REC: wf1_school.id"
+          grade_id: "REC: wf1_grade.id"
+          grade_class_id: "REC: wf1_grade_class.id"
+          student_id: "REC: wf1_student.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "wf1_analytic"
+        values:
+          name: "WF1 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "wf1_funding_source"
+        values:
+          name: "WF1 Funding Source"
+          code: "WF1FS"
+          analytic_account_id: "REC: wf1_analytic.id"
+
+      - step: "Create the product covered by the benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "wf1_product"
+        values:
+          name: "WF1 Product"
+          type: "service"
+
+      - step: "Create the deduction journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "wf1_journal"
+        values:
+          name: "WF1 Journal"
+          code: "JWF1"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "wf1_account_type_income"
+
+      - step: "Get the account.account.type Receivable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "wf1_account_type_receivable"
+
+      - step: "Get the account.account.type Current Assets reference"
+        action: "ref"
+        xml_id: "account.data_account_type_current_assets"
+        save_as: "wf1_account_type_asset"
+
+      - step: "Create the receivable account"
+        action: "create"
+        model: "account.account"
+        save_as: "wf1_receivable_account"
+        values:
+          name: "WF1 Receivable Account"
+          code: "WF1RA"
+          user_type_id: "REC: wf1_account_type_receivable.id"
+          reconcile: true
+
+      - step: "Create the discount account the deduction line posts to"
+        action: "create"
+        model: "account.account"
+        save_as: "wf1_discount_account"
+        values:
+          name: "WF1 Discount Account"
+          code: "WF1DA"
+          user_type_id: "REC: wf1_account_type_income.id"
+          reconcile: false
+
+      - step: "Create the deferred account the deduction line posts to"
+        action: "create"
+        model: "account.account"
+        save_as: "wf1_deferred_account"
+        values:
+          name: "WF1 Deferred Account"
+          code: "WF1FA"
+          user_type_id: "REC: wf1_account_type_asset.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "wf1_type"
+        values:
+          name: "WF1 Type"
+          code: "WF1TY"
+          deduction_journal_id: "REC: wf1_journal.id"
+          discount_account_id: "REC: wf1_discount_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "wf1_program"
+        values:
+          name: "WF1 Program"
+          code: "WF1PRG"
+          type_id: "REC: wf1_type.id"
+          school_id: "REC: wf1_school.id"
+          academic_year_id: "REC: wf1_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: wf1_funding_source.id"]]]
+          deduction_journal_id: "REC: wf1_journal.id"
+          discount_account_id: "REC: wf1_discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: wf1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 100000.0
+
+      # ── The Award's own Start Date (2026-09-01) falls AFTER the
+      # deduction's own Date (2026-08-01) below, so the deduction's
+      # Recognition Method computes to `deferred` and Recognition
+      # Date to 2026-09-01 -- exactly the boundary the wizard's own
+      # `date` field is set to further down ─────────────────────────
+      - step: "Create the award backing the due deduction"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "wf1_award"
+        values:
+          program_id: "REC: wf1_program.id"
+          student_id: "REC: wf1_student.id"
+          enrollment_id: "REC: wf1_enrollment.id"
+          date_start: 2026-09-01
+          date_end: 2027-02-28
+          deferred_discount_account_id: "REC: wf1_deferred_account.id"
+          recognition_journal_id: "REC: wf1_journal.id"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "WF1 Benefit"
+                product_id: "REC: wf1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: wf1_funding_source.id"
+                percentage: 100.0
+
+      - step: "Find the award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: wf1_award.id"]]
+        limit: 1
+        save_as: "wf1_benefit"
+
+      - step: "Find the award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: wf1_award.id"]]
+        limit: 1
+        save_as: "wf1_funding"
+
+      - step: "Create the Schedule line realizing the Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "wf1_schedule"
+        values:
+          benefit_id: "REC: wf1_benefit.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the deferred, still-pending deduction due for recognition"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "wf1_deduction"
+        values:
+          award_id: "REC: wf1_award.id"
+          date: 2026-08-01
+          journal_id: "REC: wf1_journal.id"
+          receivable_account_id: "REC: wf1_receivable_account.id"
+          deferred_account_id: "REC: wf1_deferred_account.id"
+          recognition_journal_id: "REC: wf1_journal.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: wf1_schedule.id"
+                funding_id: "REC: wf1_funding.id"
+                final_account_id: "REC: wf1_discount_account.id"
+                name: "WF1 Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+
+      - step: "Assert the deduction is deferred and pending, due 2026-09-01"
+        action: "assert"
+        target: "wf1_deduction"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          recognition_method:
+            type: "value"
+            expected: "deferred"
+          recognition_date:
+            type: "value"
+            expected: 2026-09-01
+          recognition_state:
+            type: "value"
+            expected: "pending"
+
+      # ── Onchange (form): changing Date on the wizard refreshes
+      # Deductions to every Pending, deferred deduction whose own
+      # Recognition Date falls on or before it -- exercised twice, so
+      # the SAME onchange is shown both excluding and including the
+      # fixture above, driven purely by the `date` value ─────────────
+      - step: "Open the wizard and set Date before the deduction is due"
+        action: "form"
+        model: "create_due_scholarship_recognition"
+        save: false
+        ops:
+          - set:
+              date: 2026-08-15
+          - assert:
+              deduction_ids:
+                type: "m2m"
+                check: "count"
+                expected_count: 0
+
+      - step: "Move Date on to the deduction's own Recognition Date"
+        action: "form"
+        model: "create_due_scholarship_recognition"
+        save: false
+        ops:
+          - set:
+              date: 2026-08-15
+          - set:
+              date: 2026-09-01
+          - assert:
+              deduction_ids:
+                type: "m2m"
+                check: "contains"
+                expected_records:
+                  - "REC: wf1_deduction"
