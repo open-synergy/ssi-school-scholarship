@@ -331,8 +331,9 @@ scenarios:
             type: "m2o"
             expected: "REC: ou2"
 
-  - name: "Award OU Derive - onchange leaves operating_unit_id empty for a
-      multi-OU school, fills it for a single-OU school"
+  - name:
+      "Award OU Derive - onchange leaves operating_unit_id empty for a multi-OU school,
+      fills it for a single-OU school"
     steps:
       # ── Shared fixture chain (suffix AWOU8/AWOU9) ────────────────
       # School8 has exactly one Operating Unit (AWOU8); School9 has two
