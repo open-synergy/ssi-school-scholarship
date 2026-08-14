@@ -75,3 +75,11 @@
 - A new Scholarship Award record is created in **Draft** status.
 - **Amount Awarded** is recomputed as the sum of the Benefit lines' amounts.
 - **Compliance State** defaults to **Active**.
+
+## Related Views
+
+- The **Awards** stat button in the button box of the Student form and the Enrollment
+  form (`action_open_scholarship_award`) opens the list of Scholarship Award records of
+  that Student or Enrollment. It only returns an `act_window` and writes no field, so it
+  is pure navigation: informational only, not documented as an IK step or tour of its
+  own.
