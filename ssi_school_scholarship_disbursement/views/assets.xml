@@ -13,6 +13,10 @@
                 type="text/javascript"
                 src="/ssi_school_scholarship_disbursement/static/tests/tours/school_scholarship_disbursement_tour.js"
             />
+        <script
+                type="text/javascript"
+                src="/ssi_school_scholarship_disbursement/static/tests/tours/school_scholarship_award_create_due_disbursement_tour.js"
+            />
     </xpath>
 </template>
 </odoo>
