@@ -1,3 +1,7 @@
+.. image:: https://odoo-community.org/readme-banner-image
+   :target: https://odoo-community.org/get-involved?utm_source=readme
+   :alt: Odoo Community Association
+
 ===============================================
 School Scholarship - Admission - Operating Unit
 ===============================================
@@ -36,6 +40,17 @@ access rule of its own.
 
 .. contents::
    :local:
+
+Usage
+=====
+
+Work Instruction
+~~~~~~~~~~~~~~~~
+
+Scholarship Award
+^^^^^^^^^^^^^^^^^^
+
+* `Create Scholarship Award <docs/school_scholarship_award/01-create.html>`_
 
 Bug Tracker
 ===========
