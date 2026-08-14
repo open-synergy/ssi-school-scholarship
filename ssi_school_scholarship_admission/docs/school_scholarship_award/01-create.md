@@ -15,3 +15,10 @@ When this module is installed, **Billing Source** gains a second value:
   billed against. Hidden when Billing Source is not Admission. Selecting it fills
   **Student** from the admission's School Student, and **School**/**Grade** from the
   admission.
+
+## Related Views
+
+- The **Awards** stat button in the button box of the Admission form
+  (`action_open_scholarship_award`) opens the list of Scholarship Award records billed
+  against that Admission. It only returns an `act_window` and writes no field, so it is
+  pure navigation: informational only, not documented as an IK step or tour of its own.
