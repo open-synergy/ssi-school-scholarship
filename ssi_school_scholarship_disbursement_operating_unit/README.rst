@@ -1,3 +1,7 @@
+.. image:: https://odoo-community.org/readme-banner-image
+   :target: https://odoo-community.org/get-involved?utm_source=readme
+   :alt: Odoo Community Association
+
 ================================================
 School Scholarship Disbursement - Operating Unit
 ================================================
@@ -33,6 +37,17 @@ security group, record rule, and view integration.
 
 .. contents::
    :local:
+
+Usage
+=====
+
+Work Instruction
+~~~~~~~~~~~~~~~~
+
+Scholarship Disbursement
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+* `Create Scholarship Disbursement <docs/school_scholarship_disbursement/01-create.html>`_
 
 Bug Tracker
 ===========
