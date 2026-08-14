@@ -531,12 +531,25 @@ scenarios:
             type: "m2o"
             expected: "REC: ou8"
 
+      # ``operating_unit_id`` is cleared to an empty recordset *before*
+      # selecting the Enrollment. ``mixin.single_operating_unit`` defaults
+      # the field to the acting user's own operating unit
+      # (``operating_unit_default_get``) as soon as the form opens -- for
+      # ``base.user_admin`` (an Operating Unit manager) that default is
+      # never falsy, since it resolves to *some* operating unit in the
+      # system regardless of the school under test. Clearing it first
+      # isolates what this step actually verifies: that the onchange
+      # itself never picks an operating unit for a multi-OU school,
+      # rather than asserting on that unrelated ambient default. `false`
+      # cannot be used here -- Form.__setattr__ requires an actual
+      # recordset for many2one fields.
       - step: "Open a fresh award form and select the multi-OU school's Enrollment"
         action: "form"
         model: "school_scholarship_award"
         as_user: "base.user_admin"
         save: false
         values:
+          operating_unit_id: "EVAL: env['operating.unit']"
           enrollment_id: "REC: enrollment9"
         asserts:
           operating_unit_id:
