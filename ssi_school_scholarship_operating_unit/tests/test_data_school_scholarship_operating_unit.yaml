@@ -331,6 +331,231 @@ scenarios:
             type: "m2o"
             expected: "REC: ou2"
 
+  - name:
+      "Award OU Derive - onchange leaves operating_unit_id empty for a multi-OU school,
+      fills it for a single-OU school"
+    steps:
+      # ── Shared fixture chain (suffix AWOU8/AWOU9) ────────────────
+      # School8 has exactly one Operating Unit (AWOU8); School9 has two
+      # (AWOU9A, AWOU9B). Both branches of onchange_operating_unit_id
+      # are exercised through the same trigger field (enrollment_id),
+      # each on its own fresh, unsaved form -- so the empty-branch
+      # assertion is never contaminated by a value left over from the
+      # single-OU branch (mixin.transaction "leaves the current value
+      # untouched" when the count isn't exactly one).
+      - step: "Create partner for the single Operating Unit"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou8_partner"
+        values:
+          name: "Award Branch OU8 Partner"
+
+      - step: "Create the single Operating Unit"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou8"
+        values:
+          name: "Award Branch OU8"
+          code: "AWOU8"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ou8_partner.id"
+
+      - step: "Create partner for Operating Unit 9A"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou9a_partner"
+        values:
+          name: "Award Branch OU9A Partner"
+
+      - step: "Create Operating Unit 9A"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou9a"
+        values:
+          name: "Award Branch OU9A"
+          code: "AWOU9A"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ou9a_partner.id"
+
+      - step: "Create partner for Operating Unit 9B"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou9b_partner"
+        values:
+          name: "Award Branch OU9B Partner"
+
+      - step: "Create Operating Unit 9B"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou9b"
+        values:
+          name: "Award Branch OU9B"
+          code: "AWOU9B"
+          company_id: "REF: base.main_company"
+          partner_id: "REC: ou9b_partner.id"
+
+      - step: "Create grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type8"
+        values:
+          name: "AWOU8 Grade Type"
+          code: "AWOU8GT"
+
+      - step: "Create the school with exactly one Operating Unit"
+        action: "create"
+        model: "school"
+        save_as: "school8"
+        values:
+          name: "AWOU8 School"
+          code: "AWOU8SC"
+          grade_type_id: "REC: grade_type8.id"
+          operating_unit_ids: [[6, 0, ["REC: ou8.id"]]]
+
+      - step: "Create the school with two Operating Units"
+        action: "create"
+        model: "school"
+        save_as: "school9"
+        values:
+          name: "AWOU9 School"
+          code: "AWOU9SC"
+          grade_type_id: "REC: grade_type8.id"
+          operating_unit_ids: [[6, 0, ["REC: ou9a.id", "REC: ou9b.id"]]]
+
+      - step: "Create grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade8"
+        values:
+          name: "AWOU8 Grade"
+          code: "AWOU8GR"
+          type_id: "REC: grade_type8.id"
+
+      - step: "Create grade class for the single-OU school"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class8"
+        values:
+          name: "AWOU8 Class"
+          code: "AWOU8CL"
+          school_id: "REC: school8.id"
+          grade_id: "REC: grade8.id"
+
+      - step: "Create grade class for the multi-OU school"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class9"
+        values:
+          name: "AWOU9 Class"
+          code: "AWOU9CL"
+          school_id: "REC: school9.id"
+          grade_id: "REC: grade8.id"
+
+      - step: "Create academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year8"
+        values:
+          name: "AWOU8 Academic Year"
+          code: "AWOU8AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term8"
+        values:
+          name: "AWOU8 Term"
+          code: "AWOU8TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year8.id"
+
+      - step: "Create student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact8"
+        values:
+          name: "AWOU8 Contact"
+
+      - step: "Create student"
+        action: "create"
+        model: "school_student"
+        save_as: "student8"
+        values:
+          name: "AWOU8 Student"
+          code: "AWOU8ST"
+          contact_id: "REC: contact8.id"
+          school_id: "REC: school8.id"
+
+      # ``user_id`` set explicitly to admin so the later ``as_user:
+      # base.user_admin`` form steps read these enrollments cleanly,
+      # without depending on the "All" data-ownership group covering
+      # the gap (T-05).
+      - step: "Create enrollment at the single-OU school"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment8"
+        values:
+          academic_year_id: "REC: academic_year8.id"
+          academic_term_id: "REC: academic_term8.id"
+          school_id: "REC: school8.id"
+          grade_id: "REC: grade8.id"
+          grade_class_id: "REC: grade_class8.id"
+          student_id: "REC: student8.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Create enrollment at the multi-OU school"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment9"
+        values:
+          academic_year_id: "REC: academic_year8.id"
+          academic_term_id: "REC: academic_term8.id"
+          school_id: "REC: school9.id"
+          grade_id: "REC: grade8.id"
+          grade_class_id: "REC: grade_class9.id"
+          student_id: "REC: student8.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Open a new award form and select the single-OU school's Enrollment"
+        action: "form"
+        model: "school_scholarship_award"
+        as_user: "base.user_admin"
+        save: false
+        values:
+          enrollment_id: "REC: enrollment8"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: ou8"
+
+      # ``operating_unit_id`` is cleared to an empty recordset *before*
+      # selecting the Enrollment. ``mixin.single_operating_unit`` defaults
+      # the field to the acting user's own operating unit
+      # (``operating_unit_default_get``) as soon as the form opens -- for
+      # ``base.user_admin`` (an Operating Unit manager) that default is
+      # never falsy, since it resolves to *some* operating unit in the
+      # system regardless of the school under test. Clearing it first
+      # isolates what this step actually verifies: that the onchange
+      # itself never picks an operating unit for a multi-OU school,
+      # rather than asserting on that unrelated ambient default. `false`
+      # cannot be used here -- Form.__setattr__ requires an actual
+      # recordset for many2one fields.
+      - step: "Open a fresh award form and select the multi-OU school's Enrollment"
+        action: "form"
+        model: "school_scholarship_award"
+        as_user: "base.user_admin"
+        save: false
+        values:
+          operating_unit_id: "EVAL: env['operating.unit']"
+          enrollment_id: "REC: enrollment9"
+        asserts:
+          operating_unit_id:
+            type: "value"
+            operator: "is_falsy"
+
   - name: "Award OU Derive - write enrollment_id moves the operating unit"
     steps:
       # ── Shared fixture chain (suffix AWOU3) ──────────────────────
