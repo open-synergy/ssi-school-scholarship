@@ -5,6 +5,8 @@
 # HttpSavepointCase -- NOT HttpCase. In 14.0, HttpCase does not set up
 # cls.env in setUpClass, so fixtures written there would fail with
 # AttributeError before the browser even starts.
+from datetime import date, timedelta
+
 from odoo.tests import HttpSavepointCase, tagged
 
 
@@ -20,6 +22,13 @@ class TestUiSchoolScholarshipDisbursement(HttpSavepointCase):
         tours.
         """
         super().setUpClass()
+        # ``date_due`` must stay in the future relative to whenever this
+        # suite runs -- the model's ``date`` field defaults to
+        # ``today()``, and ``_check_date_due`` rejects a ``date_due``
+        # earlier than ``date``. A fixed literal here goes stale the
+        # moment it falls behind the execution date (it already has,
+        # twice), so it is derived from ``date.today()`` instead.
+        tour_date_due = (date.today() + timedelta(days=30)).strftime("%Y-%m-%d")
         admin = cls.env.ref("base.user_admin")
         account_type_expense = cls.env.ref("account.data_account_type_expenses")
         account_type_payable = cls.env.ref("account.data_account_type_payable")
@@ -293,7 +302,7 @@ class TestUiSchoolScholarshipDisbursement(HttpSavepointCase):
                 "journal_id": tour_journal.id,
                 "payable_account_id": tour_payable_account.id,
                 "payment_method": "cash",
-                "date_due": "2026-08-15",
+                "date_due": tour_date_due,
                 "user_id": admin.id,
                 "line_ids": [
                     (
@@ -331,7 +340,7 @@ class TestUiSchoolScholarshipDisbursement(HttpSavepointCase):
                 "journal_id": tour_journal.id,
                 "payable_account_id": tour_payable_account.id,
                 "payment_method": "cash",
-                "date_due": "2026-08-15",
+                "date_due": tour_date_due,
                 "user_id": admin.id,
                 "line_ids": [
                     (
@@ -379,7 +388,7 @@ class TestUiSchoolScholarshipDisbursement(HttpSavepointCase):
                 "journal_id": tour_journal.id,
                 "payable_account_id": tour_payable_account.id,
                 "payment_method": "cash",
-                "date_due": "2026-08-15",
+                "date_due": tour_date_due,
                 "user_id": admin.id,
             }
         )
