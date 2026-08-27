@@ -27,3 +27,7 @@ themselves — this index is never allowed to fall behind the modules it documen
 ## ssi_school_scholarship_disbursement_operating_unit
 
 - `docs/school_scholarship_disbursement/01-create.md`
+
+## ssi_school_scholarship_donation
+
+- `docs/school_scholarship_funding_source/01-create.md`

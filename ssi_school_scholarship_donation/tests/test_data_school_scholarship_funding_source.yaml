@@ -1,0 +1,609 @@
+# No shared `setup:` block on purpose -- every scenario in this file
+# runs in the SAME database transaction (odoo-yaml-test replays only the
+# alias registry per scenario, never a rollback), so a fixture shared
+# via `setup:` would recreate the same unique codes on every replay and
+# fail with "Duplicate code" from the second scenario onward. Each
+# scenario below builds its own self-contained fixture chain instead,
+# with a scenario-unique code suffix.
+
+scenarios:
+  - name: "Funding Source - Donation Fund Wiring And Award Commitment"
+    steps:
+      # ── Shared fixture chain (suffix FS1) ────────────────────────
+      - step: "Get the ir.model reference for the Funding Source model"
+        action: "search"
+        model: "ir.model"
+        domain: [["model", "=", "school_scholarship_funding_source"]]
+        limit: 1
+        save_as: "fs_model"
+
+      - step: "Create the analytic account bound to both sides"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic1"
+        values:
+          name: "FS1 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source1"
+        values:
+          name: "FS1 Funding Source"
+          code: "FS1FS"
+          analytic_account_id: "REC: analytic1.id"
+
+      - step: "Create the donation fund bound to the same analytic account"
+        action: "create"
+        model: "donation_fund"
+        save_as: "fund1"
+        values:
+          name: "FS1 Fund"
+          code: "FS1FD"
+          analytic_account_id: "REC: analytic1.id"
+
+      # ── Positive: binding a Donation Fund creates exactly one ledger
+      # row, with a zero Amount Committed (no Award has funded it yet).
+      - step: "Bind the funding source to the donation fund"
+        action: "write"
+        target: "funding_source1"
+        values:
+          donation_fund_id: "REC: fund1.id"
+
+      - step: "Assert exactly one donation_fund_usage row was created"
+        action: "search"
+        model: "donation_fund_usage"
+        domain:
+          [
+            ["model_id", "=", "REC: fs_model.id"],
+            ["res_id", "=", "REC: funding_source1.id"],
+          ]
+        save_as: "usage1"
+        expect_count: 1
+
+      - step: "Assert the usage row starts at zero committed/realized"
+        action: "assert"
+        target: "usage1"
+        asserts:
+          fund_id:
+            type: "m2o"
+            expected: "REC: fund1"
+          amount_committed:
+            type: "value"
+            expected: 0.0
+          amount_realized:
+            type: "value"
+            expected: 0.0
+
+      # ── Fund the donation fund with a Done donation of 1,000,000 ──
+      - step: "Create the donation income account"
+        action: "create"
+        model: "account.account"
+        save_as: "donation_income_account1"
+        values:
+          name: "FS1 Donation Income"
+          code: "FS1DIN"
+          user_type_id: "REF: account.data_account_type_revenue"
+
+      - step: "Create the donation receivable account"
+        action: "create"
+        model: "account.account"
+        save_as: "donation_receivable_account1"
+        values:
+          name: "FS1 Donation Receivable"
+          code: "FS1DRC"
+          user_type_id: "REF: account.data_account_type_receivable"
+          reconcile: true
+
+      - step: "Create the donation journal's default cash account"
+        action: "create"
+        model: "account.account"
+        save_as: "donation_cash_account1"
+        values:
+          name: "FS1 Donation Cash"
+          code: "FS1DCA"
+          user_type_id: "REF: account.data_account_type_liquidity"
+
+      - step: "Create the journal the donation is posted through"
+        action: "create"
+        model: "account.journal"
+        save_as: "donation_journal1"
+        values:
+          name: "FS1 Donation Journal"
+          code: "FS1DJ"
+          type: "general"
+          default_account_id: "REC: donation_cash_account1.id"
+
+      - step: "Create the donation type"
+        action: "create"
+        model: "donation_type"
+        save_as: "donation_type1"
+        values:
+          name: "FS1 Donation Type"
+          code: "FS1DTY"
+          journal_id: "REC: donation_journal1.id"
+          income_account_id: "REC: donation_income_account1.id"
+          receivable_account_id: "REC: donation_receivable_account1.id"
+
+      - step: "Create the donor"
+        action: "create"
+        model: "res.partner"
+        save_as: "donor1"
+        values:
+          name: "FS1 Donor"
+
+      - step: "Create the donation"
+        action: "create"
+        model: "donation"
+        save_as: "donation1"
+        values:
+          partner_id: "REC: donor1.id"
+          type_id: "REC: donation_type1.id"
+          fund_id: "REC: fund1.id"
+          amount: 1000000.0
+          receipt_method: "cash"
+          journal_id: "REC: donation_journal1.id"
+          income_account_id: "REC: donation_income_account1.id"
+
+      - step: "Confirm the donation"
+        action: "call"
+        target: "donation1"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the donation, which also runs Done"
+        action: "call"
+        target: "donation1"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+      - step: "Assert the fund's Amount Received reflects the donation"
+        action: "assert"
+        target: "fund1"
+        refresh: true
+        asserts:
+          amount_received:
+            type: "value"
+            expected: 1000000.0
+
+      # ── Draw against the fund by opening a scholarship award funded
+      # 100% by the funding source ─────────────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type1"
+        values:
+          name: "FS1 Grade Type"
+          code: "FS1GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school1"
+        values:
+          name: "FS1 School"
+          code: "FS1SC"
+          grade_type_id: "REC: grade_type1.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year1"
+        values:
+          name: "FS1 Academic Year"
+          code: "FS1AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term1"
+        values:
+          name: "FS1 Term"
+          code: "FS1TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year1.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade1"
+        values:
+          name: "FS1 Grade"
+          code: "FS1GR"
+          type_id: "REC: grade_type1.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class1"
+        values:
+          name: "FS1 Class"
+          code: "FS1CL"
+          school_id: "REC: school1.id"
+          grade_id: "REC: grade1.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact1"
+        values:
+          name: "FS1 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "student1"
+        values:
+          name: "FS1 Student"
+          code: "FS1ST"
+          contact_id: "REC: contact1.id"
+          school_id: "REC: school1.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment1"
+        values:
+          academic_year_id: "REC: academic_year1.id"
+          academic_term_id: "REC: academic_term1.id"
+          school_id: "REC: school1.id"
+          grade_id: "REC: grade1.id"
+          grade_class_id: "REC: grade_class1.id"
+          student_id: "REC: student1.id"
+
+      - step: "Create the product covered by the benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "product1"
+        values:
+          name: "FS1 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "deduction_journal1"
+        values:
+          name: "FS1 Deduction Journal"
+          code: "FS1DDJ"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account1"
+        values:
+          name: "FS1 Discount Account"
+          code: "FS1DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type1"
+        values:
+          name: "FS1 Type"
+          code: "FS1TY"
+          deduction_journal_id: "REC: deduction_journal1.id"
+          discount_account_id: "REC: discount_account1.id"
+
+      - step: "Create the scholarship program, funded by the funding source"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program1"
+        values:
+          name: "FS1 Program"
+          code: "FS1PRG"
+          type_id: "REC: type1.id"
+          school_id: "REC: school1.id"
+          academic_year_id: "REC: academic_year1.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source1.id"]]]
+          deduction_journal_id: "REC: deduction_journal1.id"
+          discount_account_id: "REC: discount_account1.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product1.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 1000000.0
+
+      - step: "Create the income account used by the payment term detail"
+        action: "create"
+        model: "account.account"
+        save_as: "income_account1"
+        values:
+          name: "FS1 Income Account"
+          code: "FS1IA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create a Payment Term matching the award's Benefit line"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "payment_term1"
+        values:
+          enrollment_id: "REC: enrollment1.id"
+          name: "FS1 Payment Term"
+          date_invoice: 2026-08-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: product1.id"
+                name: "FS1 Payment Term Fee"
+                account_id: "REC: income_account1.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create the award, funded 100% by the funding source"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award1"
+        values:
+          program_id: "REC: program1.id"
+          student_id: "REC: student1.id"
+          enrollment_id: "REC: enrollment1.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account1.id"
+          # Owned by admin so the record rule does not reject the
+          # ``as_user: base.user_admin`` steps below (test-traps.md
+          # T-05).
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "FS1 Benefit Line"
+                product_id: "REC: product1.id"
+                # ``price_unit`` is NOT read by
+                # ``_compute_amount_planned`` (school_scholarship_
+                # award_schedule.py:292-297) -- the formula is
+                # ``base_amount * benefit.percentage / 100.0``.
+                # ``computation`` defaults to "percentage" with
+                # ``percentage`` defaulting to 0.0, so this line must
+                # set ``percentage: 100.0`` explicitly for the
+                # 1,000,000 benefit to be awarded at all.
+                percentage: 100.0
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source1.id"
+                percentage: 100.0
+
+      - step: "Confirm the award as admin"
+        action: "call"
+        target: "award1"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      # WAJIB (test-traps.md T-04): force the policy compute's
+      # _refresh() before Approve reads approve_ok, or Approve fails
+      # nondeterministically on the stale cache left by Confirm.
+      - step: "Assert the award is Confirm before approving"
+        action: "assert"
+        target: "award1"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the award as admin, opening it"
+        action: "call"
+        target: "award1"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert opening generated the award's realization amount"
+        action: "assert"
+        target: "award1"
+        refresh: true
+        asserts:
+          amount_awarded:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "Assert the funding source committed the award's amount"
+        action: "assert"
+        target: "funding_source1"
+        refresh: true
+        asserts:
+          amount_committed:
+            type: "value"
+            expected: 1000000.0
+
+      # ── Positive: the ledger row and the fund follow the funding
+      # source's own Amount Committed once the award is Open ────────
+      - step: "Assert the usage row now mirrors the committed amount"
+        action: "assert"
+        target: "usage1"
+        refresh: true
+        asserts:
+          amount_committed:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "Assert the donation fund's Amount Committed follows"
+        action: "assert"
+        target: "fund1"
+        refresh: true
+        asserts:
+          amount_committed:
+            type: "value"
+            expected: 1000000.0
+          amount_available:
+            type: "value"
+            expected: 0.0
+
+      # ── Positive: clearing the Donation Fund removes the ledger row
+      # and the fund's Amount Committed drops back to zero ───────────
+      - step: "Clear the funding source's donation fund"
+        action: "write"
+        target: "funding_source1"
+        values:
+          donation_fund_id: false
+
+      - step: "Assert the ledger row for the funding source is gone"
+        action: "search"
+        model: "donation_fund_usage"
+        domain:
+          [
+            ["model_id", "=", "REC: fs_model.id"],
+            ["res_id", "=", "REC: funding_source1.id"],
+          ]
+        save_as: "usage1_after_clear"
+        expect_count: 0
+
+      - step: "Assert the donation fund's Amount Committed is back to zero"
+        action: "assert"
+        target: "fund1"
+        refresh: true
+        asserts:
+          amount_committed:
+            type: "value"
+            expected: 0.0
+
+  - name: "Funding Source - Deleting It Removes Its Ledger Row"
+    steps:
+      # ── Shared fixture chain (suffix FS2) ────────────────────────
+      - step: "Get the ir.model reference for the Funding Source model"
+        action: "search"
+        model: "ir.model"
+        domain: [["model", "=", "school_scholarship_funding_source"]]
+        limit: 1
+        save_as: "fs_model"
+
+      - step: "Create the analytic account bound to both sides"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic2"
+        values:
+          name: "FS2 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source2"
+        values:
+          name: "FS2 Funding Source"
+          code: "FS2FS"
+          analytic_account_id: "REC: analytic2.id"
+
+      - step: "Create the donation fund bound to the same analytic account"
+        action: "create"
+        model: "donation_fund"
+        save_as: "fund2"
+        values:
+          name: "FS2 Fund"
+          code: "FS2FD"
+          analytic_account_id: "REC: analytic2.id"
+
+      - step: "Bind the funding source to the donation fund"
+        action: "write"
+        target: "funding_source2"
+        values:
+          donation_fund_id: "REC: fund2.id"
+
+      - step: "Assert exactly one donation_fund_usage row exists"
+        action: "search"
+        model: "donation_fund_usage"
+        domain:
+          [
+            ["model_id", "=", "REC: fs_model.id"],
+            ["res_id", "=", "REC: funding_source2.id"],
+          ]
+        save_as: "usage2"
+        expect_count: 1
+
+      - step: "Delete the funding source"
+        action: "unlink"
+        target: "funding_source2"
+
+      - step: "Assert its ledger row was deleted along with it"
+        action: "search"
+        model: "donation_fund_usage"
+        domain:
+          [
+            ["model_id", "=", "REC: fs_model.id"],
+            ["res_id", "=", "REC: funding_source2.id"],
+          ]
+        save_as: "usage2_after_unlink"
+        expect_count: 0
+
+  - name: "Funding Source - No Donation Fund Leaves No Ledger Row"
+    steps:
+      # ── Shared fixture chain (suffix FS3) ────────────────────────
+      - step: "Get the ir.model reference for the Funding Source model"
+        action: "search"
+        model: "ir.model"
+        domain: [["model", "=", "school_scholarship_funding_source"]]
+        limit: 1
+        save_as: "fs_model"
+
+      - step: "Create the analytic account"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic3"
+        values:
+          name: "FS3 Analytic"
+
+      # ── Negative (absence, not error): a Funding Source with no
+      # Donation Fund is saved normally, with no ledger row at all ──
+      - step: "Create the funding source without a donation fund"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source3"
+        values:
+          name: "FS3 Funding Source"
+          code: "FS3FS"
+          analytic_account_id: "REC: analytic3.id"
+
+      - step: "Assert the funding source has no donation fund"
+        action: "assert"
+        target: "funding_source3"
+        asserts:
+          donation_fund_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Assert no donation_fund_usage row was created for it"
+        action: "search"
+        model: "donation_fund_usage"
+        domain:
+          [
+            ["model_id", "=", "REC: fs_model.id"],
+            ["res_id", "=", "REC: funding_source3.id"],
+          ]
+        save_as: "usage3"
+        expect_count: 0

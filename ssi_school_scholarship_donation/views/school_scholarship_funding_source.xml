@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+<record id="school_scholarship_funding_source_view_search_donation" model="ir.ui.view">
+    <field name="name">school_scholarship_funding_source - search - donation</field>
+    <field name="model">school_scholarship_funding_source</field>
+    <field
+            name="inherit_id"
+            ref="ssi_school_scholarship.school_scholarship_funding_source_view_search"
+        />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='analytic_account_id']" position="after">
+                <field name="donation_fund_id" />
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="school_scholarship_funding_source_view_tree_donation" model="ir.ui.view">
+    <field name="name">school_scholarship_funding_source - tree - donation</field>
+    <field name="model">school_scholarship_funding_source</field>
+    <field
+            name="inherit_id"
+            ref="ssi_school_scholarship.school_scholarship_funding_source_view_tree"
+        />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='analytic_account_id']" position="after">
+                <field name="donation_fund_id" optional="hide" />
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="school_scholarship_funding_source_view_form_donation" model="ir.ui.view">
+    <field name="name">school_scholarship_funding_source - form - donation</field>
+    <field name="model">school_scholarship_funding_source</field>
+    <field
+            name="inherit_id"
+            ref="ssi_school_scholarship.school_scholarship_funding_source_view_form"
+        />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='analytic_account_id']" position="after">
+                <field name="donation_fund_id" />
+            </xpath>
+        </data>
+    </field>
+</record>
+
+</odoo>
