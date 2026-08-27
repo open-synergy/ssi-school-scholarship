@@ -15,6 +15,7 @@ setuptools.setup(
         'odoo14-addon-ssi_school_scholarship_deduction_operating_unit',
         'odoo14-addon-ssi_school_scholarship_disbursement',
         'odoo14-addon-ssi_school_scholarship_disbursement_operating_unit',
+        'odoo14-addon-ssi_school_scholarship_donation',
         'odoo14-addon-ssi_school_scholarship_operating_unit',
     ],
     classifiers=[
