@@ -29,10 +29,23 @@ class SchoolScholarshipFundingSource(models.Model):
     stored compute fields by calling ``_write()`` directly
     (``odoo/models.py``), never ``write()`` -- so the mixin's own
     ``write()`` override never observes those recomputations by
-    itself. ``_write()`` is overridden here for that reason alone;
-    the refresh it triggers is idempotent, so it does not conflict
-    with the mixin's ``write()`` override running for the same
-    change.
+    itself. ``_write()`` is overridden here for that reason alone.
+
+    That refresh is deliberately update-only, never creating a
+    ledger row. ``mixin.donation_fund_consumer.
+    _donation_fund_usage_refresh`` reads a stored compute field
+    through ``_prepare_donation_fund_usage``, which can itself
+    trigger a flush -- and therefore a *nested* call into
+    ``_write()`` -- before the outer refresh's own ``search()``
+    result is used to decide between ``create``/``write``. That
+    interleaving lets the outer call insert a second
+    ``donation_fund_usage`` row for the same ``(model_id, res_id)``
+    once the nested call has already inserted the first one,
+    violating the table's unique constraint. Restricting this
+    hook to updating a row that already exists is safe under any
+    interleaving: creation and deletion of a ledger row stay
+    entirely the mixin's own ``create()``/``write()``/``unlink()``
+    responsibility.
     """
 
     _name = "school_scholarship_funding_source"
@@ -47,13 +60,15 @@ class SchoolScholarshipFundingSource(models.Model):
     _donation_committed_states = (False,)
 
     def _write(self, vals):
-        """Write raw column values, then refresh the donation ledger.
+        """Write raw column values, then update an EXISTING ledger row.
 
         Overridden instead of ``write()`` because Odoo 14's
         ``Model.flush()`` recomputes stored compute fields (such as
         ``amount_committed``/``amount_realized``) by calling
         ``_write()`` directly, bypassing ``write()`` entirely --
         this is the only hook that observes those recomputed values.
+        Update-only by design -- see the class docstring for why
+        this must never create or delete a ledger row.
 
         :param vals: raw column values being written
         :return: True, as returned by the base ``_write``
@@ -61,8 +76,38 @@ class SchoolScholarshipFundingSource(models.Model):
         result = super()._write(vals)
         relevant_fields = self._donation_fund_usage_relevant_fields()
         if any(field_name in vals for field_name in relevant_fields):
-            self.sudo()._donation_fund_usage_refresh()
+            self.sudo()._donation_fund_usage_update_only()
         return result
+
+    def _donation_fund_usage_update_only(self):
+        """Update this record's ``donation_fund_usage`` row, if any.
+
+        Unlike ``mixin.donation_fund_consumer.
+        _donation_fund_usage_refresh``, this never creates or
+        deletes a ledger row -- only the mixin's own ``create()``,
+        ``write()``, and ``unlink()`` do that. It exists solely so
+        ``_write()`` can pick up committed/realized amounts
+        recomputed by ``Model.flush()`` without risking a duplicate
+        ``(model_id, res_id)`` row from a nested flush triggered by
+        reading those very stored compute fields.
+
+        :return: nothing
+        """
+        Usage = self.env["donation_fund_usage"].sudo()  # pylint: disable=invalid-name
+        model = self._donation_fund_usage_model()
+        for record in self:
+            if not record.donation_fund_id:
+                continue
+            usage = Usage.search(
+                [
+                    ("model_id", "=", model.id),
+                    ("res_id", "=", record.id),
+                ],
+                limit=1,
+            )
+            if not usage:
+                continue
+            usage.write(record._prepare_donation_fund_usage())
 
     @api.constrains("donation_fund_id", "analytic_account_id")
     def _check_donation_fund_analytic_account(self):
