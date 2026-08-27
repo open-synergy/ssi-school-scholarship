@@ -17,3 +17,4 @@ odoo14-addon-ssi-operating-unit-mixin
 odoo14-addon-ssi-school-operating-unit
 odoo14-addon-ssi-financial-accounting-operating-unit
 odoo14-addon-ssi-customer-invoice-operating-unit
+odoo14-addon-ssi-donation
