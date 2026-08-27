@@ -120,6 +120,21 @@ odoo.define(
                     run: "text Cash",
                 },
                 {
+                    // Date defaults to today() (see the model's own
+                    // ``default=``), which drifts forward every day
+                    // this tour runs. Filling it in explicitly here,
+                    // no later than Date Due below, makes
+                    // ``_check_date_due`` compare two fixed literals
+                    // against each other instead of against
+                    // ``fields.Date.today()`` -- the same pattern
+                    // already used and green for
+                    // ``date_start``/``date_end`` in
+                    // ``school_scholarship_award_tour.js``.
+                    content: "Fill in Date",
+                    trigger: ".o_field_widget[name='date'] input",
+                    run: "text 08/01/2026",
+                },
+                {
                     content: "Fill in Date Due",
                     trigger: ".o_field_widget[name='date_due'] input",
                     run: "text 08/15/2026",
