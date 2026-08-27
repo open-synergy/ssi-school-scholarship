@@ -377,7 +377,15 @@ scenarios:
               - 0
               - name: "FS1 Benefit Line"
                 product_id: "REC: product1.id"
-                price_unit: 1000000.0
+                # ``price_unit`` is NOT read by
+                # ``_compute_amount_planned`` (school_scholarship_
+                # award_schedule.py:292-297) -- the formula is
+                # ``base_amount * benefit.percentage / 100.0``.
+                # ``computation`` defaults to "percentage" with
+                # ``percentage`` defaulting to 0.0, so this line must
+                # set ``percentage: 100.0`` explicitly for the
+                # 1,000,000 benefit to be awarded at all.
+                percentage: 100.0
           funding_ids:
             - - 0
               - 0
