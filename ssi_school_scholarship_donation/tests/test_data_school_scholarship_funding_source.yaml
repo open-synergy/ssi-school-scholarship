@@ -319,6 +319,15 @@ scenarios:
           funding_source_ids: [[6, 0, ["REC: funding_source1.id"]]]
           deduction_journal_id: "REC: deduction_journal1.id"
           discount_account_id: "REC: discount_account1.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product1.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 1000000.0
 
       - step: "Create the income account used by the payment term detail"
         action: "create"
