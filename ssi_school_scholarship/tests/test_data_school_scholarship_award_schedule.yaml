@@ -1602,6 +1602,15 @@ scenarios:
           date_end: 2026-12-31
           year_id: "REC: as5_academic_year.id"
 
+      - step: "Open the enrollment window on the academic term"
+        action: "call"
+        target: "as5_academic_term"
+        method: "action_open_enrollment"
+        asserts:
+          enrollment_state:
+            type: "value"
+            expected: "open"
+
       - step: "Create the grade"
         action: "create"
         model: "school_grade"
