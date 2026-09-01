@@ -1560,3 +1560,391 @@ scenarios:
         expect_error:
           type: "UserError"
           message_contains: "realized Schedule line"
+
+  - name: "Award Schedule - Voided Payment Term Detail"
+    steps:
+      # ── Shared fixture chain (suffix AS5) ────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "as5_grade_type"
+        values:
+          name: "AS5 Grade Type"
+          code: "AS5GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "as5_school"
+        values:
+          name: "AS5 School"
+          code: "AS5SC"
+          grade_type_id: "REC: as5_grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "as5_academic_year"
+        values:
+          name: "AS5 Academic Year"
+          code: "AS5AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "as5_academic_term"
+        values:
+          name: "AS5 Term"
+          code: "AS5TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: as5_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "as5_grade"
+        values:
+          name: "AS5 Grade"
+          code: "AS5GR"
+          type_id: "REC: as5_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "as5_grade_class"
+        values:
+          name: "AS5 Class"
+          code: "AS5CL"
+          school_id: "REC: as5_school.id"
+          grade_id: "REC: as5_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "as5_contact"
+        values:
+          name: "AS5 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "as5_student"
+        values:
+          name: "AS5 Student"
+          code: "AS5ST"
+          contact_id: "REC: as5_contact.id"
+          school_id: "REC: as5_school.id"
+
+      # Owned by admin so the ``as_user: base.user_admin`` steps below
+      # are not rejected by the internal_user_rule record rule
+      # (odoo-development-unit-test, test-traps.md T-05), and so it
+      # can be confirmed/approved to Open -- the only enrollment state
+      # under which a Payment Term can ever reach ``voided``.
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "as5_enrollment"
+        values:
+          academic_year_id: "REC: as5_academic_year.id"
+          academic_term_id: "REC: as5_academic_term.id"
+          school_id: "REC: as5_school.id"
+          grade_id: "REC: as5_grade.id"
+          grade_class_id: "REC: as5_grade_class.id"
+          student_id: "REC: as5_student.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm the enrollment as admin"
+        action: "call"
+        target: "as5_enrollment"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the enrollment as admin (auto-opens)"
+        action: "call"
+        target: "as5_enrollment"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the product category matched by the category-scoped Benefit"
+        action: "create"
+        model: "product.category"
+        save_as: "as5_category"
+        values:
+          name: "AS5 Category"
+
+      - step: "Create the product covered by both Benefit lines"
+        action: "create"
+        model: "product.product"
+        save_as: "as5_product"
+        values:
+          name: "AS5 Product"
+          type: "service"
+          categ_id: "REC: as5_category.id"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "as5_journal"
+        values:
+          name: "AS5 Journal"
+          code: "JAS5"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "as5_discount_account"
+        values:
+          name: "AS5 Discount Account"
+          code: "AS5DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the income account used by payment term details"
+        action: "create"
+        model: "account.account"
+        save_as: "as5_income_account"
+        values:
+          name: "AS5 Income Account"
+          code: "AS5IA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "as5_type"
+        values:
+          name: "AS5 Type"
+          code: "AS5TY"
+          deduction_journal_id: "REC: as5_journal.id"
+          discount_account_id: "REC: as5_discount_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "as5_program"
+        values:
+          name: "AS5 Program"
+          code: "AS5PRG"
+          type_id: "REC: as5_type.id"
+          school_id: "REC: as5_school.id"
+          academic_year_id: "REC: as5_academic_year.id"
+          deduction_journal_id: "REC: as5_journal.id"
+          discount_account_id: "REC: as5_discount_account.id"
+
+      # ── One Payment Term, two detail lines on the same Product
+      # (1,000,000 each) -- neither voided yet.
+      - step: "Create the Payment Term with two detail lines"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "as5_term"
+        values:
+          enrollment_id: "REC: as5_enrollment.id"
+          name: "AS5 Term"
+          date_invoice: 2026-08-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: as5_product.id"
+                name: "AS5 Detail 1"
+                account_id: "REC: as5_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+            - - 0
+              - 0
+              - product_id: "REC: as5_product.id"
+                name: "AS5 Detail 2"
+                account_id: "REC: as5_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Find detail line 1"
+        action: "search"
+        model: "school_enrollment_payment_term_detail"
+        domain: [["term_id", "=", "REC: as5_term.id"], ["name", "=", "AS5 Detail 1"]]
+        limit: 1
+        save_as: "as5_detail1"
+
+      - step: "Find detail line 2"
+        action: "search"
+        model: "school_enrollment_payment_term_detail"
+        domain: [["term_id", "=", "REC: as5_term.id"], ["name", "=", "AS5 Detail 2"]]
+        limit: 1
+        save_as: "as5_detail2"
+
+      - step: "Create a draft award to host the compute Benefit lines"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "as5_award"
+        values:
+          program_id: "REC: as5_program.id"
+          student_id: "REC: as5_student.id"
+          enrollment_id: "REC: as5_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: as5_discount_account.id"
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "AS5 Benefit Product"
+                product_id: "REC: as5_product.id"
+                percentage: 40.0
+            - - 0
+              - 0
+              - name: "AS5 Benefit Category"
+                product_id: "REC: as5_product.id"
+                product_category_id: "REC: as5_category.id"
+                percentage: 40.0
+
+      - step: "Find the Product-basis Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain:
+          [["award_id", "=", "REC: as5_award.id"], ["name", "=", "AS5 Benefit Product"]]
+        limit: 1
+        save_as: "as5_benefit_product"
+
+      - step: "Find the Category-basis Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain:
+          [
+            ["award_id", "=", "REC: as5_award.id"],
+            ["name", "=", "AS5 Benefit Category"],
+          ]
+        limit: 1
+        save_as: "as5_benefit_category"
+
+      - step: "Create the Product-basis schedule line against the term"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "as5_schedule_product"
+        values:
+          benefit_id: "REC: as5_benefit_product.id"
+          payment_term_id: "REC: as5_term.id"
+          date: "REC: as5_term.date_invoice"
+
+      - step: "Create the Category-basis schedule line against the term"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "as5_schedule_category"
+        values:
+          benefit_id: "REC: as5_benefit_category.id"
+          payment_term_id: "REC: as5_term.id"
+          date: "REC: as5_term.date_invoice"
+
+      # ── Positive: neither detail voided -- Base Amount unchanged
+      # from before this fix, for both matching bases.
+      - step: "Assert Base Amount sums both details when none are voided"
+        action: "assert"
+        target: "as5_schedule_product"
+        asserts:
+          base_amount:
+            type: "value"
+            expected: 2000000.0
+
+      - step: "Assert the same for the Category-basis schedule line"
+        action: "assert"
+        target: "as5_schedule_category"
+        asserts:
+          base_amount:
+            type: "value"
+            expected: 2000000.0
+
+      - step: "Void the first detail line (its amount moved to another term)"
+        action: "write"
+        target: "as5_detail1"
+        values:
+          voided: true
+
+      # ── Positive: one of two same-Product details voided -- Base
+      # Amount recomputes and excludes it, for both matching bases.
+      - step: "Assert Product-basis Base Amount excludes the voided detail"
+        action: "assert"
+        target: "as5_schedule_product"
+        asserts:
+          base_amount:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "Assert Category-basis Base Amount excludes the voided detail"
+        action: "assert"
+        target: "as5_schedule_category"
+        asserts:
+          base_amount:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "Void the second detail line too -- the term is now fully voided"
+        action: "write"
+        target: "as5_detail2"
+        values:
+          voided: true
+
+      # ── Positive: the term's own state becomes ``voided`` (Open
+      # enrollment, no invoice, not manually controlled, every detail
+      # voided). The schedule's ``payment_term_state`` mirrors it via
+      # its own compute -- this write is exactly where the ValueError
+      # fixed by this item used to be raised.
+      - step: "Assert the term itself is now Voided"
+        action: "assert"
+        target: "as5_term"
+        asserts:
+          state:
+            type: "value"
+            expected: "voided"
+
+      - step: "Assert the schedule's Payment Term State mirrors Voided"
+        action: "assert"
+        target: "as5_schedule_product"
+        asserts:
+          payment_term_state:
+            type: "value"
+            expected: "voided"
+
+      - step: "Assert the same for the Category-basis schedule line"
+        action: "assert"
+        target: "as5_schedule_category"
+        asserts:
+          payment_term_state:
+            type: "value"
+            expected: "voided"
+
+      # ── Negative: a schedule whose term has nothing left to bill
+      # has Base Amount zero, and raises no error being computed or
+      # saved -- it has simply lost its scholarship basis.
+      - step: "Assert Base Amount is zero once every detail is voided"
+        action: "assert"
+        target: "as5_schedule_product"
+        asserts:
+          base_amount:
+            type: "value"
+            expected: 0.0
+
+      - step: "Assert the same for the Category-basis schedule line"
+        action: "assert"
+        target: "as5_schedule_category"
+        asserts:
+          base_amount:
+            type: "value"
+            expected: 0.0

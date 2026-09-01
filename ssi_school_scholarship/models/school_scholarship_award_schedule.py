@@ -130,6 +130,7 @@ class SchoolScholarshipAwardSchedule(models.Model):
             ("draft", "Draft"),
             ("uninvoiced", "Uninvoiced"),
             ("invoiced", "Invoiced"),
+            ("voided", "Voided"),
             ("manual", "Manually Controlled"),
             ("cancelled", "Cancelled"),
         ],
@@ -212,6 +213,7 @@ class SchoolScholarshipAwardSchedule(models.Model):
         "payment_term_id.detail_ids.price_subtotal",
         "payment_term_id.detail_ids.product_id",
         "payment_term_id.detail_ids.product_category_id",
+        "payment_term_id.detail_ids.voided",
         "benefit_id.product_id",
         "benefit_id.product_category_id",
     )
@@ -221,7 +223,11 @@ class SchoolScholarshipAwardSchedule(models.Model):
         Matches by ``product_id`` when the Benefit line has no
         Product Category (a single-Product benefit), or by the
         detail lines' own ``product_category_id`` when the Benefit
-        line targets a Product Category instead.
+        line targets a Product Category instead. Detail lines
+        flagged ``voided`` (their full amount has been moved to
+        another Payment Term by an approved correction document)
+        are excluded before that match, so a moved amount is never
+        counted twice.
 
         :return: nothing; assigns ``base_amount``
         """
@@ -230,13 +236,14 @@ class SchoolScholarshipAwardSchedule(models.Model):
             term = record._get_source_term()
             benefit = record.benefit_id
             if term:
+                details = term.detail_ids.filtered(lambda line: not line.voided)
                 if benefit.product_category_id:
-                    details = term.detail_ids.filtered(
+                    details = details.filtered(
                         lambda line: line.product_category_id
                         == benefit.product_category_id
                     )
                 else:
-                    details = term.detail_ids.filtered(
+                    details = details.filtered(
                         lambda line: line.product_id == benefit.product_id
                     )
                 result = sum(details.mapped("price_subtotal"))
