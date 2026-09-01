@@ -2734,6 +2734,11 @@ msgid "Viewer"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_schedule__payment_term_state__voided
+msgid "Voided"
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award__compliance_state__warning
 msgid "Warning"
 msgstr ""
