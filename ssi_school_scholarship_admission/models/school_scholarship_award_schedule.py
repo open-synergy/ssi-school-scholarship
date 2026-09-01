@@ -76,10 +76,12 @@ class SchoolScholarshipAwardSchedule(models.Model):
         "payment_term_id.detail_ids.price_subtotal",
         "payment_term_id.detail_ids.product_id",
         "payment_term_id.detail_ids.product_category_id",
+        "payment_term_id.detail_ids.voided",
         "admission_payment_term_id",
         "admission_payment_term_id.detail_ids.price_subtotal",
         "admission_payment_term_id.detail_ids.product_id",
         "admission_payment_term_id.detail_ids.product_category_id",
+        "admission_payment_term_id.detail_ids.voided",
         "benefit_id.product_id",
         "benefit_id.product_category_id",
     )

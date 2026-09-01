@@ -4,5 +4,6 @@
 
 from . import (
     test_school_scholarship_admission,
+    test_school_scholarship_award_schedule_voided,
     test_ui_school_scholarship_award,
 )

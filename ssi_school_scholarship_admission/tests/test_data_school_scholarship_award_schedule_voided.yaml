@@ -1,0 +1,597 @@
+options:
+  auto_refresh: true
+scenarios:
+  - name: "Award Schedule Admission - Voided Payment Term Detail"
+    steps:
+      # ── Shared fixture chain (suffix SA6) ────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type6"
+        values:
+          name: "SA6 Grade Type"
+          code: "SA6GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school6"
+        values:
+          name: "SA6 School"
+          code: "SA6SC"
+          grade_type_id: "REC: grade_type6.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year6"
+        values:
+          name: "SA6 Academic Year"
+          code: "SA6AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term6"
+        values:
+          name: "SA6 Term"
+          code: "SA6TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year6.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade6"
+        values:
+          name: "SA6 Grade"
+          code: "SA6GR"
+          type_id: "REC: grade_type6.id"
+
+      - step: "Create the admission student's contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "admission_contact6"
+        values:
+          name: "SA6 Admission Contact"
+
+      # Owned by admin so the ``as_user: base.user_admin`` steps below
+      # are not rejected by the internal_user_rule record rule
+      # (odoo-development-unit-test, test-traps.md T-05).
+      - step: "Create the admission"
+        action: "create"
+        model: "school_admission"
+        save_as: "admission6"
+        values:
+          academic_year_id: "REC: academic_year6.id"
+          academic_term_id: "REC: academic_term6.id"
+          school_id: "REC: school6.id"
+          grade_id: "REC: grade6.id"
+          student_id: "REC: admission_contact6.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm the admission as admin"
+        action: "call"
+        target: "admission6"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      # The Confirm step above carries `asserts`, and that is what makes
+      # this Approve work: running asserts triggers the library's
+      # _refresh(), dropping the approve_ok=False cached while
+      # action_confirm read confirm_ok (test-traps.md T-04).
+      - step: "Approve the admission as admin (auto-opens)"
+        action: "call"
+        target: "admission6"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic6"
+        values:
+          name: "SA6 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source6"
+        values:
+          name: "SA6 Funding Source"
+          code: "SA6FS"
+          analytic_account_id: "REC: analytic6.id"
+
+      - step: "Create the product covered by both Payment Term detail lines"
+        action: "create"
+        model: "product.product"
+        save_as: "product6"
+        values:
+          name: "SA6 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal6"
+        values:
+          name: "SA6 Journal"
+          code: "JSA6"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account6"
+        values:
+          name: "SA6 Discount Account"
+          code: "SA6DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the income account used by the payment term details"
+        action: "create"
+        model: "account.account"
+        save_as: "income_account6"
+        values:
+          name: "SA6 Income Account"
+          code: "SA6IA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type6"
+        values:
+          name: "SA6 Type"
+          code: "SA6TY"
+          deduction_journal_id: "REC: journal6.id"
+          discount_account_id: "REC: discount_account6.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program6"
+        values:
+          name: "SA6 Program"
+          code: "SA6PRG"
+          type_id: "REC: type6.id"
+          school_id: "REC: school6.id"
+          academic_year_id: "REC: academic_year6.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source6.id"]]]
+          deduction_journal_id: "REC: journal6.id"
+          discount_account_id: "REC: discount_account6.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product6.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      # ── One Admission Payment Term, two detail lines on the same
+      # Product (1,000,000 each) -- neither voided yet.
+      - step: "Create the Admission Payment Term with two detail lines"
+        action: "create"
+        model: "school_admission_payment_term"
+        save_as: "term6"
+        values:
+          admission_id: "REC: admission6.id"
+          name: "SA6 Payment Term"
+          date_invoice: 2026-08-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: product6.id"
+                name: "SA6 Detail 1"
+                account_id: "REC: income_account6.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+            - - 0
+              - 0
+              - product_id: "REC: product6.id"
+                name: "SA6 Detail 2"
+                account_id: "REC: income_account6.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Find detail line 1"
+        action: "search"
+        model: "school_admission_payment_term_detail"
+        domain: [["term_id", "=", "REC: term6.id"], ["name", "=", "SA6 Detail 1"]]
+        limit: 1
+        save_as: "detail6_1"
+
+      - step: "Find detail line 2"
+        action: "search"
+        model: "school_admission_payment_term_detail"
+        domain: [["term_id", "=", "REC: term6.id"], ["name", "=", "SA6 Detail 2"]]
+        limit: 1
+        save_as: "detail6_2"
+
+      - step: "Create a draft award to host the compute Benefit line"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award6"
+        values:
+          program_id: "REC: program6.id"
+          student_id: "REC: admission6.school_student_id.id"
+          source_type: "admission"
+          admission_id: "REC: admission6.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account6.id"
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "SA6 Benefit Line"
+                product_id: "REC: product6.id"
+                percentage: 40.0
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source6.id"
+                percentage: 100.0
+
+      - step: "Find the Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: award6.id"], ["name", "=", "SA6 Benefit Line"]]
+        limit: 1
+        save_as: "benefit6"
+
+      - step: "Create the Admission-sourced schedule line against the term"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "schedule6"
+        values:
+          benefit_id: "REC: benefit6.id"
+          admission_payment_term_id: "REC: term6.id"
+          date: "REC: term6.date_invoice"
+
+      # ── Positive: neither detail voided -- Base Amount sums both.
+      - step: "Assert Base Amount sums both details when none are voided"
+        action: "assert"
+        target: "schedule6"
+        asserts:
+          base_amount:
+            type: "value"
+            expected: 2000000.0
+
+      - step: "Void the first detail line (its amount moved to another term)"
+        action: "write"
+        target: "detail6_1"
+        values:
+          voided: true
+
+      # ── Positive: one of two same-Product details voided, AFTER the
+      # Schedule line already exists -- Base Amount recomputes without
+      # touching the Schedule line itself.
+      - step: "Assert Base Amount excludes the voided detail"
+        action: "assert"
+        target: "schedule6"
+        asserts:
+          base_amount:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "Void the second detail line too -- every detail is now voided"
+        action: "write"
+        target: "detail6_2"
+        values:
+          voided: true
+
+      # ── Negative: a schedule whose term has nothing left to bill has
+      # Base Amount zero, and raises no error being computed or saved
+      # -- it has simply lost its scholarship basis.
+      - step: "Assert Base Amount is zero once every detail is voided"
+        action: "assert"
+        target: "schedule6"
+        asserts:
+          base_amount:
+            type: "value"
+            expected: 0.0
+
+  - name: "Award Schedule Enrollment - Voided Payment Term Detail"
+    steps:
+      # ── Shared fixture chain (suffix SA7) — mirrors the parent
+      # module's own Enrollment-sourced regression coverage, proving
+      # the widened @api.depends fires for the Enrollment path too,
+      # not only the Admission path added by this module.
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type7"
+        values:
+          name: "SA7 Grade Type"
+          code: "SA7GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school7"
+        values:
+          name: "SA7 School"
+          code: "SA7SC"
+          grade_type_id: "REC: grade_type7.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year7"
+        values:
+          name: "SA7 Academic Year"
+          code: "SA7AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term7"
+        values:
+          name: "SA7 Term"
+          code: "SA7TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year7.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade7"
+        values:
+          name: "SA7 Grade"
+          code: "SA7GR"
+          type_id: "REC: grade_type7.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class7"
+        values:
+          name: "SA7 Class"
+          code: "SA7CL"
+          school_id: "REC: school7.id"
+          grade_id: "REC: grade7.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact7"
+        values:
+          name: "SA7 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "student7"
+        values:
+          name: "SA7 Student"
+          code: "SA7ST"
+          contact_id: "REC: contact7.id"
+          school_id: "REC: school7.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment7"
+        values:
+          academic_year_id: "REC: academic_year7.id"
+          academic_term_id: "REC: academic_term7.id"
+          school_id: "REC: school7.id"
+          grade_id: "REC: grade7.id"
+          grade_class_id: "REC: grade_class7.id"
+          student_id: "REC: student7.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic7"
+        values:
+          name: "SA7 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source7"
+        values:
+          name: "SA7 Funding Source"
+          code: "SA7FS"
+          analytic_account_id: "REC: analytic7.id"
+
+      - step: "Create the product covered by both Payment Term detail lines"
+        action: "create"
+        model: "product.product"
+        save_as: "product7"
+        values:
+          name: "SA7 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal7"
+        values:
+          name: "SA7 Journal"
+          code: "JSA7"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account7"
+        values:
+          name: "SA7 Discount Account"
+          code: "SA7DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the income account used by the payment term details"
+        action: "create"
+        model: "account.account"
+        save_as: "income_account7"
+        values:
+          name: "SA7 Income Account"
+          code: "SA7IA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type7"
+        values:
+          name: "SA7 Type"
+          code: "SA7TY"
+          deduction_journal_id: "REC: journal7.id"
+          discount_account_id: "REC: discount_account7.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program7"
+        values:
+          name: "SA7 Program"
+          code: "SA7PRG"
+          type_id: "REC: type7.id"
+          school_id: "REC: school7.id"
+          academic_year_id: "REC: academic_year7.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source7.id"]]]
+          deduction_journal_id: "REC: journal7.id"
+          discount_account_id: "REC: discount_account7.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product7.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      # ── One Enrollment Payment Term, two detail lines on the same
+      # Product (1,000,000 each) -- neither voided yet.
+      - step: "Create the Enrollment Payment Term with two detail lines"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "term7"
+        values:
+          enrollment_id: "REC: enrollment7.id"
+          name: "SA7 Payment Term"
+          date_invoice: 2026-08-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: product7.id"
+                name: "SA7 Detail 1"
+                account_id: "REC: income_account7.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+            - - 0
+              - 0
+              - product_id: "REC: product7.id"
+                name: "SA7 Detail 2"
+                account_id: "REC: income_account7.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Find detail line 1"
+        action: "search"
+        model: "school_enrollment_payment_term_detail"
+        domain: [["term_id", "=", "REC: term7.id"], ["name", "=", "SA7 Detail 1"]]
+        limit: 1
+        save_as: "detail7_1"
+
+      - step: "Create a draft award to host the compute Benefit line"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award7"
+        values:
+          program_id: "REC: program7.id"
+          student_id: "REC: student7.id"
+          enrollment_id: "REC: enrollment7.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account7.id"
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "SA7 Benefit Line"
+                product_id: "REC: product7.id"
+                percentage: 40.0
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source7.id"
+                percentage: 100.0
+
+      - step: "Find the Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: award7.id"], ["name", "=", "SA7 Benefit Line"]]
+        limit: 1
+        save_as: "benefit7"
+
+      - step: "Create the Enrollment-sourced schedule line against the term"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "schedule7"
+        values:
+          benefit_id: "REC: benefit7.id"
+          payment_term_id: "REC: term7.id"
+          date: "REC: term7.date_invoice"
+
+      # ── Positive: neither detail voided -- Base Amount sums both.
+      - step: "Assert Base Amount sums both details when none are voided"
+        action: "assert"
+        target: "schedule7"
+        asserts:
+          base_amount:
+            type: "value"
+            expected: 2000000.0
+
+      - step: "Void the first detail line (its amount moved to another term)"
+        action: "write"
+        target: "detail7_1"
+        values:
+          voided: true
+
+      # ── Positive: an Enrollment-sourced Schedule line still recomputes
+      # Base Amount once a detail is voided, exactly as before this
+      # module widened `@api.depends` to also cover the Admission path.
+      - step: "Assert Base Amount excludes the voided detail"
+        action: "assert"
+        target: "schedule7"
+        asserts:
+          base_amount:
+            type: "value"
+            expected: 1000000.0
