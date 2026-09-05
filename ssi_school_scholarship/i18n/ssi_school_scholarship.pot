@@ -1240,7 +1240,6 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
-#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_search
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_funding_source_view_search
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_program_view_search
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_type_view_search
@@ -2086,6 +2085,13 @@ msgid "Realized"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: code:addons/ssi_school_scholarship/models/school_scholarship_award.py:0
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_form
+#, python-format
+msgid "Realized Schedules"
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__recognition_journal_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_program__recognition_journal_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_type__recognition_journal_id
@@ -2196,6 +2202,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__schedule_ids
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_form
 msgid "Schedule"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: code:addons/ssi_school_scholarship/models/school_scholarship_award.py:0
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_award_view_form
+#, python-format
+msgid "Schedule Lines"
 msgstr ""
 
 #. module: ssi_school_scholarship
