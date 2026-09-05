@@ -1814,6 +1814,11 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_schedule__payment_term_state__paid
+msgid "Paid"
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__partner_id
 msgid "Partner"
 msgstr ""
