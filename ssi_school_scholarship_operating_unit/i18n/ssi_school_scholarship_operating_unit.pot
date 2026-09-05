@@ -43,6 +43,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_school_scholarship_operating_unit.field_school_scholarship_program__operating_unit_ids
 #: model:ir.model.fields,field_description:ssi_school_scholarship_operating_unit.field_school_scholarship_type__operating_unit_ids
 #: model:res.groups,name:ssi_school_scholarship_operating_unit.school_scholarship_award_operating_unit_group
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_operating_unit.school_scholarship_award_view_search_ou
 msgid "Operating Unit"
 msgstr ""
 
