@@ -17,13 +17,13 @@
                 <field name="award_id" />
                 <field name="student_id" />
                 <field name="partner_id" />
-                <group expand="0" string="Group By">
-                    <filter
-                            name="group_by_award_id"
-                            string="Award"
-                            context="{'group_by': 'award_id'}"
-                        />
-                </group>
+            </xpath>
+            <xpath expr="//group[@name='group_by']" position="inside">
+                <filter
+                        name="group_by_award_id"
+                        string="Award"
+                        context="{'group_by': 'award_id'}"
+                    />
             </xpath>
         </data>
     </field>
@@ -45,16 +45,16 @@
             </xpath>
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="date" />
-                <field name="award_id" />
-                <field name="student_id" />
                 <field name="partner_id" />
                 <field name="amount_total" widget="monetary" />
-                <field name="amount_allocated" widget="monetary" />
-                <field name="amount_unallocated" widget="monetary" />
-                <field name="reconciled" />
-                <field name="recognition_method" />
-                <field name="recognition_state" />
-                <field name="amount_deferred" widget="monetary" />
+                <field name="award_id" optional="hide" />
+                <field name="student_id" optional="hide" />
+                <field name="amount_allocated" widget="monetary" optional="hide" />
+                <field name="amount_unallocated" widget="monetary" optional="hide" />
+                <field name="reconciled" optional="hide" />
+                <field name="recognition_method" optional="hide" />
+                <field name="recognition_state" optional="hide" />
+                <field name="amount_deferred" widget="monetary" optional="hide" />
                 <field name="currency_id" invisible="1" />
             </xpath>
         </data>
@@ -72,24 +72,16 @@
                 <field name="award_id" />
                 <field name="student_id" />
                 <field name="partner_id" />
-                <field name="journal_id" />
-                <field name="receivable_account_id" />
-                <field name="recognition_method" />
-                <field
-                        name="recognition_date"
-                        attrs="{'invisible': [('recognition_method', '=', 'immediate')]}"
-                    />
-                <field
-                        name="deferred_account_id"
-                        attrs="{'invisible': [('recognition_method', '=', 'immediate')]}"
-                    />
-                <field
-                        name="recognition_journal_id"
-                        attrs="{'invisible': [('recognition_method', '=', 'immediate')]}"
-                    />
             </xpath>
             <xpath expr="//group[@name='header_right']" position="inside">
                 <field name="date" />
+                <field name="reconciled" />
+                <field
+                        name="recognition_state"
+                        attrs="{'invisible': [('recognition_method', '=', 'immediate')]}"
+                    />
+            </xpath>
+            <xpath expr="//group[@name='footer_left']" position="inside">
                 <field name="currency_id" invisible="1" />
                 <field name="company_currency_id" invisible="1" />
                 <field
@@ -107,9 +99,8 @@
                         widget="monetary"
                         options="{'currency_field': 'currency_id'}"
                     />
-                <field name="reconciled" />
-                <field name="move_id" />
-                <field name="receivable_move_line_id" />
+            </xpath>
+            <xpath expr="//group[@name='footer_right']" position="inside">
                 <field
                         name="amount_recognized"
                         widget="monetary"
@@ -120,10 +111,6 @@
                         name="amount_deferred"
                         widget="monetary"
                         options="{'currency_field': 'currency_id'}"
-                        attrs="{'invisible': [('recognition_method', '=', 'immediate')]}"
-                    />
-                <field
-                        name="recognition_state"
                         attrs="{'invisible': [('recognition_method', '=', 'immediate')]}"
                     />
             </xpath>
@@ -258,6 +245,34 @@
                             </group>
                         </form>
                     </field>
+                </page>
+                <page name="accounting" string="Accounting">
+                    <group name="accounting_1" colspan="4" col="2">
+                        <field name="journal_id" />
+                        <field name="receivable_account_id" />
+                        <field name="move_id" readonly="1" />
+                        <field name="receivable_move_line_id" readonly="1" />
+                    </group>
+                    <group
+                            name="accounting_2"
+                            string="Deferred Recognition"
+                            colspan="4"
+                            col="2"
+                        >
+                        <field name="recognition_method" />
+                        <field
+                                name="recognition_date"
+                                attrs="{'invisible': [('recognition_method', '=', 'immediate')]}"
+                            />
+                        <field
+                                name="deferred_account_id"
+                                attrs="{'invisible': [('recognition_method', '=', 'immediate')]}"
+                            />
+                        <field
+                                name="recognition_journal_id"
+                                attrs="{'invisible': [('recognition_method', '=', 'immediate')]}"
+                            />
+                    </group>
                 </page>
             </xpath>
         </data>

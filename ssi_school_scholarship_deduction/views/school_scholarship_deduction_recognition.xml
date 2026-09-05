@@ -15,13 +15,13 @@
         <data>
             <xpath expr="//search" position="inside">
                 <field name="deduction_id" />
-                <group expand="0" string="Group By">
-                    <filter
-                            name="group_by_deduction_id"
-                            string="Deduction"
-                            context="{'group_by': 'deduction_id'}"
-                        />
-                </group>
+            </xpath>
+            <xpath expr="//group[@name='group_by']" position="inside">
+                <filter
+                        name="group_by_deduction_id"
+                        string="Deduction"
+                        context="{'group_by': 'deduction_id'}"
+                    />
             </xpath>
         </data>
     </field>
@@ -38,8 +38,8 @@
                 <field name="date" />
                 <field name="deduction_id" />
                 <field name="amount" widget="monetary" />
-                <field name="ratio" widget="percentage" />
-                <field name="move_id" />
+                <field name="ratio" widget="percentage" optional="hide" />
+                <field name="move_id" optional="hide" />
                 <field name="currency_id" invisible="1" />
             </xpath>
         </data>
@@ -55,7 +55,6 @@
         <data>
             <xpath expr="//field[@name='user_id']" position="after">
                 <field name="deduction_id" />
-                <field name="journal_id" />
             </xpath>
             <xpath expr="//group[@name='header_right']" position="inside">
                 <field name="date" />
@@ -67,7 +66,6 @@
                         options="{'currency_field': 'currency_id'}"
                     />
                 <field name="ratio" widget="percentage" />
-                <field name="move_id" />
             </xpath>
             <xpath expr="//page[1]" position="before">
                 <page name="recognition_line" string="Recognition Lines">
@@ -94,6 +92,12 @@
                 </page>
                 <page name="note" string="Note">
                     <field name="note" colspan="4" nolabel="1" />
+                </page>
+                <page name="accounting" string="Accounting">
+                    <group name="accounting_1" colspan="4" col="2">
+                        <field name="journal_id" />
+                        <field name="move_id" readonly="1" />
+                    </group>
                 </page>
             </xpath>
         </data>
