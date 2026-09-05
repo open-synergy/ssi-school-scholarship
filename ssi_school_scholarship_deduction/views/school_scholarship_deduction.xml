@@ -75,7 +75,6 @@
             </xpath>
             <xpath expr="//group[@name='header_right']" position="inside">
                 <field name="date" />
-                <field name="reconciled" />
                 <field
                         name="recognition_state"
                         attrs="{'invisible': [('recognition_method', '=', 'immediate')]}"
@@ -252,6 +251,7 @@
                         <field name="receivable_account_id" />
                         <field name="move_id" readonly="1" />
                         <field name="receivable_move_line_id" readonly="1" />
+                        <field name="reconciled" />
                     </group>
                     <group
                             name="accounting_2"
@@ -278,4 +278,20 @@
         </data>
     </field>
 </record>
+
+<record id="school_scholarship_deduction_action" model="ir.actions.act_window">
+    <field name="name">Scholarship Deductions</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">school_scholarship_deduction</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem
+        id="school_scholarship_deduction_menu"
+        name="Scholarship Deductions"
+        parent="ssi_school_scholarship.menu_school_scholarship"
+        action="school_scholarship_deduction_action"
+        groups="school_scholarship_deduction_viewer_group"
+        sequence="20"
+    />
 </odoo>
