@@ -17,13 +17,13 @@
                 <field name="award_id" />
                 <field name="student_id" />
                 <field name="partner_id" />
-                <group expand="0" string="Group By">
-                    <filter
-                            name="group_by_award_id"
-                            string="Award"
-                            context="{'group_by': 'award_id'}"
-                        />
-                </group>
+            </xpath>
+            <xpath expr="//group[@name='group_by']" position="inside">
+                <filter
+                        name="group_by_award_id"
+                        string="Award"
+                        context="{'group_by': 'award_id'}"
+                    />
             </xpath>
         </data>
     </field>
@@ -38,14 +38,14 @@
         <data>
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="date" />
-                <field name="date_due" />
-                <field name="award_id" />
-                <field name="student_id" />
+                <field name="date_due" optional="hide" />
+                <field name="award_id" optional="hide" />
+                <field name="student_id" optional="hide" />
                 <field name="partner_id" />
-                <field name="payment_method" />
+                <field name="payment_method" optional="hide" />
                 <field name="amount_total" widget="monetary" />
-                <field name="amount_paid" widget="monetary" />
-                <field name="amount_residual" widget="monetary" />
+                <field name="amount_paid" widget="monetary" optional="hide" />
+                <field name="amount_residual" widget="monetary" optional="hide" />
                 <field name="currency_id" invisible="1" />
             </xpath>
         </data>
@@ -63,17 +63,17 @@
                 <field name="award_id" />
                 <field name="student_id" />
                 <field name="partner_id" />
-                <field name="journal_id" />
-                <field name="payable_account_id" />
+            </xpath>
+            <xpath expr="//group[@name='header_right']" position="inside">
+                <field name="date" />
+                <field name="date_due" />
                 <field name="payment_method" />
                 <field
                         name="bank_account_id"
                         attrs="{'invisible': [('payment_method', '!=', 'bank_transfer')], 'required': [('payment_method', '=', 'bank_transfer')]}"
                     />
             </xpath>
-            <xpath expr="//group[@name='header_right']" position="inside">
-                <field name="date" />
-                <field name="date_due" />
+            <xpath expr="//group[@name='footer_left']" position="inside">
                 <field name="currency_id" invisible="1" />
                 <field name="company_currency_id" invisible="1" />
                 <field
@@ -91,8 +91,6 @@
                         widget="monetary"
                         options="{'currency_field': 'currency_id'}"
                     />
-                <field name="move_id" />
-                <field name="payable_move_line_id" />
             </xpath>
             <xpath expr="//page[1]" position="before">
                 <page name="line" string="Lines">
@@ -197,6 +195,14 @@
                             </group>
                         </form>
                     </field>
+                </page>
+                <page name="accounting" string="Accounting">
+                    <group name="accounting_1" colspan="4" col="2">
+                        <field name="journal_id" />
+                        <field name="payable_account_id" />
+                        <field name="move_id" readonly="1" />
+                        <field name="payable_move_line_id" readonly="1" />
+                    </group>
                 </page>
             </xpath>
         </data>

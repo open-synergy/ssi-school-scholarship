@@ -68,8 +68,8 @@ odoo.define(
                     },
                 },
 
-                // ── Flow 3 — Fill in Award, Journal, Payable Account,
-                // Payment Method, Date Due.
+                // ── Flow 3 — Fill in Award, Payment Method, Date, Date
+                // Due, all still in the header.
                 {
                     content: "Select the Award",
                     trigger: ".o_field_many2one[name='award_id'] input",
@@ -79,28 +79,6 @@ odoo.define(
                     content: "Pick the Award from the dropdown",
                     trigger:
                         ".ui-autocomplete .ui-menu-item a:contains(TOUR-DISBURSEMENT-AWARD-CREATE-001)",
-                    in_modal: false,
-                },
-                {
-                    content: "Select the Journal",
-                    trigger: ".o_field_many2one[name='journal_id'] input",
-                    run: "text TOUR Disbursement Cash Journal",
-                },
-                {
-                    content: "Pick the Journal from the dropdown",
-                    trigger:
-                        ".ui-autocomplete .ui-menu-item a:contains(TOUR Disbursement Cash Journal)",
-                    in_modal: false,
-                },
-                {
-                    content: "Select the Payable Account",
-                    trigger: ".o_field_many2one[name='payable_account_id'] input",
-                    run: "text TOUR Disbursement Payable Account",
-                },
-                {
-                    content: "Pick the Payable Account from the dropdown",
-                    trigger:
-                        ".ui-autocomplete .ui-menu-item a:contains(TOUR Disbursement Payable Account)",
                     in_modal: false,
                 },
                 {
@@ -140,7 +118,39 @@ odoo.define(
                     run: "text 08/15/2026",
                 },
 
-                // ── Flow 4 — On the Lines tab, add one line: Schedule
+                // ── Flow 4 — On the Accounting tab, fill in Journal and
+                // Payable Account -- both now live on the "Accounting"
+                // page rather than the header (issue #87).
+                {
+                    content: "Open the Accounting tab",
+                    trigger: ".o_notebook .nav-link:contains(Accounting)",
+                },
+                {
+                    content: "Select the Journal",
+                    trigger:
+                        ".tab-pane.active .o_field_many2one[name='journal_id'] input",
+                    run: "text TOUR Disbursement Cash Journal",
+                },
+                {
+                    content: "Pick the Journal from the dropdown",
+                    trigger:
+                        ".ui-autocomplete .ui-menu-item a:contains(TOUR Disbursement Cash Journal)",
+                    in_modal: false,
+                },
+                {
+                    content: "Select the Payable Account",
+                    trigger:
+                        ".tab-pane.active .o_field_many2one[name='payable_account_id'] input",
+                    run: "text TOUR Disbursement Payable Account",
+                },
+                {
+                    content: "Pick the Payable Account from the dropdown",
+                    trigger:
+                        ".ui-autocomplete .ui-menu-item a:contains(TOUR Disbursement Payable Account)",
+                    in_modal: false,
+                },
+
+                // ── Flow 5 — On the Lines tab, add one line: Schedule
                 // and Funding. Selecting Schedule fills Description,
                 // Product, and Final Account; selecting Funding,
                 // together with Schedule, fills Price Unit.
@@ -203,7 +213,7 @@ odoo.define(
                     run: "click",
                 },
 
-                // ── Flow 5 — Click Save.
+                // ── Flow 6 — Click Save.
                 {
                     content: "Save the record",
                     trigger: ".o_form_button_save",
@@ -330,6 +340,12 @@ odoo.define(
                         // Assertion only; do not trigger the default click.
                     },
                 },
+
+                // Flow 5 — Open the Accounting tab to see the posting.
+                {
+                    content: "Open the Accounting tab",
+                    trigger: ".o_notebook .nav-link:contains(Accounting)",
+                },
                 {
                     // A *readonly* many2one in 14.0 (`payable_move_line_id`
                     // is always `readonly=True`) renders as a bare
@@ -341,7 +357,8 @@ odoo.define(
                     // matches nothing (odoo-development-ui-test
                     // references/selectors.md §8, "Field readonly").
                     content: "The Payable Move Line field is filled",
-                    trigger: ".o_field_widget[name='payable_move_line_id'].o_form_uri",
+                    trigger:
+                        ".tab-pane.active .o_field_widget[name='payable_move_line_id'].o_form_uri",
                     run: function () {
                         // Assertion only; do not trigger the default click.
                     },

@@ -103,11 +103,22 @@ odoo.define(
 
                 // ── Post-Condition — the newly created Disbursement
                 // document is listed in the Scholarship Disbursements
-                // list. Waiting for the Award's own name in the Award
-                // column is the only gate here that is guaranteed
-                // false until the wizard's own RPC actually finishes
-                // (patterns.md §P): no such row exists before this
-                // wizard is run.
+                // list. The wizard's own action opens that list scoped
+                // to `domain=[("id", "in", disbursements.ids)]`
+                // (wizards/create_due_scholarship_disbursement.py,
+                // `_open_disbursements`), so every row shown there was
+                // just created by this run -- no row can pre-exist to
+                // collide with the gate below.
+                //
+                // `award_id` is `optional="hide"` in this tree (issue
+                // #87), so the Award's own name -- used by the previous
+                // version of this gate -- is no longer in the DOM at
+                // all. The default-visible columns are `date`,
+                // `partner_id`, `amount_total`; `partner_id` here is
+                // the Award's `student_id.contact_id` ("TOUR CDDB
+                // Student Contact", set up in this file's own
+                // setUpClass), paired with the Draft state badge so the
+                // gate cannot also match a later state of the same row.
                 {
                     content: "Scholarship Disbursements list is displayed",
                     trigger:
@@ -119,7 +130,8 @@ odoo.define(
                 },
                 {
                     content: "A Disbursement for the Award appears in Draft",
-                    trigger: ".o_data_row:contains(TOUR-AWARD-CREATEDISBURSEMENT-001)",
+                    trigger:
+                        ".o_data_row:contains(TOUR CDDB Student Contact):contains(Draft)",
                     run: function () {
                         // Assertion only; do not trigger the default click.
                     },
