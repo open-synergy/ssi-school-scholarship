@@ -20,15 +20,18 @@
 2. Click the **New** button. **(14.0: "Create")**
 3. Fill in the required fields:
    - **Deduction** _(required)_: Select the deferred deduction document this document
-     releases. Selecting it fills **Journal** from the deduction's own Recognition
-     Journal and **Amount** from the deduction's own Amount Deferred.
-   - **Journal** _(required)_: Defaulted from the selected Deduction; may be overridden.
+     releases. Selecting it fills **Journal** (on the **Accounting** tab) from the
+     deduction's own Recognition Journal and **Amount** from the deduction's own Amount
+     Deferred.
    - **Amount** _(required)_: Defaulted from the selected Deduction's own Amount
      Deferred; may be lowered for a partial (amortized) release. The sum of every Done
      Recognition's Amount on the same Deduction may not exceed that Deduction's own
      Amount Total.
    - **Date**: Defaults to today's date. May not be earlier than the Deduction's own
      Date.
+   - On the **Accounting** tab:
+     - **Journal** _(required)_: Defaulted from the selected Deduction; may be
+       overridden.
 4. Click **Save**.
 
 ## Post-Condition

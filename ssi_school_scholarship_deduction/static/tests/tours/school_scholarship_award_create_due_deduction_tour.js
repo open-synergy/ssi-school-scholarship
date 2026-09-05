@@ -102,9 +102,21 @@ odoo.define(
 
                 // ── Post-Condition — the newly created Deduction
                 // document is listed in the Scholarship Deductions
-                // list. Waiting for the Award's own name in the Award
-                // column is the only gate here that is guaranteed
-                // false until the wizard's own RPC actually finishes
+                // list, still in Draft
+                // (docs/school_scholarship_award/07-create-due-
+                // deduction.md:41). award_id is optional="hide" on
+                // this tree (odoo-development-backlog#86), so the
+                // Award's own name is not in the DOM; partner_id
+                // (always-visible) renders the Student Contact's name
+                // instead -- school_scholarship_deduction.partner_id
+                // is related="award_id.partner_id", i.e.
+                // student_id.contact_id. The wizard's own action
+                // domain (`[("id", "in", deductions.ids)]`) already
+                // scopes this list to only the Deduction(s) just
+                // created, so this token is unique in the resulting
+                // list regardless of how many other Deductions exist
+                // in the database. The Draft gate is guaranteed false
+                // until the wizard's own RPC actually finishes
                 // (patterns.md §P): no such row exists before this
                 // wizard is run.
                 {
@@ -118,7 +130,8 @@ odoo.define(
                 },
                 {
                     content: "A Deduction for the Award appears in Draft",
-                    trigger: ".o_data_row:contains(TOUR-AWARD-CREATEDEDUCTION-001)",
+                    trigger:
+                        ".o_data_row:contains(TOUR CDD Student Contact):contains(Draft)",
                     run: function () {
                         // Assertion only; do not trigger the default click.
                     },

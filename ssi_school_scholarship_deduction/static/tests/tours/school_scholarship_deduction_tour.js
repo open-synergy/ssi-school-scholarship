@@ -66,7 +66,8 @@ odoo.define(
                     },
                 },
 
-                // ── Flow 3 — Fill in Award, Journal, Receivable Account.
+                // ── Flow 3 — Fill in Award, then open the Accounting
+                // tab to fill in Journal and Receivable Account.
                 {
                     content: "Select the Award",
                     trigger: ".o_field_many2one[name='award_id'] input",
@@ -79,8 +80,13 @@ odoo.define(
                     in_modal: false,
                 },
                 {
+                    content: "Open the Accounting tab",
+                    trigger: ".o_notebook .nav-link:contains(Accounting)",
+                },
+                {
                     content: "Select the Journal",
-                    trigger: ".o_field_many2one[name='journal_id'] input",
+                    trigger:
+                        ".tab-pane.active .o_field_many2one[name='journal_id'] input",
                     run: "text TOUR Deduction Sale Journal",
                 },
                 {
@@ -91,7 +97,8 @@ odoo.define(
                 },
                 {
                     content: "Select the Receivable Account",
-                    trigger: ".o_field_many2one[name='receivable_account_id'] input",
+                    trigger:
+                        ".tab-pane.active .o_field_many2one[name='receivable_account_id'] input",
                     run: "text TOUR Deduction Receivable Account",
                 },
                 {
@@ -332,6 +339,13 @@ odoo.define(
                     },
                 },
                 {
+                    // Move and Receivable Move Line now live on the
+                    // Accounting tab (07-views.md Aturan 7) -- open it
+                    // before reading either field.
+                    content: "Open the Accounting tab",
+                    trigger: ".o_notebook .nav-link:contains(Accounting)",
+                },
+                {
                     // A *readonly* many2one in 14.0 (`receivable_move_line_id`
                     // is always `readonly=True`) renders as a bare
                     // `<a class="o_form_uri o_field_widget ...">` -- it
@@ -343,7 +357,7 @@ odoo.define(
                     // references/selectors.md §8, "Field readonly").
                     content: "The Receivable Move Line field is filled",
                     trigger:
-                        ".o_field_widget[name='receivable_move_line_id'].o_form_uri",
+                        ".tab-pane.active .o_field_widget[name='receivable_move_line_id'].o_form_uri",
                     run: function () {
                         // Assertion only; do not trigger the default click.
                     },

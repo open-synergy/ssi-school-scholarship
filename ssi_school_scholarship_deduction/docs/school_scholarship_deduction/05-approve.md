@@ -26,7 +26,8 @@
 - The document's status changes to **On Progress**.
 - An `account.move` is created and posted: it credits the document's Receivable Account
   for Amount Total, and debits each Line's own account for its Price Subtotal, carrying
-  that line's Analytic Account.
+  that line's Analytic Account. Its Move and the resulting Receivable Move Line are
+  shown on the **Accounting** tab.
 - The document's Receivable journal item is reconciled against every allocated invoice's
   own receivable journal item — each invoice's Amount Residual drops by its Amount
   Allocated, and an invoice fully covered moves to **Paid**.

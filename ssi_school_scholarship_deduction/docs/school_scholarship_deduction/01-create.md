@@ -22,11 +22,12 @@
 2. Click the **New** button. **(14.0: "Create")**
 3. Fill in the required fields:
    - **Award** _(required)_: Select the scholarship award this deduction realizes.
-   - **Journal** _(required)_: Select the accounting journal this document posts to.
-   - **Receivable Account** _(required)_: Select the receivable account this document
-     credits. Must be identical to the Receivable Account of every invoice allocated
-     below, or opening this document is rejected (see `05-approve`).
    - **Date**: Defaults to today's date.
+   - On the **Accounting** tab:
+     - **Journal** _(required)_: Select the accounting journal this document posts to.
+     - **Receivable Account** _(required)_: Select the receivable account this document
+       credits. Must be identical to the Receivable Account of every invoice allocated
+       below, or opening this document is rejected (see `05-approve`).
 4. On the **Lines** tab, add **at least one** line:
    - **Schedule** _(required)_: Select an Award Schedule line, restricted to the
      selected Award's own Schedule. Selecting it fills Description, Product, and Final

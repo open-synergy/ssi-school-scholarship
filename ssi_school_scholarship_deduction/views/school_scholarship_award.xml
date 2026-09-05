@@ -13,11 +13,11 @@
     <field name="arch" type="xml">
         <data>
             <xpath expr="//header" position="inside">
-                <field name="create_deduction_ok" invisible="1" />
                 <button
                         name="action_open_create_due_deduction_wizard"
                         type="object"
                         string="Create Due Deduction"
+                        class="oe_highlight"
                         attrs="{'invisible': [('create_deduction_ok', '=', False)]}"
                     />
             </xpath>

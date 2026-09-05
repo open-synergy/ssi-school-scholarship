@@ -84,6 +84,13 @@ odoo.define(
                     in_modal: false,
                 },
                 {
+                    // Journal now lives on the Accounting tab
+                    // (07-views.md Aturan 7) -- open it before reading
+                    // the field the Deduction onchange fills.
+                    content: "Open the Accounting tab",
+                    trigger: ".o_notebook .nav-link:contains(Accounting)",
+                },
+                {
                     // Gate: wait for the Deduction onchange's RPC to
                     // fill Journal before saving. `.o_external_button`
                     // (the "open related record" button) is only
@@ -98,7 +105,8 @@ odoo.define(
                     // ssi_school_scholarship_program_tour.js commit
                     // b73daad).
                     content: "Journal reflects the Deduction onchange before saving",
-                    trigger: ".o_field_many2one[name='journal_id'] .o_external_button",
+                    trigger:
+                        ".tab-pane.active .o_field_many2one[name='journal_id'] .o_external_button",
                     run: function () {
                         // Assertion only; do not trigger the default click.
                     },
@@ -180,13 +188,20 @@ odoo.define(
                     },
                 },
                 {
+                    // Move now lives on the Accounting tab (07-views.md
+                    // Aturan 7) -- open it before reading the field.
+                    content: "Open the Accounting tab",
+                    trigger: ".o_notebook .nav-link:contains(Accounting)",
+                },
+                {
                     // A *readonly* many2one in 14.0 (`move_id` is
                     // always `readonly=True`) renders as a bare
                     // `<a class="o_form_uri o_field_widget ...">`, not
                     // `.o_field_many2one` (odoo-development-ui-test
                     // references/selectors.md §8).
                     content: "The Move field is filled",
-                    trigger: ".o_field_widget[name='move_id'].o_form_uri",
+                    trigger:
+                        ".tab-pane.active .o_field_widget[name='move_id'].o_form_uri",
                     run: function () {
                         // Assertion only; do not trigger the default click.
                     },
