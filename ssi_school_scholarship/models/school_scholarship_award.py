@@ -896,6 +896,49 @@ Solution: Use revocation instead of cancellation for an award already realized
         for record in self.sudo():
             record._generate_schedule()
 
+    def action_view_schedule(self):
+        """Open this award's Schedule lines, of any state.
+
+        Pure navigation: no field is written and no state changes --
+        the smart button this backs shows the count of
+        ``schedule_ids``, and this is its door.
+
+        :return: an ``ir.actions.act_window`` dict listing this
+            award's ``school_scholarship_award_schedule`` records
+        """
+        self.ensure_one()
+        return {
+            "name": _("Schedule Lines"),
+            "type": "ir.actions.act_window",
+            "res_model": "school_scholarship_award_schedule",
+            "view_mode": "tree,form",
+            "domain": [("award_id", "=", self.id)],
+            "context": {"default_award_id": self.id},
+        }
+
+    def action_view_realized_schedule(self):
+        """Open this award's Schedule lines already realized.
+
+        Pure navigation, same as ``action_view_schedule`` -- the
+        smart button this backs shows the count of ``realized_count``.
+
+        :return: an ``ir.actions.act_window`` dict listing this
+            award's ``school_scholarship_award_schedule`` records
+            in state ``realized``
+        """
+        self.ensure_one()
+        return {
+            "name": _("Realized Schedules"),
+            "type": "ir.actions.act_window",
+            "res_model": "school_scholarship_award_schedule",
+            "view_mode": "tree,form",
+            "domain": [
+                ("award_id", "=", self.id),
+                ("state", "=", "realized"),
+            ],
+            "context": {"default_award_id": self.id},
+        }
+
     def _generate_schedule(self):
         """Idempotently create Schedule lines for every Benefit line.
 

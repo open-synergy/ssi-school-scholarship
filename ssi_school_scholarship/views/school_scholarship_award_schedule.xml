@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="school_scholarship_award_schedule_view_tree" model="ir.ui.view">
+    <field name="name">school_scholarship_award_schedule - tree</field>
+    <field name="model">school_scholarship_award_schedule</field>
+    <field name="arch" type="xml">
+        <tree>
+            <field name="award_id" />
+            <field name="benefit_id" />
+            <field name="date" />
+            <field name="amount_planned" widget="monetary" />
+            <field name="amount_realized" widget="monetary" />
+            <field name="state" widget="badge" />
+            <field name="payment_term_id" optional="hide" />
+            <field name="base_amount" widget="monetary" optional="hide" />
+            <field name="amount_planned_manual" optional="hide" />
+            <field name="payment_term_state" optional="hide" />
+            <field name="customer_invoice_id" optional="hide" />
+            <field name="note" optional="hide" />
+            <field name="currency_id" invisible="1" />
+        </tree>
+    </field>
+</record>
+
+<record id="school_scholarship_award_schedule_view_form" model="ir.ui.view">
+    <field name="name">school_scholarship_award_schedule - form</field>
+    <field name="model">school_scholarship_award_schedule</field>
+    <field name="arch" type="xml">
+        <form>
+            <sheet>
+                <group name="main" colspan="4" col="2">
+                    <field name="award_id" />
+                    <field name="benefit_id" />
+                    <field name="payment_term_id" />
+                    <field name="date" />
+                    <field name="base_amount" widget="monetary" />
+                    <field name="amount_planned" widget="monetary" />
+                    <field name="amount_planned_manual" />
+                    <field name="amount_realized" widget="monetary" />
+                    <field name="state" />
+                    <field name="payment_term_state" />
+                    <field name="customer_invoice_id" />
+                    <field name="note" />
+                    <field name="currency_id" invisible="1" />
+                </group>
+            </sheet>
+        </form>
+    </field>
+</record>
+</odoo>

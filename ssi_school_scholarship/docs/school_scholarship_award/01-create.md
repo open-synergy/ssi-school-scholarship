@@ -83,3 +83,9 @@
   that Student or Enrollment. It only returns an `act_window` and writes no field, so it
   is pure navigation: informational only, not documented as an IK step or tour of its
   own.
+- The **Schedule Lines** stat button in this form's own button box
+  (`action_view_schedule`) opens the list of this award's Schedule lines, of any state.
+  Pure navigation: no field is written and no state changes.
+- The **Realized Schedules** stat button in this form's own button box
+  (`action_view_realized_schedule`) opens the list of this award's Schedule lines
+  already in state Realized. Pure navigation, same as above.
