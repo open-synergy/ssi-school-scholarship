@@ -1515,3 +1515,27 @@ scenarios:
         domain: [["award_id", "=", "REC: b3_award_no_due.id"]]
         save_as: "b3_disbursements_no_due"
         expect_count: 0
+
+      # ── Regression: create_disbursement_ok (registered in
+      # ssi_school_scholarship, issue #93) must remain readable on
+      # the Award, and stays False while the Award is still Draft --
+      # the policy detail this module ships only grants it in state
+      # Open (policy_template/school_scholarship_award.xml) ─────────
+      - step: "Assert create_disbursement_ok reads False on a Draft Award"
+        action: "assert"
+        target: "b3_award_no_due"
+        asserts:
+          create_disbursement_ok:
+            type: "value"
+            expected: false
+
+      # ── Negative: opening the wizard directly from the Award is
+      # rejected by the create_disbursement_ok policy on a Draft
+      # Award (never confirmed) ──────────────────────────────────────
+      - step: "Reject opening the wizard on a Draft award, expecting UserError"
+        action: "call"
+        target: "b3_award_no_due"
+        method: "action_open_create_due_disbursement_wizard"
+        expect_error:
+          type: "UserError"
+          message_contains: "Document is not allowed to create disbursement"

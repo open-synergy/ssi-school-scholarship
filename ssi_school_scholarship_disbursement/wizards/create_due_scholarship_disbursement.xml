@@ -36,6 +36,7 @@
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">create_due_scholarship_disbursement</field>
     <field name="view_mode">form</field>
+    <field name="view_id" ref="create_due_scholarship_disbursement_view_form" />
     <field name="target">new</field>
 </record>
 </odoo>

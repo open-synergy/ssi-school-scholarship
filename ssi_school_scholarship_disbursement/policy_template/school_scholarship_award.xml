@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<!-- Create Disbursement: this module's own detail row on the base
+     module's Award policy template. ``create_disbursement_ok`` is
+     registered by ``ssi_school_scholarship`` (in ``_get_policy_field``)
+     but that module ships no ``policy.template_detail`` granting it,
+     unlike its siblings ``generate_schedule_ok``/``create_deduction_ok``/
+     ``revoke_ok``, which all have one there. Without this record the
+     field computes False for every Award, unconditionally, so the
+     button this module gates on it would never be reachable. -->
+<record
+        id="policy_template_school_scholarship_award_create_disbursement"
+        model="policy.template_detail"
+    >
+    <field
+            name="template_id"
+            ref="ssi_school_scholarship.policy_template_school_scholarship_award"
+        />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','school_scholarship_award'),('name','=','create_disbursement_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','school_scholarship_award'),('value','=','open')]"
+        />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+            name="group_ids"
+            eval="[(6,0,[ref('ssi_school_scholarship.school_scholarship_award_user_group')])]"
+        />
+    <field name="restrict_additional" eval="0" />
+</record>
+</odoo>

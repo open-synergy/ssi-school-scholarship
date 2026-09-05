@@ -32,7 +32,7 @@
         "sequence_template/school_scholarship_disbursement.xml",
         "approval_template/school_scholarship_disbursement.xml",
         "policy_template/school_scholarship_disbursement.xml",
-        "menu.xml",
+        "policy_template/school_scholarship_award.xml",
         "wizards/create_due_scholarship_disbursement.xml",
         "views/school_scholarship_disbursement.xml",
         "views/school_scholarship_award.xml",

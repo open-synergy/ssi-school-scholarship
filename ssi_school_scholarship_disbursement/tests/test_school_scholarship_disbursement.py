@@ -240,18 +240,23 @@ class TestSchoolScholarshipDisbursement(YamlTransactionCase):
         self.assertEqual(result, view_arch)
 
     def test_action_open_create_due_disbursement_wizard_returns_action(self):
-        """``action_open_create_due_disbursement_wizard`` must return a
-        window action pre-filling the wizard with the selected Awards.
+        """Assert the action dict returned for an Award meeting policy.
 
-        Built directly in Python (P1: nilai balik method; L-01,
+        Built directly in Python (P1: nilai balik method; L-01/L-02,
         odoo-development-unit-test references/python-escape-hatch.md)
         because ``action: call`` in the YAML DSL discards a method's
-        return value, and this method's return value -- an
-        ``ir.actions.act_window`` dict targeting ``new`` with every
-        selected Award id in ``context['active_ids']`` -- is exactly
-        what is under test. Called on two Awards at once, mirroring
+        return value, and the "actual" side of every YAML assert is
+        always a dotted ``getattr`` on a record, never a bare dict --
+        this method's return value -- an ``ir.actions.act_window``
+        dict targeting ``new`` with every selected Award id in
+        ``context['active_ids']`` -- is exactly what is under test.
+        Both Awards are confirmed and approved to Open first, so each
+        passes its own ``create_disbursement_ok`` policy check for
+        real -- the negative (policy-failing) path is exercised
+        separately in YAML. Called on two Awards at once, mirroring
         the multi-select entry point from the Awards list view.
         """
+        admin = self.env.ref("base.user_admin")
         grade_type = self.env["school_grade_type"].create(
             {"name": "P1 Grade Type", "code": "P1GT"}
         )
@@ -386,6 +391,10 @@ class TestSchoolScholarshipDisbursement(YamlTransactionCase):
                 ],
             }
         )
+        # A Benefit line is required for ``action_confirm`` to succeed
+        # (``_10_check_benefit_line``, ssi_school_scholarship); its
+        # own Schedule generation is exercised elsewhere -- here it
+        # only needs to exist so Confirm/Approve can be reached.
         award_1 = self.env["school_scholarship_award"].create(
             {
                 "program_id": program.id,
@@ -393,6 +402,20 @@ class TestSchoolScholarshipDisbursement(YamlTransactionCase):
                 "enrollment_id": enrollment_1.id,
                 "date_start": "2026-07-01",
                 "date_end": "2026-12-31",
+                "benefit_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "name": "P1 Benefit A",
+                            "product_id": product.id,
+                            "benefit_type": "cash",
+                            "computation": "fixed",
+                            "amount_fixed": 100000.0,
+                            "periodicity": "one_time",
+                        },
+                    )
+                ],
             }
         )
         award_2 = self.env["school_scholarship_award"].create(
@@ -402,9 +425,32 @@ class TestSchoolScholarshipDisbursement(YamlTransactionCase):
                 "enrollment_id": enrollment_2.id,
                 "date_start": "2026-07-01",
                 "date_end": "2026-12-31",
+                "benefit_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "name": "P1 Benefit B",
+                            "product_id": product.id,
+                            "benefit_type": "cash",
+                            "computation": "fixed",
+                            "amount_fixed": 100000.0,
+                            "periodicity": "one_time",
+                        },
+                    )
+                ],
             }
         )
         awards = award_1 | award_2
+
+        # Reach Open, the state the ``create_disbursement_ok`` policy
+        # detail (ssi_school_scholarship_disbursement/policy_template/
+        # school_scholarship_award.xml) restricts its grant to, so the
+        # call below exercises the real policy check -- not a bypass.
+        awards.action_confirm()
+        awards.invalidate_cache()
+        awards.with_user(admin).action_approve_approval()
+        awards.invalidate_cache()
 
         action = awards.action_open_create_due_disbursement_wizard()
 
