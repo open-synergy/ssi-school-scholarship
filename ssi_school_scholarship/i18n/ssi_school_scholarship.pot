@@ -499,6 +499,11 @@ msgid "Can Create Deduction"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__create_disbursement_ok
+msgid "Can Create Disbursement"
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__done_ok
 msgid "Can Finished"
 msgstr ""
@@ -1916,6 +1921,14 @@ msgid ""
 "Policy that determines whether a deduction document may be created from this"
 " award. The deduction document itself is out of this item's scope; this "
 "policy field is wired up in advance."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__create_disbursement_ok
+msgid ""
+"Policy that determines whether a disbursement document may be created from "
+"this award. The disbursement document itself is out of this item's scope; "
+"this policy field is wired up in advance."
 msgstr ""
 
 #. module: ssi_school_scholarship
