@@ -11,6 +11,7 @@ from . import test_ui_school_scholarship_program
 from . import test_school_scholarship_program_scope
 from . import test_school_scholarship_criteria
 from . import test_school_scholarship_award
+from . import test_school_scholarship_award_policy
 from . import test_school_scholarship_award_schedule
 from . import test_ui_school_scholarship_award
 from . import test_school_student

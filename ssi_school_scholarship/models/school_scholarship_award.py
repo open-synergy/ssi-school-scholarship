@@ -75,6 +75,7 @@ class SchoolScholarshipAward(models.Model):
         "manual_number_ok",
         "generate_schedule_ok",
         "create_deduction_ok",
+        "create_disbursement_ok",
         "revoke_ok",
     ]
     _header_button_order = [
@@ -521,6 +522,16 @@ class SchoolScholarshipAward(models.Model):
         "be created from this award. The deduction document itself "
         "is out of this item's scope; this policy field is wired up "
         "in advance.",
+    )
+    create_disbursement_ok = fields.Boolean(
+        string="Can Create Disbursement",
+        compute="_compute_policy",
+        store=False,
+        compute_sudo=True,
+        help="Policy that determines whether a disbursement document "
+        "may be created from this award. The disbursement document "
+        "itself is out of this item's scope; this policy field is "
+        "wired up in advance.",
     )
     revoke_ok = fields.Boolean(
         string="Can Revoke",
@@ -1169,8 +1180,8 @@ Solution: Check generate schedule policy prerequisite
         as soon as the field is read (e.g. rendering the form view).
 
         :return: the base policy fields plus this model's own
-            ``generate_schedule_ok``, ``create_deduction_ok``, and
-            ``revoke_ok``
+            ``generate_schedule_ok``, ``create_deduction_ok``,
+            ``create_disbursement_ok``, and ``revoke_ok``
         """
         res = super()._get_policy_field()
         policy_field = [
@@ -1185,6 +1196,7 @@ Solution: Check generate schedule policy prerequisite
             "open_ok",
             "generate_schedule_ok",
             "create_deduction_ok",
+            "create_disbursement_ok",
             "revoke_ok",
         ]
         res += policy_field
