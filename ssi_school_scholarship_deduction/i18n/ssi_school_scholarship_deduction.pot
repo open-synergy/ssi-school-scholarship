@@ -60,6 +60,12 @@ msgid "Account"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_form
+msgid "Accounting"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__account_id
 msgid ""
 "Accounting account this line posts to. Equal to Final Account, unless the "
@@ -641,6 +647,11 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_form
+msgid "Deferred Recognition"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__deduction_id
 msgid "Deferred deduction document this document releases."
 msgstr ""
@@ -752,12 +763,6 @@ msgstr ""
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis__amount_gross
 msgid "Gross Realized"
-msgstr ""
-
-#. module: ssi_school_scholarship_deduction
-#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_view_search
-#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_search
-msgid "Group By"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
