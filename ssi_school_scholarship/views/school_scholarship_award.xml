@@ -19,23 +19,23 @@
                 <field name="school_id" />
                 <field name="academic_year_id" />
                 <field name="compliance_state" />
-                <group expand="0" string="Group By">
-                    <filter
-                            name="group_by_program_id"
-                            string="Program"
-                            context="{'group_by': 'program_id'}"
-                        />
-                    <filter
-                            name="group_by_school_id"
-                            string="School"
-                            context="{'group_by': 'school_id'}"
-                        />
-                    <filter
-                            name="group_by_compliance_state"
-                            string="Compliance State"
-                            context="{'group_by': 'compliance_state'}"
-                        />
-                </group>
+            </xpath>
+            <xpath expr="//group[@name='group_by']" position="inside">
+                <filter
+                        name="group_by_program_id"
+                        string="Program"
+                        context="{'group_by': 'program_id'}"
+                    />
+                <filter
+                        name="group_by_school_id"
+                        string="School"
+                        context="{'group_by': 'school_id'}"
+                    />
+                <filter
+                        name="group_by_compliance_state"
+                        string="Compliance State"
+                        context="{'group_by': 'compliance_state'}"
+                    />
             </xpath>
         </data>
     </field>
@@ -51,12 +51,12 @@
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="date" />
                 <field name="student_id" />
-                <field name="program_id" />
-                <field name="school_id" />
-                <field name="date_start" />
-                <field name="date_end" />
                 <field name="amount_awarded" widget="monetary" />
-                <field name="compliance_state" />
+                <field name="program_id" optional="hide" />
+                <field name="school_id" optional="hide" />
+                <field name="date_start" optional="hide" />
+                <field name="date_end" optional="hide" />
+                <field name="compliance_state" optional="hide" />
                 <field name="company_currency_id" invisible="1" />
             </xpath>
         </data>
@@ -71,13 +71,39 @@
     <field name="arch" type="xml">
         <data>
             <xpath expr="//header" position="inside">
-                <field name="generate_schedule_ok" invisible="1" />
                 <button
                         name="action_generate_schedule"
                         type="object"
                         string="Generate Schedule"
+                        class="oe_highlight"
                         attrs="{'invisible': [('generate_schedule_ok', '=', False)]}"
                     />
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                        name="action_view_schedule"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-calendar"
+                    >
+                    <field
+                            name="schedule_count"
+                            widget="statinfo"
+                            string="Schedule Lines"
+                        />
+                </button>
+                <button
+                        name="action_view_realized_schedule"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-check-square-o"
+                    >
+                    <field
+                            name="realized_count"
+                            widget="statinfo"
+                            string="Realized Schedules"
+                        />
+                </button>
             </xpath>
             <xpath expr="//field[@name='user_id']" position="after">
                 <field name="program_id" />
@@ -98,7 +124,8 @@
             </xpath>
             <xpath expr="//group[@name='header_right']" position="inside">
                 <field name="date" />
-                <field name="compliance_state" />
+            </xpath>
+            <xpath expr="//group[@name='footer_left']" position="inside">
                 <field name="company_currency_id" invisible="1" />
                 <field
                         name="amount_awarded"
@@ -115,8 +142,6 @@
                         widget="monetary"
                         options="{'currency_field': 'company_currency_id'}"
                     />
-                <field name="schedule_count" />
-                <field name="realized_count" />
             </xpath>
             <xpath expr="//page[1]" position="before">
                 <page name="benefit" string="Benefit">
