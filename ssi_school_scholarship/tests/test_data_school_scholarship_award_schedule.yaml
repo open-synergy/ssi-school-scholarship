@@ -1972,3 +1972,361 @@ scenarios:
           base_amount:
             type: "value"
             expected: 0.0
+
+  - name: "Award Schedule - Paid Payment Term (open-synergy/ssi-school-scholarship#89)"
+    steps:
+      # ── Shared fixture chain (suffix AS6) ────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "as6_grade_type"
+        values:
+          name: "AS6 Grade Type"
+          code: "AS6GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "as6_school"
+        values:
+          name: "AS6 School"
+          code: "AS6SC"
+          grade_type_id: "REC: as6_grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "as6_academic_year"
+        values:
+          name: "AS6 Academic Year"
+          code: "AS6AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "as6_academic_term"
+        values:
+          name: "AS6 Term"
+          code: "AS6TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: as6_academic_year.id"
+
+      - step: "Open the enrollment window on the academic term"
+        action: "call"
+        target: "as6_academic_term"
+        method: "action_open_enrollment"
+        asserts:
+          enrollment_state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "as6_grade"
+        values:
+          name: "AS6 Grade"
+          code: "AS6GR"
+          type_id: "REC: as6_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "as6_grade_class"
+        values:
+          name: "AS6 Class"
+          code: "AS6CL"
+          school_id: "REC: as6_school.id"
+          grade_id: "REC: as6_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "as6_contact"
+        values:
+          name: "AS6 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "as6_student"
+        values:
+          name: "AS6 Student"
+          code: "AS6ST"
+          contact_id: "REC: as6_contact.id"
+          school_id: "REC: as6_school.id"
+
+      - step: "Create the product covered by the benefit line and the invoice"
+        action: "create"
+        model: "product.product"
+        save_as: "as6_product"
+        values:
+          name: "AS6 Product"
+          type: "service"
+
+      - step:
+          "Create the sale journal used by both the invoice type and the scholarship
+          type"
+        action: "create"
+        model: "account.journal"
+        save_as: "as6_journal"
+        values:
+          name: "AS6 Journal"
+          code: "JAS6"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "as6_discount_account"
+        values:
+          name: "AS6 Discount Account"
+          code: "AS6DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the income account used by payment term details"
+        action: "create"
+        model: "account.account"
+        save_as: "as6_income_account"
+        values:
+          name: "AS6 Income Account"
+          code: "AS6IA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Get the account.account.type Receivable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "account_type_receivable"
+
+      - step: "Create the receivable account used by the customer invoice"
+        action: "create"
+        model: "account.account"
+        save_as: "as6_receivable_account"
+        values:
+          name: "AS6 Receivable Account"
+          code: "AS6RA"
+          user_type_id: "REC: account_type_receivable.id"
+          reconcile: true
+
+      - step: "Create the customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "as6_ci_type"
+        values:
+          name: "AS6 Invoice Type"
+          code: "AS6IT"
+          journal_id: "REC: as6_journal.id"
+          receivable_account_id: "REC: as6_receivable_account.id"
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "as6_type"
+        values:
+          name: "AS6 Type"
+          code: "AS6TY"
+          deduction_journal_id: "REC: as6_journal.id"
+          discount_account_id: "REC: as6_discount_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "as6_program"
+        values:
+          name: "AS6 Program"
+          code: "AS6PRG"
+          type_id: "REC: as6_type.id"
+          school_id: "REC: as6_school.id"
+          academic_year_id: "REC: as6_academic_year.id"
+          deduction_journal_id: "REC: as6_journal.id"
+          discount_account_id: "REC: as6_discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: as6_product.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      # Owned by admin so the ``as_user: base.user_admin`` steps below
+      # are not rejected by the internal_user_rule record rule
+      # (odoo-development-unit-test, test-traps.md T-05), and so it
+      # can be confirmed/approved to Open -- the only enrollment state
+      # under which a Payment Term can ever reach ``paid``.
+      - step: "Create the enrollment, wired to the invoice type/journal/account above"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "as6_enrollment"
+        values:
+          academic_year_id: "REC: as6_academic_year.id"
+          academic_term_id: "REC: as6_academic_term.id"
+          school_id: "REC: as6_school.id"
+          grade_id: "REC: as6_grade.id"
+          grade_class_id: "REC: as6_grade_class.id"
+          student_id: "REC: as6_student.id"
+          user_id: "REF: base.user_admin"
+          customer_invoice_type_id: "REC: as6_ci_type.id"
+          receivable_journal_id: "REC: as6_journal.id"
+          receivable_account_id: "REC: as6_receivable_account.id"
+
+      - step: "Confirm the enrollment as admin"
+        action: "call"
+        target: "as6_enrollment"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the enrollment as admin (auto-opens)"
+        action: "call"
+        target: "as6_enrollment"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the Payment Term directly, with one invoiceable detail line"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "as6_term"
+        values:
+          enrollment_id: "REC: as6_enrollment.id"
+          name: "AS6 Term"
+          date_invoice: 2026-07-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: as6_product.id"
+                name: "AS6 Term Fee"
+                account_id: "REC: as6_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Assert the term is Uninvoiced before any invoice exists"
+        action: "assert"
+        target: "as6_term"
+        asserts:
+          state:
+            type: "value"
+            expected: "uninvoiced"
+
+      - step: "Create a draft award with a Fee Reduction Benefit on AS6 Product"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "as6_award"
+        values:
+          program_id: "REC: as6_program.id"
+          student_id: "REC: as6_student.id"
+          enrollment_id: "REC: as6_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "AS6 Benefit"
+                product_id: "REC: as6_product.id"
+                percentage: 40.0
+
+      - step: "Find the AS6 Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: as6_award.id"]]
+        limit: 1
+        save_as: "as6_benefit"
+
+      - step: "Create the schedule line against the (still Uninvoiced) term"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "as6_schedule"
+        values:
+          benefit_id: "REC: as6_benefit.id"
+          payment_term_id: "REC: as6_term.id"
+          date: "REC: as6_term.date_invoice"
+
+      - step: "Assert the schedule line mirrors Uninvoiced"
+        action: "assert"
+        target: "as6_schedule"
+        asserts:
+          payment_term_state:
+            type: "value"
+            expected: "uninvoiced"
+
+      - step: "Create the customer invoice from the Payment Term"
+        action: "call"
+        target: "as6_term"
+        method: "action_create_invoice"
+
+      - step: "Assert the term is now Invoiced"
+        action: "assert"
+        target: "as6_term"
+        asserts:
+          customer_invoice_id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "invoiced"
+
+      - step: "Assert the schedule line follows the term to Invoiced"
+        action: "assert"
+        target: "as6_schedule"
+        asserts:
+          payment_term_state:
+            type: "value"
+            expected: "invoiced"
+
+      - step: "Get the created customer invoice"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["id", "=", "REC: as6_term.customer_invoice_id.id"]]
+        limit: 1
+        save_as: "as6_invoice"
+
+      - step:
+          "Mark the customer invoice as paid (direct write, no reconciliation needed for
+          this ORM-level Selection field -- mirrors ssi-school's own
+          test_data_enrollment_payment_term_paid.yaml)"
+        action: "write"
+        target: "as6_invoice"
+        values:
+          state: "done"
+
+      # ── Positive: this is the exact write that used to raise
+      # ``ValueError: Wrong value for
+      # school_scholarship_award_schedule.payment_term_state: 'paid'``
+      # before this item (open-synergy/ssi-school-scholarship#89) added
+      # ``paid`` to the selection.
+      - step: "Assert the schedule line's Payment Term State mirrors Paid"
+        action: "assert"
+        target: "as6_schedule"
+        asserts:
+          payment_term_state:
+            type: "value"
+            expected: "paid"
+
+      # ── Negative: the selection stays closed -- a value outside the
+      # seven valid ones is still rejected, not accepted as free text.
+      - step: "Reject a Payment Term State value outside the seven valid ones"
+        action: "write"
+        target: "as6_schedule"
+        expect_error:
+          type: "ValueError"
+          message_contains: "Wrong value"
+        values:
+          payment_term_state: "bogus"

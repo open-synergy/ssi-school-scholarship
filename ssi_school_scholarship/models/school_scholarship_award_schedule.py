@@ -130,6 +130,7 @@ class SchoolScholarshipAwardSchedule(models.Model):
             ("draft", "Draft"),
             ("uninvoiced", "Uninvoiced"),
             ("invoiced", "Invoiced"),
+            ("paid", "Paid"),
             ("voided", "Voided"),
             ("manual", "Manually Controlled"),
             ("cancelled", "Cancelled"),
