@@ -147,6 +147,19 @@ class TestSchoolScholarshipAwardViewActions(YamlTransactionCase):
                 "academic_year_id": academic_year.id,
                 "deduction_journal_id": journal.id,
                 "discount_account_id": discount_account.id,
+                "scope_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "scope_basis": "product",
+                            "product_id": product.id,
+                            "benefit_type": "fee_reduction",
+                            "computation": "percentage",
+                            "percentage": 40.0,
+                        },
+                    )
+                ],
             }
         )
         # 1 One Time line + 4 Monthly lines (Jul..Oct, one per month)
