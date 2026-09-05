@@ -15,12 +15,14 @@
         />
     <field name="arch" type="xml">
         <data>
-            <xpath expr="//header" position="inside">
+            <xpath expr="//header/field[@name='state']" position="before">
+                <field name="create_disbursement_ok" invisible="1" />
                 <button
                         name="action_open_create_due_disbursement_wizard"
                         type="object"
                         string="Create Due Disbursement"
                         class="oe_highlight"
+                        attrs="{'invisible': [('create_disbursement_ok', '=', False)]}"
                     />
             </xpath>
         </data>

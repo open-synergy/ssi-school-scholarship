@@ -268,10 +268,19 @@ class TestUiSchoolScholarshipAwardCreateDueDisbursement(HttpSavepointCase):
         # -- which also auto-generates one due Cash Schedule line for
         # the Benefit above via the award's own post_open hook
         # (_10_generate_schedule -> _generate_cash_schedule), so no
-        # manual Schedule create() is needed here.
+        # manual Schedule create() is needed here. Reaching Open as
+        # ``admin`` also satisfies the button's own attrs gate: this
+        # module's own policy_template_detail
+        # (policy_template/school_scholarship_award.xml) grants
+        # ``create_disbursement_ok`` for state Open to
+        # ``school_scholarship_award_user_group``, which ``admin`` is
+        # a member of via ``school_scholarship_award_validator_group``
+        # (ssi_school_scholarship/security/res_groups/
+        # school_scholarship_award.xml).
         cls.tour_award.action_confirm()
         cls.tour_award.invalidate_cache()
         cls.tour_award.with_user(admin).action_approve_approval()
+        cls.tour_award.invalidate_cache()
 
     def test_create_due_disbursement(self):
         """Run the create due disbursement tour for ``school_scholarship_award``.

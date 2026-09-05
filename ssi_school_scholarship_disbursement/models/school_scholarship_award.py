@@ -2,7 +2,8 @@
 # Copyright 2026 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import _, fields, models
+from odoo.exceptions import UserError
 
 
 class SchoolScholarshipAward(models.Model):
@@ -19,7 +20,9 @@ class SchoolScholarshipAward(models.Model):
     ``school_scholarship_disbursement`` per Award, covering every due
     Cash Schedule line across every Funding line. Both methods are
     exercised from the ``create_due_scholarship_disbursement`` wizard,
-    opened via ``action_open_create_due_disbursement_wizard``.
+    opened via ``action_open_create_due_disbursement_wizard`` -- which
+    every selected Award must first pass the ``create_disbursement_ok``
+    policy check for.
     """
 
     _name = "school_scholarship_award"
@@ -29,13 +32,46 @@ class SchoolScholarshipAward(models.Model):
         """Open the wizard that realizes due Cash Schedule lines.
 
         Available both from a single Award's form and from several
-        Awards selected in the Scholarship Awards list view.
+        Awards selected in the Scholarship Awards list view; every
+        selected Award must pass the ``create_disbursement_ok`` policy
+        check before the wizard opens.
 
         :return: an ``ir.actions.act_window`` dict opening
             ``create_due_scholarship_disbursement``, with every
             selected Award pre-filled in its ``award_ids``
         """
+        for record in self.sudo():
+            record._check_create_disbursement_policy()
         return self._open_create_due_disbursement_wizard()
+
+    def _check_create_disbursement_policy(self):
+        """Reject opening the wizard when the policy check fails.
+
+        Mirrors ``_check_create_deduction_policy`` on the sibling
+        deduction module: ``create_disbursement_ok`` is a
+        ``mixin.policy`` field whose compute only depends on
+        ``policy_template_id``, so it must be busted explicitly in
+        case a stale value was cached before this Award reached Open.
+
+        :raises UserError: when ``create_disbursement_ok`` is falsy
+            and the context does not bypass the policy check.
+        """
+        self.ensure_one()
+        if self.env.context.get("bypass_policy_check", False):
+            return True
+        self.invalidate_cache(fnames=["create_disbursement_ok"], ids=self.ids)
+        if not self.create_disbursement_ok:
+            error_message = """
+Document Type: %s
+Context: Open create due disbursement wizard
+Database ID: %s
+Problem: Document is not allowed to create disbursement
+Solution: Check create disbursement policy prerequisite
+""" % (
+                self._description,
+                self.id,
+            )
+            raise UserError(_(error_message))
 
     def _open_create_due_disbursement_wizard(self):
         """Build the window action opening the due disbursement wizard.

@@ -15,6 +15,8 @@
   whose state is still **Scheduled** (not yet realized into a Disbursement). An Award
   whose Schedule lines belong to a Fee Reduction benefit, or that are already realized,
   is left untouched.
+- **Config:** An active `policy.template` for this model grants `create_disbursement_ok`
+  for state `open` to the actor's group.
 - **Access:** User is in group `Award User`.
 
 ## Flow
