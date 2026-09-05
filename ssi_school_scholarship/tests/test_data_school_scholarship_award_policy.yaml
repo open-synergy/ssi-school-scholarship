@@ -1,0 +1,757 @@
+scenarios:
+  - name: "Award Policy - create_disbursement_ok reflects a group grant"
+    steps:
+      # ── Shared fixture chain (suffix AWP1) ───────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type1"
+        values:
+          name: "AWP1 Grade Type"
+          code: "AWP1GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school1"
+        values:
+          name: "AWP1 School"
+          code: "AWP1SC"
+          grade_type_id: "REC: grade_type1.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year1"
+        values:
+          name: "AWP1 Academic Year"
+          code: "AWP1AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term1"
+        values:
+          name: "AWP1 Term"
+          code: "AWP1TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year1.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade1"
+        values:
+          name: "AWP1 Grade"
+          code: "AWP1GR"
+          type_id: "REC: grade_type1.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class1"
+        values:
+          name: "AWP1 Class"
+          code: "AWP1CL"
+          school_id: "REC: school1.id"
+          grade_id: "REC: grade1.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact1"
+        values:
+          name: "AWP1 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "student1"
+        values:
+          name: "AWP1 Student"
+          code: "AWP1ST"
+          contact_id: "REC: contact1.id"
+          school_id: "REC: school1.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment1"
+        values:
+          academic_year_id: "REC: academic_year1.id"
+          academic_term_id: "REC: academic_term1.id"
+          school_id: "REC: school1.id"
+          grade_id: "REC: grade1.id"
+          grade_class_id: "REC: grade_class1.id"
+          student_id: "REC: student1.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic1"
+        values:
+          name: "AWP1 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source1"
+        values:
+          name: "AWP1 Funding Source"
+          code: "AWP1FS"
+          analytic_account_id: "REC: analytic1.id"
+
+      - step: "Create the product covered by the benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "product1"
+        values:
+          name: "AWP1 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal1"
+        values:
+          name: "AWP1 Journal"
+          code: "JAP1"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account1"
+        values:
+          name: "AWP1 Discount Account"
+          code: "AWP1DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type1"
+        values:
+          name: "AWP1 Type"
+          code: "AWP1TY"
+          deduction_journal_id: "REC: journal1.id"
+          discount_account_id: "REC: discount_account1.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program1"
+        values:
+          name: "AWP1 Program"
+          code: "AWP1PRG"
+          type_id: "REC: type1.id"
+          school_id: "REC: school1.id"
+          academic_year_id: "REC: academic_year1.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source1.id"]]]
+          deduction_journal_id: "REC: journal1.id"
+          discount_account_id: "REC: discount_account1.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product1.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Create the award with no Benefit line"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award1"
+        values:
+          program_id: "REC: program1.id"
+          student_id: "REC: student1.id"
+          enrollment_id: "REC: enrollment1.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account1.id"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source1.id"
+                percentage: 100.0
+
+      # ── Policy wiring: grant create_disbursement_ok to the
+      # standard "User" workflow group; base.user_admin is a member
+      # of school_scholarship_award_validator_group, which implies
+      # school_scholarship_award_user_group. ────────────────────
+      - step: "Locate the ir.model record for school_scholarship_award"
+        action: "search"
+        model: "ir.model"
+        domain: [["model", "=", "school_scholarship_award"]]
+        save_as: "model_award"
+        limit: 1
+
+      - step: "Locate the create_disbursement_ok field metadata"
+        action: "search"
+        model: "ir.model.fields"
+        domain:
+          [
+            ["model", "=", "school_scholarship_award"],
+            ["name", "=", "create_disbursement_ok"],
+          ]
+        save_as: "field_create_disbursement_ok"
+        limit: 1
+
+      - step: "Create a policy template granting create_disbursement_ok"
+        action: "create"
+        model: "policy.template"
+        save_as: "policy_template1"
+        values:
+          name: "AWP1 Policy Template"
+          model_id: "REC: model_award.id"
+          detail_ids:
+            - - 0
+              - 0
+              - field_id: "REC: field_create_disbursement_ok.id"
+                restrict_state: false
+                restrict_user: true
+                computation_method: "use_group"
+                group_ids:
+                  [
+                    [
+                      6,
+                      0,
+                      [
+                        "REF: ssi_school_scholarship.school_scholarship_award_user_group",
+                      ],
+                    ],
+                  ]
+
+      - step: "Assign the policy template to the award"
+        action: "write"
+        target: "award1"
+        values:
+          policy_template_id: "REC: policy_template1.id"
+
+      - step: "Assert create_disbursement_ok is true for a User-group member"
+        action: "assert"
+        target: "award1"
+        as_user: "base.user_admin"
+        asserts:
+          create_disbursement_ok:
+            type: "value"
+            expected: true
+
+  - name: "Award Policy - create_deduction_ok registration stays independent"
+    steps:
+      # ── Shared fixture chain (suffix AWP2) ───────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type2"
+        values:
+          name: "AWP2 Grade Type"
+          code: "AWP2GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school2"
+        values:
+          name: "AWP2 School"
+          code: "AWP2SC"
+          grade_type_id: "REC: grade_type2.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year2"
+        values:
+          name: "AWP2 Academic Year"
+          code: "AWP2AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term2"
+        values:
+          name: "AWP2 Term"
+          code: "AWP2TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year2.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade2"
+        values:
+          name: "AWP2 Grade"
+          code: "AWP2GR"
+          type_id: "REC: grade_type2.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class2"
+        values:
+          name: "AWP2 Class"
+          code: "AWP2CL"
+          school_id: "REC: school2.id"
+          grade_id: "REC: grade2.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact2"
+        values:
+          name: "AWP2 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "student2"
+        values:
+          name: "AWP2 Student"
+          code: "AWP2ST"
+          contact_id: "REC: contact2.id"
+          school_id: "REC: school2.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment2"
+        values:
+          academic_year_id: "REC: academic_year2.id"
+          academic_term_id: "REC: academic_term2.id"
+          school_id: "REC: school2.id"
+          grade_id: "REC: grade2.id"
+          grade_class_id: "REC: grade_class2.id"
+          student_id: "REC: student2.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic2"
+        values:
+          name: "AWP2 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source2"
+        values:
+          name: "AWP2 Funding Source"
+          code: "AWP2FS"
+          analytic_account_id: "REC: analytic2.id"
+
+      - step: "Create the product covered by the benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "product2"
+        values:
+          name: "AWP2 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal2"
+        values:
+          name: "AWP2 Journal"
+          code: "JAP2"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income2"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account2"
+        values:
+          name: "AWP2 Discount Account"
+          code: "AWP2DA"
+          user_type_id: "REC: account_type_income2.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type2"
+        values:
+          name: "AWP2 Type"
+          code: "AWP2TY"
+          deduction_journal_id: "REC: journal2.id"
+          discount_account_id: "REC: discount_account2.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program2"
+        values:
+          name: "AWP2 Program"
+          code: "AWP2PRG"
+          type_id: "REC: type2.id"
+          school_id: "REC: school2.id"
+          academic_year_id: "REC: academic_year2.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source2.id"]]]
+          deduction_journal_id: "REC: journal2.id"
+          discount_account_id: "REC: discount_account2.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product2.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Create the award with no Benefit line"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award2"
+        values:
+          program_id: "REC: program2.id"
+          student_id: "REC: student2.id"
+          enrollment_id: "REC: enrollment2.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account2.id"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source2.id"
+                percentage: 100.0
+
+      # ── Policy wiring: this template grants ONLY the pre-existing
+      # create_deduction_ok field -- create_disbursement_ok is
+      # deliberately left out of detail_ids, proving the new field's
+      # registration did not disturb create_deduction_ok's own. ───
+      - step: "Locate the ir.model record for school_scholarship_award"
+        action: "search"
+        model: "ir.model"
+        domain: [["model", "=", "school_scholarship_award"]]
+        save_as: "model_award2"
+        limit: 1
+
+      - step: "Locate the create_deduction_ok field metadata"
+        action: "search"
+        model: "ir.model.fields"
+        domain:
+          [
+            ["model", "=", "school_scholarship_award"],
+            ["name", "=", "create_deduction_ok"],
+          ]
+        save_as: "field_create_deduction_ok"
+        limit: 1
+
+      - step: "Create a policy template granting only create_deduction_ok"
+        action: "create"
+        model: "policy.template"
+        save_as: "policy_template2"
+        values:
+          name: "AWP2 Policy Template"
+          model_id: "REC: model_award2.id"
+          detail_ids:
+            - - 0
+              - 0
+              - field_id: "REC: field_create_deduction_ok.id"
+                restrict_state: false
+                restrict_user: true
+                computation_method: "use_group"
+                group_ids:
+                  [
+                    [
+                      6,
+                      0,
+                      [
+                        "REF: ssi_school_scholarship.school_scholarship_award_user_group",
+                      ],
+                    ],
+                  ]
+
+      - step: "Assign the policy template to the award"
+        action: "write"
+        target: "award2"
+        values:
+          policy_template_id: "REC: policy_template2.id"
+
+      - step:
+          "Assert create_deduction_ok stays true, create_disbursement_ok stays false"
+        action: "assert"
+        target: "award2"
+        as_user: "base.user_admin"
+        asserts:
+          create_deduction_ok:
+            type: "value"
+            expected: true
+          create_disbursement_ok:
+            type: "value"
+            expected: false
+
+  - name: "Award Policy - create_disbursement_ok is false outside the granted group"
+    steps:
+      # ── Shared fixture chain (suffix AWP3) ───────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type3"
+        values:
+          name: "AWP3 Grade Type"
+          code: "AWP3GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school3"
+        values:
+          name: "AWP3 School"
+          code: "AWP3SC"
+          grade_type_id: "REC: grade_type3.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year3"
+        values:
+          name: "AWP3 Academic Year"
+          code: "AWP3AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term3"
+        values:
+          name: "AWP3 Term"
+          code: "AWP3TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year3.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade3"
+        values:
+          name: "AWP3 Grade"
+          code: "AWP3GR"
+          type_id: "REC: grade_type3.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class3"
+        values:
+          name: "AWP3 Class"
+          code: "AWP3CL"
+          school_id: "REC: school3.id"
+          grade_id: "REC: grade3.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact3"
+        values:
+          name: "AWP3 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "student3"
+        values:
+          name: "AWP3 Student"
+          code: "AWP3ST"
+          contact_id: "REC: contact3.id"
+          school_id: "REC: school3.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment3"
+        values:
+          academic_year_id: "REC: academic_year3.id"
+          academic_term_id: "REC: academic_term3.id"
+          school_id: "REC: school3.id"
+          grade_id: "REC: grade3.id"
+          grade_class_id: "REC: grade_class3.id"
+          student_id: "REC: student3.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic3"
+        values:
+          name: "AWP3 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source3"
+        values:
+          name: "AWP3 Funding Source"
+          code: "AWP3FS"
+          analytic_account_id: "REC: analytic3.id"
+
+      - step: "Create the product covered by the benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "product3"
+        values:
+          name: "AWP3 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal3"
+        values:
+          name: "AWP3 Journal"
+          code: "JAP3"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income3"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account3"
+        values:
+          name: "AWP3 Discount Account"
+          code: "AWP3DA"
+          user_type_id: "REC: account_type_income3.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type3"
+        values:
+          name: "AWP3 Type"
+          code: "AWP3TY"
+          deduction_journal_id: "REC: journal3.id"
+          discount_account_id: "REC: discount_account3.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program3"
+        values:
+          name: "AWP3 Program"
+          code: "AWP3PRG"
+          type_id: "REC: type3.id"
+          school_id: "REC: school3.id"
+          academic_year_id: "REC: academic_year3.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source3.id"]]]
+          deduction_journal_id: "REC: journal3.id"
+          discount_account_id: "REC: discount_account3.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product3.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Create a plain user outside the User workflow group"
+        action: "create"
+        model: "res.users"
+        save_as: "outside_user"
+        values:
+          name: "AWP3 Outside User"
+          login: "awp3.outside@example.com"
+          groups_id: [[6, 0, ["REF: base.group_user"]]]
+
+      - step: "Create the award, owned by the outside user"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award3"
+        values:
+          program_id: "REC: program3.id"
+          student_id: "REC: student3.id"
+          enrollment_id: "REC: enrollment3.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account3.id"
+          user_id: "REC: outside_user.id"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source3.id"
+                percentage: 100.0
+
+      # ── Policy wiring: same grant shape as scenario 1, still
+      # scoped to school_scholarship_award_user_group, which the
+      # plain outside_user (only base.group_user) does not hold. ──
+      - step: "Locate the ir.model record for school_scholarship_award"
+        action: "search"
+        model: "ir.model"
+        domain: [["model", "=", "school_scholarship_award"]]
+        save_as: "model_award3"
+        limit: 1
+
+      - step: "Locate the create_disbursement_ok field metadata"
+        action: "search"
+        model: "ir.model.fields"
+        domain:
+          [
+            ["model", "=", "school_scholarship_award"],
+            ["name", "=", "create_disbursement_ok"],
+          ]
+        save_as: "field_create_disbursement_ok3"
+        limit: 1
+
+      - step: "Create a policy template granting create_disbursement_ok"
+        action: "create"
+        model: "policy.template"
+        save_as: "policy_template3"
+        values:
+          name: "AWP3 Policy Template"
+          model_id: "REC: model_award3.id"
+          detail_ids:
+            - - 0
+              - 0
+              - field_id: "REC: field_create_disbursement_ok3.id"
+                restrict_state: false
+                restrict_user: true
+                computation_method: "use_group"
+                group_ids:
+                  [
+                    [
+                      6,
+                      0,
+                      [
+                        "REF: ssi_school_scholarship.school_scholarship_award_user_group",
+                      ],
+                    ],
+                  ]
+
+      - step: "Assign the policy template to the award"
+        action: "write"
+        target: "award3"
+        values:
+          policy_template_id: "REC: policy_template3.id"
+
+      - step: "Assert create_disbursement_ok is false for the outside user"
+        action: "assert"
+        target: "award3"
+        as_user: "outside_user"
+        asserts:
+          create_disbursement_ok:
+            type: "value"
+            expected: false
