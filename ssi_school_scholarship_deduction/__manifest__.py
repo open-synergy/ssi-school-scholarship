@@ -44,7 +44,6 @@
         "approval_template/school_scholarship_deduction_recognition.xml",
         "policy_template/school_scholarship_deduction.xml",
         "policy_template/school_scholarship_deduction_recognition.xml",
-        "menu.xml",
         "wizards/create_due_scholarship_deduction.xml",
         "wizards/create_due_scholarship_recognition.xml",
         "views/school_scholarship_deduction.xml",

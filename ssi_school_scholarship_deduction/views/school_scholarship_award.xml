@@ -12,7 +12,7 @@
         />
     <field name="arch" type="xml">
         <data>
-            <xpath expr="//header" position="inside">
+            <xpath expr="//header/field[@name='state']" position="before">
                 <button
                         name="action_open_create_due_deduction_wizard"
                         type="object"
