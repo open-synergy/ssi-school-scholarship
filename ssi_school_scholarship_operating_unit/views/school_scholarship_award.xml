@@ -4,6 +4,53 @@
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
 
+<record id="school_scholarship_award_view_tree_ou" model="ir.ui.view">
+    <field name="name">school_scholarship_award tree - operating unit</field>
+    <field name="model">school_scholarship_award</field>
+    <field
+            name="inherit_id"
+            ref="ssi_school_scholarship.school_scholarship_award_view_tree"
+        />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field
+                        name="operating_unit_id"
+                        optional="hide"
+                        groups="operating_unit.group_multi_operating_unit"
+                    />
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="school_scholarship_award_view_search_ou" model="ir.ui.view">
+    <field name="name">school_scholarship_award search - operating unit</field>
+    <field name="model">school_scholarship_award</field>
+    <field
+            name="inherit_id"
+            ref="ssi_school_scholarship.school_scholarship_award_view_search"
+        />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field
+                        name="operating_unit_id"
+                        groups="operating_unit.group_multi_operating_unit"
+                    />
+            </xpath>
+            <xpath expr="//filter[@name='grp_company']" position="after">
+                <filter
+                        name="grp_ou"
+                        string="Operating Unit"
+                        context="{'group_by': 'operating_unit_id'}"
+                        groups="operating_unit.group_multi_operating_unit"
+                    />
+            </xpath>
+        </data>
+    </field>
+</record>
+
 <record id="school_scholarship_award_view_form_ou" model="ir.ui.view">
     <field name="name">school_scholarship_award form - operating unit</field>
     <field name="model">school_scholarship_award</field>
@@ -16,6 +63,7 @@
             <xpath expr="//field[@name='company_id']" position="after">
                 <field
                         name="operating_unit_id"
+                        optional="hide"
                         groups="operating_unit.group_multi_operating_unit"
                     />
             </xpath>
