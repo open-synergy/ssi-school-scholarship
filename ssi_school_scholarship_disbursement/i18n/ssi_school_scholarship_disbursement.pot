@@ -42,6 +42,11 @@ msgid "Account"
 msgstr ""
 
 #. module: ssi_school_scholarship_disbursement
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_disbursement.school_scholarship_disbursement_view_form
+msgid "Accounting"
+msgstr ""
+
+#. module: ssi_school_scholarship_disbursement
 #: model:ir.model.fields,help:ssi_school_scholarship_disbursement.field_school_scholarship_disbursement_line__account_id
 msgid ""
 "Accounting account this line posts to. Always equal to Final Account -- "
@@ -543,11 +548,6 @@ msgstr ""
 #. module: ssi_school_scholarship_disbursement
 #: model:ir.model.fields,help:ssi_school_scholarship_disbursement.field_school_scholarship_disbursement_line__funding_source_id
 msgid "Funding source of the selected Funding line."
-msgstr ""
-
-#. module: ssi_school_scholarship_disbursement
-#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_disbursement.school_scholarship_disbursement_view_search
-msgid "Group By"
 msgstr ""
 
 #. module: ssi_school_scholarship_disbursement
