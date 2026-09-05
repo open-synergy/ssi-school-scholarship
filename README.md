@@ -29,7 +29,7 @@ addon | version | maintainers | summary
 [ssi_school_scholarship_disbursement](ssi_school_scholarship_disbursement/) | 14.0.1.1.0 |  | School Scholarship Disbursement
 [ssi_school_scholarship_disbursement_operating_unit](ssi_school_scholarship_disbursement_operating_unit/) | 14.0.1.0.1 |  | School Scholarship Disbursement - Operating Unit
 [ssi_school_scholarship_donation](ssi_school_scholarship_donation/) | 14.0.1.0.0 |  | School Scholarship - Donation
-[ssi_school_scholarship_operating_unit](ssi_school_scholarship_operating_unit/) | 14.0.1.0.2 |  | School Scholarship - Operating Unit
+[ssi_school_scholarship_operating_unit](ssi_school_scholarship_operating_unit/) | 14.0.1.1.0 |  | School Scholarship - Operating Unit
 
 [//]: # (end addons)
 
