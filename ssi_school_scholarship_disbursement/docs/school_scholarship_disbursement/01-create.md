@@ -21,15 +21,16 @@
 2. Click the **New** button. **(14.0: "Create")**
 3. Fill in the required fields:
    - **Award** _(required)_: Select the scholarship award this disbursement realizes.
-   - **Journal** _(required)_: Select the accounting journal this document posts to.
-   - **Payable Account** _(required)_: Select the payable account this document credits.
-     Must allow reconciliation, or opening this document is rejected (see `05-approve`).
    - **Payment Method** _(required)_: Select **Cash** or **Bank Transfer**. Defaults to
      Bank Transfer.
    - **Bank Account**: Required when Payment Method is Bank Transfer.
    - **Date**: Defaults to today's date.
    - **Date Due** _(required)_: Must not be earlier than Date.
-4. On the **Lines** tab, add **at least one** line:
+4. On the **Accounting** tab, fill in the required fields:
+   - **Journal** _(required)_: Select the accounting journal this document posts to.
+   - **Payable Account** _(required)_: Select the payable account this document credits.
+     Must allow reconciliation, or opening this document is rejected (see `05-approve`).
+5. On the **Lines** tab, add **at least one** line:
    - **Schedule** _(required)_: Select an Award Schedule line, restricted to the
      selected Award's own Schedule. Selecting it fills Description, Product, and Final
      Account from the Schedule line's Benefit.
@@ -38,7 +39,7 @@
      the Schedule line's Amount Planned multiplied by the Funding line's Percentage.
    - **UoM Quantity**: Left at its default of **1** — Price Unit is also this line's
      total.
-5. Click **Save**.
+6. Click **Save**.
 
 ## Post-Condition
 

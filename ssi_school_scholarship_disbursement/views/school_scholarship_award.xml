@@ -20,6 +20,7 @@
                         name="action_open_create_due_disbursement_wizard"
                         type="object"
                         string="Create Due Disbursement"
+                        class="oe_highlight"
                     />
             </xpath>
         </data>
