@@ -52,24 +52,23 @@ class TestSchoolScholarshipAwardViewActions(YamlTransactionCase):
     references/python-escape-hatch.md §4).
     """
 
-    @classmethod
-    def setUpClass(cls):
+    def setUp(self):
         """Build one award with 5 Schedule lines (2 realized), plus a
         second bare award used only for the ``ensure_one`` negative
         path.
         """
-        super().setUpClass()
-        grade_type = cls.env["school_grade_type"].create(
+        super().setUp()
+        grade_type = self.env["school_grade_type"].create(
             {"name": "AV Grade Type", "code": "AVGT"}
         )
-        school = cls.env["school"].create(
+        school = self.env["school"].create(
             {
                 "name": "AV School",
                 "code": "AVSC",
                 "grade_type_id": grade_type.id,
             }
         )
-        academic_year = cls.env["school_academic_year"].create(
+        academic_year = self.env["school_academic_year"].create(
             {
                 "name": "AV Academic Year",
                 "code": "AVAY",
@@ -77,7 +76,7 @@ class TestSchoolScholarshipAwardViewActions(YamlTransactionCase):
                 "date_end": "2027-06-30",
             }
         )
-        academic_term = cls.env["school_academic_term"].create(
+        academic_term = self.env["school_academic_term"].create(
             {
                 "name": "AV Term",
                 "code": "AVTM",
@@ -86,10 +85,10 @@ class TestSchoolScholarshipAwardViewActions(YamlTransactionCase):
                 "year_id": academic_year.id,
             }
         )
-        grade = cls.env["school_grade"].create(
+        grade = self.env["school_grade"].create(
             {"name": "AV Grade", "code": "AVGR", "type_id": grade_type.id}
         )
-        grade_class = cls.env["school_grade_class"].create(
+        grade_class = self.env["school_grade_class"].create(
             {
                 "name": "AV Class",
                 "code": "AVCL",
@@ -97,8 +96,8 @@ class TestSchoolScholarshipAwardViewActions(YamlTransactionCase):
                 "grade_id": grade.id,
             }
         )
-        contact = cls.env["res.partner"].create({"name": "AV Contact"})
-        student = cls.env["school_student"].create(
+        contact = self.env["res.partner"].create({"name": "AV Contact"})
+        student = self.env["school_student"].create(
             {
                 "name": "AV Student",
                 "code": "AVST",
@@ -106,7 +105,7 @@ class TestSchoolScholarshipAwardViewActions(YamlTransactionCase):
                 "school_id": school.id,
             }
         )
-        enrollment = cls.env["school_enrollment"].create(
+        enrollment = self.env["school_enrollment"].create(
             {
                 "academic_year_id": academic_year.id,
                 "academic_term_id": academic_term.id,
@@ -116,14 +115,14 @@ class TestSchoolScholarshipAwardViewActions(YamlTransactionCase):
                 "student_id": student.id,
             }
         )
-        product = cls.env["product.product"].create(
+        product = self.env["product.product"].create(
             {"name": "AV Product", "type": "service"}
         )
-        journal = cls.env["account.journal"].create(
+        journal = self.env["account.journal"].create(
             {"name": "AV Journal", "code": "JAV", "type": "sale"}
         )
-        account_type_income = cls.env.ref("account.data_account_type_revenue")
-        discount_account = cls.env["account.account"].create(
+        account_type_income = self.env.ref("account.data_account_type_revenue")
+        discount_account = self.env["account.account"].create(
             {
                 "name": "AV Discount Account",
                 "code": "AVDA",
@@ -131,7 +130,7 @@ class TestSchoolScholarshipAwardViewActions(YamlTransactionCase):
                 "reconcile": False,
             }
         )
-        scholarship_type = cls.env["school_scholarship_type"].create(
+        scholarship_type = self.env["school_scholarship_type"].create(
             {
                 "name": "AV Type",
                 "code": "AVTY",
@@ -139,7 +138,7 @@ class TestSchoolScholarshipAwardViewActions(YamlTransactionCase):
                 "discount_account_id": discount_account.id,
             }
         )
-        program = cls.env["school_scholarship_program"].create(
+        program = self.env["school_scholarship_program"].create(
             {
                 "name": "AV Program",
                 "code": "AVPRG",
@@ -152,7 +151,7 @@ class TestSchoolScholarshipAwardViewActions(YamlTransactionCase):
         )
         # 1 One Time line + 4 Monthly lines (Jul..Oct, one per month)
         # once generated -- see ``_get_cash_schedule_dates``.
-        cls.award = cls.env["school_scholarship_award"].create(
+        self.award = self.env["school_scholarship_award"].create(
             {
                 "program_id": program.id,
                 "student_id": student.id,
@@ -187,13 +186,13 @@ class TestSchoolScholarshipAwardViewActions(YamlTransactionCase):
                 ],
             }
         )
-        cls.award.with_context(bypass_policy_check=True)._generate_schedule()
-        cls.realized_schedules = cls.award.schedule_ids[:2]
-        cls.realized_schedules.write({"state": "realized"})
+        self.award.with_context(bypass_policy_check=True)._generate_schedule()
+        self.realized_schedules = self.award.schedule_ids[:2]
+        self.realized_schedules.write({"state": "realized"})
 
         # A second, bare award (no Benefit line needed) purely to
         # form a 2-record recordset for the ``ensure_one`` check.
-        cls.other_award = cls.env["school_scholarship_award"].create(
+        self.other_award = self.env["school_scholarship_award"].create(
             {
                 "program_id": program.id,
                 "student_id": student.id,
