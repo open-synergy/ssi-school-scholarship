@@ -86,9 +86,7 @@ scenarios:
             type: "value"
             expected: "All"
 
-  - name:
-      "New deduction categories are parented under the shared School Scholarship
-      categories"
+  - name: "New deduction categories are parented under the shared School categories"
     steps:
       - step: "Get school_scholarship_deduction_workflow_module_category by XML ID"
         action: "ref"
@@ -105,7 +103,7 @@ scenarios:
         asserts:
           parent_id:
             type: "m2o"
-            expected_xml_id: "ssi_school_scholarship.school_scholarship_workflow_module_category"
+            expected_xml_id: "ssi_school.school_workflow_module_category"
           name:
             type: "value"
             expected: "Scholarship Deduction"
@@ -115,28 +113,22 @@ scenarios:
         asserts:
           parent_id:
             type: "m2o"
-            expected_xml_id: "ssi_school_scholarship.school_scholarship_data_ownership_module_category"
+            expected_xml_id: "ssi_school.school_data_ownership_module_category"
           name:
             type: "value"
             expected: "Scholarship Deduction"
 
-  - name: "No res.groups still points at the shared workflow category"
+  - name: "No res.groups still points directly at the shared workflow category"
     steps:
       - step: "Search res.groups on the shared workflow category"
         action: "search"
         model: "res.groups"
         domain:
-          [
-            [
-              "category_id",
-              "=",
-              "REF: ssi_school_scholarship.school_scholarship_workflow_module_category",
-            ],
-          ]
+          [["category_id", "=", "REF: ssi_school.school_workflow_module_category"]]
         save_as: "orphan_workflow_groups"
         expect_count: 0
 
-  - name: "No res.groups still points at the shared data ownership category"
+  - name: "No res.groups still points directly at the shared data ownership category"
     steps:
       - step: "Search res.groups on the shared data ownership category"
         action: "search"
@@ -146,8 +138,7 @@ scenarios:
             [
               "category_id",
               "=",
-              "REF:
-              ssi_school_scholarship.school_scholarship_data_ownership_module_category",
+              "REF: ssi_school.school_data_ownership_module_category",
             ],
           ]
         save_as: "orphan_data_ownership_groups"
