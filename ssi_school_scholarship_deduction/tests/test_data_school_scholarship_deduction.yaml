@@ -2445,6 +2445,11 @@ scenarios:
                 final_account_id: "REC: d3_discount_account.id"
                 name: "D3 Deduction Line"
                 uom_quantity: 1
+                price_unit: 500000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: d3_invoice.id"
                 amount_allocated: 500000.0
 
       - step:
