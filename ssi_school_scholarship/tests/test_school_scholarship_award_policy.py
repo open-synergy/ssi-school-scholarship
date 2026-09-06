@@ -14,3 +14,9 @@ class TestSchoolScholarshipAwardPolicy(YamlTransactionCase):
     def test_school_scholarship_award_policy(self):
         """Run the ``create_disbursement_ok`` policy scenarios."""
         self.run_yaml_scenario("test_data_school_scholarship_award_policy.yaml")
+
+    def test_school_scholarship_award_restart_approval_ok(self):
+        """Run the ``restart_approval_ok`` policy scenarios."""
+        self.run_yaml_scenario(
+            "test_data_school_scholarship_award_restart_approval.yaml"
+        )

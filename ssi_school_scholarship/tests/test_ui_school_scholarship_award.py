@@ -346,6 +346,54 @@ class TestUiSchoolScholarshipAward(HttpSavepointCase):
             }
         )
 
+        # Pre-Condition for 14-restart-approval -- an award already On
+        # Progress (open), owned by admin so the tour's login="admin"
+        # session is both the record owner (internal_user_rule) and a
+        # member of Award Validator (school_scholarship_award_validator_group
+        # grants restart_approval_ok at state open) -- and with no
+        # approval.template configured anywhere in this fixture, so
+        # ``approval_template_id`` stays False and ``restart_approval_ok``
+        # reads True, same reasoning as
+        # test_data_school_scholarship_award_restart_approval.yaml.
+        cls.tour_award_restart_approval = cls.env["school_scholarship_award"].create(
+            {
+                "name": "TOUR-AWARD-RESTART-APPROVAL-001",
+                "program_id": cls.tour_program.id,
+                "student_id": cls.tour_student.id,
+                "enrollment_id": cls.tour_enrollment.id,
+                "date_start": "2026-07-01",
+                "date_end": "2026-12-31",
+                "user_id": admin.id,
+                "benefit_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "name": "TOUR Award Restart Approval Benefit",
+                            "product_id": cls.tour_product.id,
+                            "price_unit": 1000000.0,
+                            "percentage": 100.0,
+                        },
+                    )
+                ],
+                "funding_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "funding_source_id": cls.tour_funding_source.id,
+                            "percentage": 100.0,
+                        },
+                    )
+                ],
+            }
+        )
+        cls.tour_award_restart_approval.action_confirm()
+        # Same cache-busting reason as ``tour_award_generate_schedule``
+        # above (test-traps.md T-04).
+        cls.tour_award_restart_approval.invalidate_cache()
+        cls.tour_award_restart_approval.with_user(admin).action_approve_approval()
+
         # Pre-Condition for 10-cancel -- a Draft award, plus the
         # Cancellation Reason the wizard requires.
         cls.tour_award_cancel = cls.env["school_scholarship_award"].create(
@@ -435,5 +483,17 @@ class TestUiSchoolScholarshipAward(HttpSavepointCase):
         self.start_tour(
             "/web",
             "ssi_school_scholarship_school_scholarship_award_cancel",
+            login="admin",
+        )
+
+    def test_restart_approval(self):
+        """Run the restart approval tour for
+        ``school_scholarship_award``.
+
+        IK: docs/school_scholarship_award/14-restart-approval.md
+        """
+        self.start_tour(
+            "/web",
+            "ssi_school_scholarship_school_scholarship_award_restart_approval",
             login="admin",
         )

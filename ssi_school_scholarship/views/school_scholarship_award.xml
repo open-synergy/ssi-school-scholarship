@@ -115,15 +115,15 @@
                         domain="[('student_id', '=', student_id)]"
                         attrs="{'required': [('source_type', '=', 'enrollment')], 'invisible': [('source_type', '!=', 'enrollment')]}"
                     />
+            </xpath>
+            <xpath expr="//group[@name='header_right']" position="inside">
+                <field name="date" />
                 <field name="school_id" />
                 <field name="grade_id" />
                 <field name="academic_year_id" />
                 <field name="date_start" />
                 <field name="date_end" />
                 <field name="is_employee_benefit" />
-            </xpath>
-            <xpath expr="//group[@name='header_right']" position="inside">
-                <field name="date" />
             </xpath>
             <xpath expr="//group[@name='footer_left']" position="inside">
                 <field name="company_currency_id" invisible="1" />

@@ -62,6 +62,14 @@ class SchoolScholarshipAward(models.Model):
 
     # Attributes related to add element on view automatically
     _automatically_insert_view_element = True
+    # The document reaches ``open`` on its own via ``_after_approved_method``
+    # (see below), never through a user-facing Start button, so the Start
+    # button and its ``open_ok`` policy row are kept out of the view. They
+    # stay switched off here rather than left to the mixin default (which
+    # would insert both) -- see the ``open_ok`` note in ``_get_policy_field``
+    # for why ``open_ok`` itself is still registered.
+    _automatically_insert_open_policy_fields = False
+    _automatically_insert_open_button = False
 
     _statusbar_visible_label = "draft,confirm,open,done"
     _policy_field_order = [
