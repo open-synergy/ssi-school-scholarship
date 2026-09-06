@@ -211,7 +211,7 @@ scenarios:
             type: "value"
             expected: false
 
-      # ── Bring the main award to Open, with no approval template ──
+      # ── Bring the main award to Confirm (Waiting for Approval) ────
       - step: "Create the main award"
         action: "create"
         model: "school_scholarship_award"
@@ -251,10 +251,13 @@ scenarios:
             expected: "confirm"
 
       # WAJIB: forces the library's _refresh() (flush + invalidate)
-      # before the approval policy is read -- see the identical
-      # comment in test_data_school_scholarship_award.yaml
-      # (test-traps.md T-04).
-      - step: "Assert the award is Confirm before approving"
+      # before the restart_approval_ok policy field is read -- policy
+      # fields share one compute method that only re-triggers on
+      # @api.depends("policy_template_id"), so the state change made
+      # by action_confirm above must be busted explicitly (identical
+      # comment in test_data_school_scholarship_award.yaml,
+      # test-traps.md T-04).
+      - step: "Assert the award is Confirm before reading restart_approval_ok"
         action: "assert"
         target: "award_ra1"
         refresh: true
@@ -263,27 +266,7 @@ scenarios:
             type: "value"
             expected: "confirm"
 
-      - step: "Approve the award as admin, auto-opening it"
-        action: "call"
-        target: "award_ra1"
-        method: "action_approve_approval"
-        as_user: "base.user_admin"
-        asserts:
-          state:
-            type: "value"
-            expected: "open"
-
-      - step:
-          "Assert no approval template was needed for this simple confirm/approve flow"
-        action: "assert"
-        target: "award_ra1"
-        refresh: true
-        asserts:
-          approval_template_id:
-            type: "value"
-            operator: "is_falsy"
-
-      # ── Positive: Open, no approval_template_id, validator group ──
+      # ── Positive: Confirm, validator group ────────────────────────
       - step: "Assert restart_approval_ok is true for a validator"
         action: "assert"
         target: "award_ra1"
@@ -293,7 +276,7 @@ scenarios:
             type: "value"
             expected: true
 
-      # ── Negative: Open, but only school_scholarship_award_user_group ─
+      # ── Negative: Confirm, but only school_scholarship_award_user_group ─
       - step: "Assert restart_approval_ok is false for a plain User-group member"
         action: "assert"
         target: "award_ra1"

@@ -532,20 +532,20 @@ odoo.define("ssi_school_scholarship.school_scholarship_award_tour", function (re
                 in_modal: true,
             },
 
-            // Post-Condition — Status remains On Progress: no
-            // approval.template is configured anywhere in this
-            // fixture, so the restarted approval process finds
-            // nothing to rebuild and the record stays exactly where
-            // it was. Odoo-yaml-test's negative-path equivalent
+            // Post-Condition — Status remains Waiting for Approval:
+            // the record's approval process is rebuilt from its
+            // (always-assigned) approval.template, so it stays
+            // exactly where it was instead of moving to another
+            // state. Odoo-yaml-test's positive-path equivalent
             // (odoo-school-scholarship#122 T-08) is what proves the
             // value read by the page underneath this button;
             // odoo-development-ui-test's tour scope excludes
             // asserting field values (only the kasat-mata statusbar
             // is checked here).
             {
-                content: "Status is still On Progress",
+                content: "Status is still Waiting for Approval",
                 trigger:
-                    ".o_statusbar_status .o_arrow_button[data-value='open'].btn-primary",
+                    ".o_statusbar_status .o_arrow_button[data-value='confirm'].btn-primary",
                 run: function () {
                     // Assertion only; do not trigger the default click.
                 },

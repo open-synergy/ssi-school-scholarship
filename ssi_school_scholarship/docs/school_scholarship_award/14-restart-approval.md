@@ -4,14 +4,18 @@
 > **Model:** `school_scholarship_award`\
 > **Menu:** School > Scholarship > Scholarship Awards\
 > **Actor:** user in group `Award Validator`\
-> **Requires:** `05-approve`
+> **Requires:** `04-confirm`
 
 ## Pre-Condition
 
-- **Record:** Status is **On Progress**, and the approval process is stalled (for
-  example, the record currently has no approval template assigned).
+- **Record:** Status is **Waiting for Approval**, and the approval process is stalled
+  (for example, the record currently has no approval template assigned, or the assigned
+  template no longer matches).
 - **Config:** An active `policy.template` for this model grants `restart_approval_ok`
-  for state `open` to the actor's group.
+  for state `confirm` to the actor's group.
+- **Config:** An active `approval.template` for this model matches this record, with an
+  approver group configured for its approval level, so the process can be rebuilt once
+  restarted.
 - **Access:** User is in group `Award Validator`.
 
 ## Flow
@@ -23,6 +27,6 @@
 
 ## Post-Condition
 
-- Status remains **On Progress**.
+- Status remains **Waiting for Approval**.
 - The existing approval records are discarded and a new approval process is created from
-  the approval template that now matches the record, if any.
+  the approval template that now matches the record.

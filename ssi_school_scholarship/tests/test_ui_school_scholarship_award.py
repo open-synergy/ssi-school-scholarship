@@ -346,14 +346,17 @@ class TestUiSchoolScholarshipAward(HttpSavepointCase):
             }
         )
 
-        # Pre-Condition for 14-restart-approval -- an award already On
-        # Progress (open), owned by admin so the tour's login="admin"
-        # session is both the record owner (internal_user_rule) and a
-        # member of Award Validator (school_scholarship_award_validator_group
-        # grants restart_approval_ok at state open) -- and with no
-        # approval.template configured anywhere in this fixture, so
-        # ``approval_template_id`` stays False and ``restart_approval_ok``
-        # reads True, same reasoning as
+        # Pre-Condition for 14-restart-approval -- an award still
+        # Waiting for Approval (confirm), owned by admin so the tour's
+        # login="admin" session is both the record owner
+        # (internal_user_rule) and a member of Award Validator
+        # (school_scholarship_award_validator_group grants
+        # restart_approval_ok at state confirm). ``approval.template``
+        # is always assigned on confirm (the single Standard template
+        # in approval_template/school_scholarship_award.xml matches
+        # every award), so restart_approval_ok's grant does not depend
+        # on ``approval_template_id`` being empty -- only on state and
+        # group membership, same reasoning as
         # test_data_school_scholarship_award_restart_approval.yaml.
         cls.tour_award_restart_approval = cls.env["school_scholarship_award"].create(
             {
@@ -389,10 +392,6 @@ class TestUiSchoolScholarshipAward(HttpSavepointCase):
             }
         )
         cls.tour_award_restart_approval.action_confirm()
-        # Same cache-busting reason as ``tour_award_generate_schedule``
-        # above (test-traps.md T-04).
-        cls.tour_award_restart_approval.invalidate_cache()
-        cls.tour_award_restart_approval.with_user(admin).action_approve_approval()
 
         # Pre-Condition for 10-cancel -- a Draft award, plus the
         # Cancellation Reason the wizard requires.
