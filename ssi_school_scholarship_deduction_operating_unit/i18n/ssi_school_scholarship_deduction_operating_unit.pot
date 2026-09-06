@@ -61,6 +61,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction_operating_unit.field_school_scholarship_deduction__operating_unit_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction_operating_unit.field_school_scholarship_deduction_recognition__operating_unit_id
 #: model:res.groups,name:ssi_school_scholarship_deduction_operating_unit.school_scholarship_deduction_operating_unit_group
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction_operating_unit.school_scholarship_deduction_recognition_view_search_ou
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction_operating_unit.school_scholarship_deduction_view_search_ou
 msgid "Operating Unit"
 msgstr ""
 
