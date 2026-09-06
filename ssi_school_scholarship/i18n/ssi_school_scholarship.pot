@@ -2374,26 +2374,6 @@ msgid "School"
 msgstr ""
 
 #. module: ssi_school_scholarship
-#: model:ir.module.category,name:ssi_school_scholarship.school_scholarship_module_category
-msgid "School - Scholarship"
-msgstr ""
-
-#. module: ssi_school_scholarship
-#: model:ir.module.category,name:ssi_school_scholarship.school_scholarship_configurator_module_category
-msgid "School - Scholarship - Configurator"
-msgstr ""
-
-#. module: ssi_school_scholarship
-#: model:ir.module.category,name:ssi_school_scholarship.school_scholarship_data_ownership_module_category
-msgid "School - Scholarship - Data Ownership"
-msgstr ""
-
-#. module: ssi_school_scholarship
-#: model:ir.module.category,name:ssi_school_scholarship.school_scholarship_workflow_module_category
-msgid "School - Scholarship - Workflow"
-msgstr ""
-
-#. module: ssi_school_scholarship
 #: model:ir.model,name:ssi_school_scholarship.model_school_enrollment
 msgid "School Enrollment"
 msgstr ""
