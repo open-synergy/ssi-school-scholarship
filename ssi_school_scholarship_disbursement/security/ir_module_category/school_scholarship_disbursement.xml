@@ -8,10 +8,7 @@
         model="ir.module.category"
     >
     <field name="name">Scholarship Disbursement</field>
-    <field
-            name="parent_id"
-            ref="ssi_school_scholarship.school_scholarship_workflow_module_category"
-        />
+    <field name="parent_id" ref="ssi_school.school_workflow_module_category" />
 </record>
 
 <record
@@ -19,9 +16,6 @@
         model="ir.module.category"
     >
     <field name="name">Scholarship Disbursement</field>
-    <field
-            name="parent_id"
-            ref="ssi_school_scholarship.school_scholarship_data_ownership_module_category"
-        />
+    <field name="parent_id" ref="ssi_school.school_data_ownership_module_category" />
 </record>
 </odoo>

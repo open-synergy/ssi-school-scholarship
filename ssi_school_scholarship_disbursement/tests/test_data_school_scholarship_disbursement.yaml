@@ -329,6 +329,17 @@ scenarios:
             type: "value"
             expected: 500000.0
 
+      - step:
+          "Assert open_ok reads False without error in draft -- open_ok stays registered
+          for mixin.policy's compute even though no button/policy detail can ever set it
+          True"
+        action: "assert"
+        target: "b1_disbursement_single"
+        asserts:
+          open_ok:
+            type: "value"
+            expected: false
+
       - step: "Confirm the single disbursement as admin"
         action: "call"
         target: "b1_disbursement_single"
@@ -362,6 +373,19 @@ scenarios:
           payable_move_line_id:
             type: "value"
             operator: "is_truthy"
+
+      - step:
+          "Assert open_ok is still False in open, read by base.user_admin -- a Validator
+          group member -- proving the button's removal was not quietly paired with a
+          policy.template_detail grant for open_ok"
+        action: "assert"
+        target: "b1_disbursement_single"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          open_ok:
+            type: "value"
+            expected: false
 
       - step: "Assert Amount Residual equals Amount Total before any payment"
         action: "assert"
