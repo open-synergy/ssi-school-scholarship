@@ -34,6 +34,7 @@ msgstr ""
 #. module: ssi_school_scholarship_disbursement_operating_unit
 #: model:ir.model.fields,field_description:ssi_school_scholarship_disbursement_operating_unit.field_school_scholarship_disbursement__operating_unit_id
 #: model:res.groups,name:ssi_school_scholarship_disbursement_operating_unit.school_scholarship_disbursement_operating_unit_group
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_disbursement_operating_unit.school_scholarship_disbursement_view_search_ou
 msgid "Operating Unit"
 msgstr ""
 
