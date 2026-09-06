@@ -267,20 +267,31 @@ scenarios:
             expected: "confirm"
 
       # ── Positive: Confirm, validator group ────────────────────────
+      # WAJIB: refresh: true busts the cached restart_approval_ok value
+      # again before this read. The compute is keyed by (field,
+      # record_id) only -- with no depends_context -- so reading it as
+      # a *different* as_user right after another as_user step would
+      # otherwise return the previous reader's cached result instead of
+      # recomputing for the current user (test-traps.md T-04).
       - step: "Assert restart_approval_ok is true for a validator"
         action: "assert"
         target: "award_ra1"
         as_user: "base.user_admin"
+        refresh: true
         asserts:
           restart_approval_ok:
             type: "value"
             expected: true
 
       # ── Negative: Confirm, but only school_scholarship_award_user_group ─
+      # WAJIB: same reasoning as the step above -- without refresh: true
+      # this step reads the value cached for base.user_admin (True)
+      # instead of recomputing for user_only_ra1 (False).
       - step: "Assert restart_approval_ok is false for a plain User-group member"
         action: "assert"
         target: "award_ra1"
         as_user: "user_only_ra1"
+        refresh: true
         asserts:
           restart_approval_ok:
             type: "value"
