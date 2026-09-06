@@ -86,8 +86,7 @@ scenarios:
             type: "value"
             expected: "All"
 
-  - name:
-      "New award categories are parented under the shared School Scholarship categories"
+  - name: "Award categories are now parented under ssi_school's shared categories"
     steps:
       - step: "Get school_scholarship_award_workflow_module_category by XML ID"
         action: "ref"
@@ -103,7 +102,7 @@ scenarios:
         asserts:
           parent_id:
             type: "m2o"
-            expected_xml_id: "ssi_school_scholarship.school_scholarship_workflow_module_category"
+            expected_xml_id: "ssi_school.school_workflow_module_category"
           name:
             type: "value"
             expected: "Scholarship Award"
@@ -113,76 +112,76 @@ scenarios:
         asserts:
           parent_id:
             type: "m2o"
-            expected_xml_id: "ssi_school_scholarship.school_scholarship_data_ownership_module_category"
+            expected_xml_id: "ssi_school.school_data_ownership_module_category"
           name:
             type: "value"
             expected: "Scholarship Award"
 
-  - name: "Old shared workflow/data ownership categories still exist as parents"
+  - name:
+      "Configurator groups are now parented under ssi_school's configurator category"
     steps:
-      - step: "Get the old shared workflow category by XML ID"
+      - step: "Get school_scholarship_type_group by XML ID"
         action: "ref"
-        xml_id: "ssi_school_scholarship.school_scholarship_workflow_module_category"
-        save_as: "shared_workflow_category"
-      - step: "Get the old shared data ownership category by XML ID"
+        xml_id: "ssi_school_scholarship.school_scholarship_type_group"
+        save_as: "type_group"
+      - step: "Get school_scholarship_program_group by XML ID"
         action: "ref"
-        xml_id: "ssi_school_scholarship.school_scholarship_data_ownership_module_category"
-        save_as: "shared_data_ownership_category"
-      - step: "Assert the shared categories are still named as before"
+        xml_id: "ssi_school_scholarship.school_scholarship_program_group"
+        save_as: "program_group"
+      - step: "Get school_scholarship_funding_source_group by XML ID"
+        action: "ref"
+        xml_id: "ssi_school_scholarship.school_scholarship_funding_source_group"
+        save_as: "funding_source_group"
+      - step: "Assert type_group category_id"
         action: "assert"
-        target: "shared_workflow_category"
+        target: "type_group"
         asserts:
-          name:
-            type: "value"
-            expected: "School - Scholarship - Workflow"
-      - step: "Assert the shared data ownership category is still named as before"
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school.school_configurator_module_category"
+      - step: "Assert program_group category_id"
         action: "assert"
-        target: "shared_data_ownership_category"
+        target: "program_group"
         asserts:
-          name:
-            type: "value"
-            expected: "School - Scholarship - Data Ownership"
-
-  - name: "No res.groups still points at the shared workflow category"
-    steps:
-      - step: "Search res.groups on the shared workflow category"
-        action: "search"
-        model: "res.groups"
-        domain:
-          [
-            [
-              "category_id",
-              "=",
-              "REF: ssi_school_scholarship.school_scholarship_workflow_module_category",
-            ],
-          ]
-        save_as: "orphan_workflow_groups"
-        expect_count: 0
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school.school_configurator_module_category"
+      - step: "Assert funding_source_group category_id"
+        action: "assert"
+        target: "funding_source_group"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected_xml_id: "ssi_school.school_configurator_module_category"
 
   - name:
-      "Only the out-of-scope Deduction Recognition group still points at the shared data
-      ownership category"
+      "The module's own root/configurator/workflow/data ownership categories are gone"
     steps:
+      # `env.ref()` (action: ref) does not honor `expect_error` (odoo-yaml-test
+      # L-24: silently ignored on `ref`/`search`/`assert`), so a raised
+      # ValueError here would surface as an unhandled step error instead of a
+      # deliberate negative assertion. Proving deletion via `ir.model.data`
+      # stays fully inside YAML and is strictly stronger: it is the exact
+      # record `ir.model.data._process_end()` removes, and `env.ref()`
+      # failure is a direct consequence of its absence.
       - step:
-          "Get the deliberately out-of-scope Deduction Recognition Operating Unit
-          group's id"
-        action: "ref"
-        xml_id: "ssi_school_scholarship_deduction_operating_unit.school_scholarship_deduction_recognition_operating_unit_group"
-        save_as: "recognition_ou_group"
-      - step:
-          "Search res.groups on the shared data ownership category, excluding the
-          deliberately out-of-scope Recognition group"
+          "Search ir.model.data for the four XML IDs removed from
+          ir_module_category_data.xml"
         action: "search"
-        model: "res.groups"
+        model: "ir.model.data"
         domain:
           [
+            ["module", "=", "ssi_school_scholarship"],
             [
-              "category_id",
-              "=",
-              "REF:
-              ssi_school_scholarship.school_scholarship_data_ownership_module_category",
+              "name",
+              "in",
+              [
+                "school_scholarship_module_category",
+                "school_scholarship_configurator_module_category",
+                "school_scholarship_workflow_module_category",
+                "school_scholarship_data_ownership_module_category",
+              ],
             ],
-            ["id", "!=", "REC: recognition_ou_group.id"],
           ]
-        save_as: "orphan_data_ownership_groups"
+        save_as: "removed_category_data"
         expect_count: 0

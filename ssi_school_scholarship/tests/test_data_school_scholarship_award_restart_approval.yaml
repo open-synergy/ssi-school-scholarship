@@ -1,0 +1,298 @@
+scenarios:
+  - name:
+      "Award Policy - restart_approval_ok reflects state, group, and
+      approval_template_id (odoo-school-scholarship#122 T-08)"
+    steps:
+      # ── Shared fixture chain (suffix RA1) ─────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type_ra1"
+        values:
+          name: "RA1 Grade Type"
+          code: "RA1GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school_ra1"
+        values:
+          name: "RA1 School"
+          code: "RA1SC"
+          grade_type_id: "REC: grade_type_ra1.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year_ra1"
+        values:
+          name: "RA1 Academic Year"
+          code: "RA1AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term_ra1"
+        values:
+          name: "RA1 Term"
+          code: "RA1TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year_ra1.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade_ra1"
+        values:
+          name: "RA1 Grade"
+          code: "RA1GR"
+          type_id: "REC: grade_type_ra1.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class_ra1"
+        values:
+          name: "RA1 Class"
+          code: "RA1CL"
+          school_id: "REC: school_ra1.id"
+          grade_id: "REC: grade_ra1.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact_ra1"
+        values:
+          name: "RA1 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "student_ra1"
+        values:
+          name: "RA1 Student"
+          code: "RA1ST"
+          contact_id: "REC: contact_ra1.id"
+          school_id: "REC: school_ra1.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment_ra1"
+        values:
+          academic_year_id: "REC: academic_year_ra1.id"
+          academic_term_id: "REC: academic_term_ra1.id"
+          school_id: "REC: school_ra1.id"
+          grade_id: "REC: grade_ra1.id"
+          grade_class_id: "REC: grade_class_ra1.id"
+          student_id: "REC: student_ra1.id"
+
+      - step: "Create the product covered by the Benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "product_ra1"
+        values:
+          name: "RA1 Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal_ra1"
+        values:
+          name: "RA1 Journal"
+          code: "JRA1"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income_ra1"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account_ra1"
+        values:
+          name: "RA1 Discount Account"
+          code: "RA1DA"
+          user_type_id: "REC: account_type_income_ra1.id"
+          reconcile: false
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_ra1"
+        values:
+          name: "RA1 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source_ra1"
+        values:
+          name: "RA1 Funding Source"
+          code: "RA1FS"
+          analytic_account_id: "REC: analytic_ra1.id"
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type_ra1"
+        values:
+          name: "RA1 Type"
+          code: "RA1TY"
+          deduction_journal_id: "REC: journal_ra1.id"
+          discount_account_id: "REC: discount_account_ra1.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program_ra1"
+        values:
+          name: "RA1 Program"
+          code: "RA1PRG"
+          type_id: "REC: type_ra1.id"
+          school_id: "REC: school_ra1.id"
+          academic_year_id: "REC: academic_year_ra1.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source_ra1.id"]]]
+          deduction_journal_id: "REC: journal_ra1.id"
+          discount_account_id: "REC: discount_account_ra1.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product_ra1.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Create a plain user holding only school_scholarship_award_user_group"
+        action: "create"
+        model: "res.users"
+        save_as: "user_only_ra1"
+        values:
+          name: "RA1 User-Only"
+          login: "ra1.user-only@example.com"
+          groups_id:
+            [
+              [
+                6,
+                0,
+                ["REF: ssi_school_scholarship.school_scholarship_award_user_group"],
+              ],
+            ]
+
+      # ── Negative (restrict_state): still Draft ───────────────────
+      - step: "Create a second, never-confirmed award"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award_ra1_draft"
+        values:
+          program_id: "REC: program_ra1.id"
+          student_id: "REC: student_ra1.id"
+          enrollment_id: "REC: enrollment_ra1.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account_ra1.id"
+          user_id: "REF: base.user_admin"
+
+      - step:
+          "Assert restart_approval_ok is false in Draft for a validator (restrict_state
+          excludes it)"
+        action: "assert"
+        target: "award_ra1_draft"
+        as_user: "base.user_admin"
+        asserts:
+          restart_approval_ok:
+            type: "value"
+            expected: false
+
+      # ── Bring the main award to Confirm (Waiting for Approval) ────
+      - step: "Create the main award"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award_ra1"
+        values:
+          program_id: "REC: program_ra1.id"
+          student_id: "REC: student_ra1.id"
+          enrollment_id: "REC: enrollment_ra1.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account_ra1.id"
+          # Owned by admin so the ``as_user: base.user_admin`` steps
+          # below are not rejected by the internal_user_rule record
+          # rule (test-traps.md T-05).
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "RA1 Benefit Line"
+                product_id: "REC: product_ra1.id"
+                price_unit: 1000000.0
+                percentage: 100.0
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source_ra1.id"
+                percentage: 100.0
+
+      - step: "Confirm the award as admin"
+        action: "call"
+        target: "award_ra1"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      # WAJIB: forces the library's _refresh() (flush + invalidate)
+      # before the restart_approval_ok policy field is read -- policy
+      # fields share one compute method that only re-triggers on
+      # @api.depends("policy_template_id"), so the state change made
+      # by action_confirm above must be busted explicitly (identical
+      # comment in test_data_school_scholarship_award.yaml,
+      # test-traps.md T-04).
+      - step: "Assert the award is Confirm before reading restart_approval_ok"
+        action: "assert"
+        target: "award_ra1"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      # ── Positive: Confirm, validator group ────────────────────────
+      # WAJIB: refresh: true busts the cached restart_approval_ok value
+      # again before this read. The compute is keyed by (field,
+      # record_id) only -- with no depends_context -- so reading it as
+      # a *different* as_user right after another as_user step would
+      # otherwise return the previous reader's cached result instead of
+      # recomputing for the current user (test-traps.md T-04).
+      - step: "Assert restart_approval_ok is true for a validator"
+        action: "assert"
+        target: "award_ra1"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          restart_approval_ok:
+            type: "value"
+            expected: true
+
+      # ── Negative: Confirm, but only school_scholarship_award_user_group ─
+      # WAJIB: same reasoning as the step above -- without refresh: true
+      # this step reads the value cached for base.user_admin (True)
+      # instead of recomputing for user_only_ra1 (False).
+      - step: "Assert restart_approval_ok is false for a plain User-group member"
+        action: "assert"
+        target: "award_ra1"
+        as_user: "user_only_ra1"
+        refresh: true
+        asserts:
+          restart_approval_ok:
+            type: "value"
+            expected: false

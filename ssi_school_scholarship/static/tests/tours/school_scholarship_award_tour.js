@@ -487,4 +487,69 @@ odoo.define("ssi_school_scholarship.school_scholarship_award_tour", function (re
             },
         ])
     );
+
+    // IK: docs/school_scholarship_award/14-restart-approval.md
+    tour.register(
+        "ssi_school_scholarship_school_scholarship_award_restart_approval",
+        {
+            test: true,
+            url: "/web",
+        },
+        [].concat(openScholarshipAwardsList(), [
+            // Flow 2 — Open the record whose approval process is
+            // stalled.
+            {
+                content: "Open the record",
+                trigger:
+                    ".o_data_row:contains(TOUR-AWARD-RESTART-APPROVAL-001) .o_data_cell:first",
+            },
+            {
+                content: "Form is open",
+                trigger: ".o_form_view",
+                extra_trigger: ".o_form_view.o_form_readonly",
+                run: function () {
+                    // Assertion only; do not trigger the default click.
+                },
+            },
+
+            // Flow 3 — Click the Restart Approval Process button. It
+            // is a `type="object"` button, so it keeps its method
+            // name in the DOM (odoo-development-ui-test,
+            // selectors.md §4).
+            {
+                content: "Click the Restart Approval Process button",
+                trigger:
+                    ".o_statusbar_buttons button[name='action_reload_approval_template']",
+                extra_trigger: ".o_form_view",
+            },
+
+            // Flow 4 — Click OK on the confirmation dialog. The
+            // button carries `confirm="Restart approval process. Are
+            // you sure?"`.
+            {
+                content: "Confirm the dialog",
+                trigger: ".modal-footer button.btn-primary",
+                in_modal: true,
+            },
+
+            // Post-Condition — Status remains Waiting for Approval:
+            // the record's approval process is rebuilt from its
+            // (always-assigned) approval.template, so it stays
+            // exactly where it was instead of moving to another
+            // state. Odoo-yaml-test's positive-path equivalent
+            // (odoo-school-scholarship#122 T-08) is what proves the
+            // value read by the page underneath this button;
+            // odoo-development-ui-test's tour scope excludes
+            // asserting field values (only the kasat-mata statusbar
+            // is checked here).
+            {
+                content: "Status is still Waiting for Approval",
+                trigger:
+                    ".o_statusbar_status .o_arrow_button[data-value='confirm'].btn-primary",
+                run: function () {
+                    // Assertion only; do not trigger the default click.
+                },
+            },
+        ])
+    );
 });

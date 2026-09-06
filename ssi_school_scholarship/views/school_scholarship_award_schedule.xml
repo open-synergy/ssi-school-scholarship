@@ -32,8 +32,8 @@
         <form>
             <sheet>
                 <group name="main" colspan="4" col="2">
-                    <field name="award_id" />
                     <field name="benefit_id" />
+                    <field name="award_id" />
                     <field name="payment_term_id" />
                     <field name="date" />
                     <field name="base_amount" widget="monetary" />
