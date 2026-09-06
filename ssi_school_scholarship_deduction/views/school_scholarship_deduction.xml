@@ -68,12 +68,10 @@
     <field name="inherit_id" ref="ssi_transaction_mixin.mixin_transaction_view_form" />
     <field name="arch" type="xml">
         <data>
-            <xpath expr="//field[@name='user_id']" position="after">
+            <xpath expr="//group[@name='header_right']" position="inside">
                 <field name="award_id" />
                 <field name="student_id" />
                 <field name="partner_id" />
-            </xpath>
-            <xpath expr="//group[@name='header_right']" position="inside">
                 <field name="date" />
                 <field
                         name="recognition_state"
@@ -259,11 +257,11 @@
                             colspan="4"
                             col="2"
                         >
-                        <field name="recognition_method" />
                         <field
                                 name="recognition_date"
                                 attrs="{'invisible': [('recognition_method', '=', 'immediate')]}"
                             />
+                        <field name="recognition_method" />
                         <field
                                 name="deferred_account_id"
                                 attrs="{'invisible': [('recognition_method', '=', 'immediate')]}"
