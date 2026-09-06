@@ -4,7 +4,7 @@
 
 {
     "name": "School Scholarship Disbursement - Operating Unit",
-    "version": "14.0.1.0.1",
+    "version": "14.0.1.1.0",
     "website": "https://simetri-sinergi.id",
     # pylint: disable=line-too-long
     "author": "PT. Simetri Sinergi Indonesia, OpenSynergy Indonesia, Odoo Community Association (OCA)",  # noqa: B950
