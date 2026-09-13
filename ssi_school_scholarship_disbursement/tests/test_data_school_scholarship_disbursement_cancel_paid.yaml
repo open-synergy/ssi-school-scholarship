@@ -437,6 +437,7 @@ scenarios:
         action: "search"
         model: "account.partial.reconcile"
         domain: [["debit_move_id", "=", "REC: cp1_payment_payable_line.id"]]
+        save_as: "cp1_partial_reconcile"
         expect_count: 1
 
       # ── Negative: cancelling a paid disbursement is rejected before
@@ -480,6 +481,7 @@ scenarios:
         action: "search"
         model: "account.partial.reconcile"
         domain: [["debit_move_id", "=", "REC: cp1_payment_payable_line.id"]]
+        save_as: "cp1_partial_reconcile_after"
         expect_count: 1
 
       # ── Positive: once the payment's reconciliation is undone,
