@@ -1,6 +1,6 @@
 # Create Due Disbursement — Scholarship Award
 
-> **Module:** ssi_school_scholarship_disbursement\
+> **Module:** `ssi_school_scholarship_disbursement`\
 > **Extends:** ssi_school_scholarship — model `school_scholarship_award`\
 > **Model:** `school_scholarship_award`\
 > **Menu:** School > Scholarship > Scholarship Awards\

@@ -1,6 +1,6 @@
 # Confirm Scholarship Disbursement
 
-> **Module:** ssi_school_scholarship_disbursement\
+> **Module:** `ssi_school_scholarship_disbursement`\
 > **Model:** `school_scholarship_disbursement`\
 > **Menu:** School > Scholarship > Scholarship Disbursements\
 > **Actor:** user in group `Disbursement User`\
