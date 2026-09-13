@@ -1,6 +1,6 @@
 # Create Scholarship Funding Source
 
-> **Module:** ssi_school_scholarship_donation\
+> **Module:** `ssi_school_scholarship_donation`\
 > **Extends:** ssi_school_scholarship — model `school_scholarship_funding_source`, action
 > `01-create`
 
