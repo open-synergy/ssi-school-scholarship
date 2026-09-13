@@ -1,6 +1,6 @@
 # Create Scholarship Disbursement
 
-> **Module:** ssi_school_scholarship_disbursement_operating_unit\
+> **Module:** `ssi_school_scholarship_disbursement_operating_unit`\
 > **Extends:** ssi_school_scholarship_disbursement — model `school_scholarship_disbursement`,
 > action `01-create`
 
