@@ -10,6 +10,8 @@
 ## Pre-Condition
 
 - **Record:** Status is **Draft**, **Waiting for Approval**, or **On Progress**.
+- **Record:** No payment has been reconciled against the document's Payable Move Line
+  (**Amount Paid** is zero).
 - **Config:** An active `policy.template` grants `cancel_ok` for that state to the
   actor's group.
 - **Access:** User is in group `Disbursement Validator`.

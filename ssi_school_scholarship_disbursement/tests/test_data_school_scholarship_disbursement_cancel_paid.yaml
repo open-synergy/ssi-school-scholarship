@@ -1,0 +1,530 @@
+scenarios:
+  - name: "Disbursement - Cancel is rejected once payment is reconciled"
+    steps:
+      # ── Shared fixture chain (suffix CP1) ─────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "cp1_grade_type"
+        values:
+          name: "CP1 Grade Type"
+          code: "CP1GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "cp1_school"
+        values:
+          name: "CP1 School"
+          code: "CP1SC"
+          grade_type_id: "REC: cp1_grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "cp1_academic_year"
+        values:
+          name: "CP1 Academic Year"
+          code: "CP1AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "cp1_academic_term"
+        values:
+          name: "CP1 Term"
+          code: "CP1TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: cp1_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "cp1_grade"
+        values:
+          name: "CP1 Grade"
+          code: "CP1GR"
+          type_id: "REC: cp1_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "cp1_grade_class"
+        values:
+          name: "CP1 Class"
+          code: "CP1CL"
+          school_id: "REC: cp1_school.id"
+          grade_id: "REC: cp1_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "cp1_contact"
+        values:
+          name: "CP1 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "cp1_student"
+        values:
+          name: "CP1 Student"
+          code: "CP1ST"
+          contact_id: "REC: cp1_contact.id"
+          school_id: "REC: cp1_school.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "cp1_enrollment"
+        values:
+          academic_year_id: "REC: cp1_academic_year.id"
+          academic_term_id: "REC: cp1_academic_term.id"
+          school_id: "REC: cp1_school.id"
+          grade_id: "REC: cp1_grade.id"
+          grade_class_id: "REC: cp1_grade_class.id"
+          student_id: "REC: cp1_student.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "cp1_analytic"
+        values:
+          name: "CP1 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "cp1_funding_source"
+        values:
+          name: "CP1 Funding Source"
+          code: "CP1FS"
+          analytic_account_id: "REC: cp1_analytic.id"
+
+      - step: "Create the product covered by the benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "cp1_product"
+        values:
+          name: "CP1 Product"
+          type: "service"
+
+      - step: "Create the cash journal used for disbursement"
+        action: "create"
+        model: "account.journal"
+        save_as: "cp1_journal"
+        values:
+          name: "CP1 Cash Journal"
+          code: "JCP1"
+          type: "cash"
+
+      - step:
+          "Create a dummy sale journal (school_scholarship_type requires a Deduction
+          Journal even though this module never posts a deduction)"
+        action: "create"
+        model: "account.journal"
+        save_as: "cp1_dummy_journal"
+        values:
+          name: "CP1 Dummy Deduction Journal"
+          code: "JCP1D"
+          type: "sale"
+
+      - step: "Create the general journal used by the customer payment"
+        action: "create"
+        model: "account.journal"
+        save_as: "cp1_payment_journal"
+        values:
+          name: "CP1 Payment Journal"
+          code: "JCP1P"
+          type: "general"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "cp1_account_type_income"
+
+      - step: "Get the account.account.type Expenses reference"
+        action: "ref"
+        xml_id: "account.data_account_type_expenses"
+        save_as: "cp1_account_type_expense"
+
+      - step: "Get the account.account.type Payable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_payable"
+        save_as: "cp1_account_type_payable"
+
+      - step: "Get the account.account.type Liquidity reference"
+        action: "ref"
+        xml_id: "account.data_account_type_liquidity"
+        save_as: "cp1_account_type_liquidity"
+
+      - step: "Create the payable account credited by the disbursement"
+        action: "create"
+        model: "account.account"
+        save_as: "cp1_payable_account"
+        values:
+          name: "CP1 Payable Account"
+          code: "CP1PA"
+          user_type_id: "REC: cp1_account_type_payable.id"
+          reconcile: true
+
+      - step: "Create the expense account the disbursement line posts to"
+        action: "create"
+        model: "account.account"
+        save_as: "cp1_expense_account"
+        values:
+          name: "CP1 Expense Account"
+          code: "CP1EA"
+          user_type_id: "REC: cp1_account_type_expense.id"
+          reconcile: false
+
+      - step:
+          "Create a dummy discount account (school_scholarship_type requires one even
+          though this module never posts a deduction)"
+        action: "create"
+        model: "account.account"
+        save_as: "cp1_discount_account"
+        values:
+          name: "CP1 Discount Account"
+          code: "CP1DA"
+          user_type_id: "REC: cp1_account_type_income.id"
+          reconcile: false
+
+      - step: "Create the liquidity account used by the customer payment"
+        action: "create"
+        model: "account.account"
+        save_as: "cp1_liquidity_account"
+        values:
+          name: "CP1 Liquidity Account"
+          code: "CP1LQ"
+          user_type_id: "REC: cp1_account_type_liquidity.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "cp1_type"
+        values:
+          name: "CP1 Type"
+          code: "CP1TY"
+          deduction_journal_id: "REC: cp1_dummy_journal.id"
+          discount_account_id: "REC: cp1_discount_account.id"
+          disbursement_journal_id: "REC: cp1_journal.id"
+          payable_account_id: "REC: cp1_payable_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "cp1_program"
+        values:
+          name: "CP1 Program"
+          code: "CP1PRG"
+          type_id: "REC: cp1_type.id"
+          school_id: "REC: cp1_school.id"
+          academic_year_id: "REC: cp1_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: cp1_funding_source.id"]]]
+          deduction_journal_id: "REC: cp1_dummy_journal.id"
+          discount_account_id: "REC: cp1_discount_account.id"
+          disbursement_journal_id: "REC: cp1_journal.id"
+          payable_account_id: "REC: cp1_payable_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: cp1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 500000.0
+
+      - step: "Create the award backing the disbursement"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "cp1_award"
+        values:
+          program_id: "REC: cp1_program.id"
+          student_id: "REC: cp1_student.id"
+          enrollment_id: "REC: cp1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          expense_account_id: "REC: cp1_expense_account.id"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "CP1 Cash Benefit"
+                product_id: "REC: cp1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 500000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: cp1_funding_source.id"
+                percentage: 100.0
+
+      - step: "Find the award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: cp1_award.id"]]
+        limit: 1
+        save_as: "cp1_benefit"
+
+      - step: "Find the award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: cp1_award.id"]]
+        limit: 1
+        save_as: "cp1_funding"
+
+      - step: "Create the Schedule line realizing the Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "cp1_schedule"
+        values:
+          benefit_id: "REC: cp1_benefit.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the disbursement document"
+        action: "create"
+        model: "school_scholarship_disbursement"
+        save_as: "cp1_disbursement"
+        values:
+          award_id: "REC: cp1_award.id"
+          date: 2026-08-05
+          date_due: 2026-08-10
+          journal_id: "REC: cp1_journal.id"
+          payable_account_id: "REC: cp1_payable_account.id"
+          payment_method: "cash"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: cp1_schedule.id"
+                funding_id: "REC: cp1_funding.id"
+                final_account_id: "REC: cp1_expense_account.id"
+                name: "CP1 Disbursement Line"
+                uom_quantity: 1
+                price_unit: 500000.0
+
+      - step: "Confirm the disbursement as admin"
+        action: "call"
+        target: "cp1_disbursement"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step:
+          "Assert intermediate state before approving (forces a refresh so approve_ok is
+          not read from the stale cache filled by action_confirm -- T-04)"
+        action: "assert"
+        target: "cp1_disbursement"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the disbursement, opening it and posting its entry"
+        action: "call"
+        target: "cp1_disbursement"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          move_id:
+            type: "value"
+            operator: "is_truthy"
+          payable_move_line_id:
+            type: "value"
+            operator: "is_truthy"
+          amount_paid:
+            type: "value"
+            expected: 0.0
+          amount_residual:
+            type: "value"
+            expected: 500000.0
+
+      # ── Reconcile a plain journal entry (standing in for an
+      # ``account.payment``) against the disbursement's own Payable
+      # Move Line -- full amount, so the guard's condition is
+      # unambiguous. ──────────────────────────────────────────────
+      - step: "Create the customer payment as a plain, posted journal entry"
+        action: "create"
+        model: "account.move"
+        save_as: "cp1_payment_move"
+        values:
+          journal_id: "REC: cp1_payment_journal.id"
+          date: 2026-08-20
+          ref: "CP1 Customer Payment"
+          line_ids:
+            - - 0
+              - 0
+              - name: "CP1 Customer Payment - Payable"
+                account_id: "REC: cp1_payable_account.id"
+                partner_id: "REC: cp1_contact.id"
+                debit: 500000.0
+                credit: 0.0
+            - - 0
+              - 0
+              - name: "CP1 Customer Payment - Liquidity"
+                account_id: "REC: cp1_liquidity_account.id"
+                partner_id: "REC: cp1_contact.id"
+                debit: 0.0
+                credit: 500000.0
+
+      - step: "Post the customer payment"
+        action: "call"
+        target: "cp1_payment_move"
+        method: "action_post"
+        asserts:
+          state:
+            type: "value"
+            expected: "posted"
+
+      - step: "Find the payment's own journal item on the Payable Account"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["move_id", "=", "REC: cp1_payment_move.id"],
+            ["account_id", "=", "REC: cp1_payable_account.id"],
+          ]
+        limit: 1
+        save_as: "cp1_payment_payable_line"
+
+      - step: "Find both Payable journal items (payment + disbursement)"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            [
+              "id",
+              "in",
+              [
+                "REC: cp1_payment_payable_line.id",
+                "REC: cp1_disbursement.payable_move_line_id.id",
+              ],
+            ],
+          ]
+        save_as: "cp1_reconcile_lines"
+        expect_count: 2
+
+      - step: "Reconcile the payment against the disbursement (full)"
+        action: "call"
+        target: "cp1_reconcile_lines"
+        method: "reconcile"
+
+      - step: "Assert the disbursement is now fully paid"
+        action: "assert"
+        target: "cp1_disbursement"
+        refresh: true
+        asserts:
+          amount_paid:
+            type: "value"
+            expected: 500000.0
+          amount_residual:
+            type: "value"
+            expected: 0.0
+
+      - step: "Exactly one partial reconcile links the payment to the disbursement"
+        action: "search"
+        model: "account.partial.reconcile"
+        domain: [["debit_move_id", "=", "REC: cp1_payment_payable_line.id"]]
+        expect_count: 1
+
+      # ── Negative: cancelling a paid disbursement is rejected before
+      # the state changes ─────────────────────────────────────────────
+      - step: "Create the cancellation reason"
+        action: "create"
+        model: "base.cancel_reason"
+        save_as: "cp1_reason"
+        values:
+          name: "CP1 Cancel Reason"
+          code: "CP1CR"
+
+      - step: "Cancelling the paid disbursement is rejected"
+        action: "wizard"
+        model: "base.select_cancel_reason"
+        target: "cp1_disbursement"
+        as_user: "base.user_admin"
+        values:
+          cancel_reason_id: "REC: cp1_reason.id"
+        method: "action_confirm"
+        expect_error:
+          type: "UserError"
+          message_contains: "already received payment"
+
+      - step: "Assert the disbursement was left untouched by the rejected cancel"
+        action: "assert"
+        target: "cp1_disbursement"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          move_id:
+            type: "value"
+            operator: "is_truthy"
+          amount_paid:
+            type: "value"
+            expected: 500000.0
+
+      - step: "The reconciliation between payment and disbursement is untouched"
+        action: "search"
+        model: "account.partial.reconcile"
+        domain: [["debit_move_id", "=", "REC: cp1_payment_payable_line.id"]]
+        expect_count: 1
+
+      # ── Positive: once the payment's reconciliation is undone,
+      # cancelling succeeds again ──────────────────────────────────────
+      - step: "Undo the reconciliation on the payment's own Payable line"
+        action: "call"
+        target: "cp1_payment_payable_line"
+        method: "remove_move_reconcile"
+
+      - step: "Assert the disbursement is no longer paid"
+        action: "assert"
+        target: "cp1_disbursement"
+        refresh: true
+        asserts:
+          amount_paid:
+            type: "value"
+            expected: 0.0
+
+      - step: "Cancel the now-unpaid disbursement via the wizard"
+        action: "wizard"
+        model: "base.select_cancel_reason"
+        target: "cp1_disbursement"
+        as_user: "base.user_admin"
+        values:
+          cancel_reason_id: "REC: cp1_reason.id"
+        method: "action_confirm"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Assert cancelling deleted the accounting entry"
+        action: "assert"
+        target: "cp1_disbursement"
+        refresh: true
+        asserts:
+          move_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Assert cancelling reset the Schedule line back to scheduled"
+        action: "assert"
+        target: "cp1_schedule"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "scheduled"

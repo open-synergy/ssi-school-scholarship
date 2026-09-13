@@ -5,7 +5,8 @@
 from datetime import date as datetime_date
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
+from odoo.tools.float_utils import float_is_zero
 
 from odoo.addons.ssi_decorator import ssi_decorator
 
@@ -485,6 +486,36 @@ Solution: Select a Date Due on or after Date
                 "state": "realized",
             }
         )
+
+    @ssi_decorator.pre_cancel_check()
+    def _10_check_no_payment(self):
+        """Reject cancelling a document already settled by payment.
+
+        Runs on the ``pre_cancel_check`` slot, i.e. before the
+        document leaves its current state for ``cancel``.
+        Cancelling deletes this document's own accounting entry
+        (``_10_delete_accounting_entry``), which would strip the
+        Payable Move Line an external ``account.payment`` is
+        already reconciled against, so any settled amount forbids
+        cancelling.
+
+        :raises UserError: when ``amount_paid`` is not zero
+        """
+        self.ensure_one()
+        precision = self.company_currency_id.decimal_places
+        if not float_is_zero(self.amount_paid, precision_digits=precision):
+            error_message = """
+Document Type: %s
+Context: Cancel document
+Database ID: %s
+Problem: Document has already received payment
+Solution: Undo the reconciliation of the payment against this
+document's payable journal item before cancelling
+""" % (
+                self._description,
+                self.id,
+            )
+            raise UserError(_(error_message))
 
     @ssi_decorator.post_cancel_action()
     def _10_delete_accounting_entry(self):
