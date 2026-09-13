@@ -1,6 +1,6 @@
 # Create Scholarship Award
 
-> **Module:** ssi_school_scholarship_admission\
+> **Module:** `ssi_school_scholarship_admission`\
 > **Extends:** ssi_school_scholarship — model `school_scholarship_award`, action `01-create`
 
 ## Additional Fields
