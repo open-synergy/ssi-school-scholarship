@@ -1,6 +1,6 @@
 # Create Scholarship Funding Source
 
-> **Module:** ssi_school_scholarship\
+> **Module:** `ssi_school_scholarship`\
 > **Model:** `school_scholarship_funding_source`\
 > **Menu:** School > Configuration > Scholarship > Scholarship Funding Sources\
 > **Actor:** user in group `Scholarship Funding Source`\
