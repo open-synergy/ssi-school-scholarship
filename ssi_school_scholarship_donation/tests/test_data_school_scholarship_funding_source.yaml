@@ -607,3 +607,97 @@ scenarios:
           ]
         save_as: "usage3"
         expect_count: 0
+
+  - name: "Funding Source - Donation Fund Analytic Account Mismatch Is Rejected"
+    steps:
+      # ── Shared fixture chain (suffix FS4). Kept self-contained in
+      # this scenario's own body, not `setup:` -- this file has no
+      # shared `setup:` block on purpose (see the file header): the
+      # Donation Fund created below has a unique `code`, and `setup:`
+      # is replayed before every scenario in this same DB transaction
+      # (no rollback between scenarios -- test-traps.md T-01 §(b′)),
+      # so a second replay would collide on that unique code. ─────
+      - step: "Create the analytic account the funding source is bound to"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic4a"
+        values:
+          name: "FS4 Analytic A"
+
+      - step: "Create a DIFFERENT analytic account the donation fund is bound to"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic4b"
+        values:
+          name: "FS4 Analytic B"
+
+      - step: "Create the donation fund bound to Analytic Account B"
+        action: "create"
+        model: "donation_fund"
+        save_as: "fund4"
+        values:
+          name: "FS4 Fund"
+          code: "FS4FD"
+          analytic_account_id: "REC: analytic4b.id"
+
+      # ── Negative: creating a Funding Source bound to Analytic
+      # Account A, but wired to a Donation Fund bound to Analytic
+      # Account B, is rejected at create time. Both trigger fields
+      # (`analytic_account_id` and `donation_fund_id`) MUST be in the
+      # same `create` vals, since `@api.constrains` only fires for
+      # fields present in the vals of the call that touched them
+      # (test-traps.md T-06). ────────────────────────────────────────
+      - step: "Create a funding source with a mismatched donation fund"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "Donation Fund's Analytic Account does not match"
+        values:
+          name: "FS4 Funding Source"
+          code: "FS4FS"
+          analytic_account_id: "REC: analytic4a.id"
+          donation_fund_id: "REC: fund4.id"
+
+  - name: "Funding Source - Donation Fund With Matching Analytic Account Is Accepted"
+    steps:
+      # ── Shared fixture chain (suffix FS5) ────────────────────────
+      - step: "Create the analytic account shared by both sides"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic5"
+        values:
+          name: "FS5 Analytic"
+
+      - step: "Create the donation fund bound to that analytic account"
+        action: "create"
+        model: "donation_fund"
+        save_as: "fund5"
+        values:
+          name: "FS5 Fund"
+          code: "FS5FD"
+          analytic_account_id: "REC: analytic5.id"
+
+      # ── Positive: creating a Funding Source bound to the SAME
+      # Analytic Account as its Donation Fund, in one `create` call,
+      # is accepted -- the constrain only rejects a mismatch. ────────
+      - step: "Create a funding source with a matching donation fund"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source5"
+        values:
+          name: "FS5 Funding Source"
+          code: "FS5FS"
+          analytic_account_id: "REC: analytic5.id"
+          donation_fund_id: "REC: fund5.id"
+
+      - step: "Assert the funding source saved with its donation fund wired"
+        action: "assert"
+        target: "funding_source5"
+        asserts:
+          donation_fund_id:
+            type: "m2o"
+            expected: "REC: fund5"
+          analytic_account_id:
+            type: "m2o"
+            expected: "REC: analytic5"
