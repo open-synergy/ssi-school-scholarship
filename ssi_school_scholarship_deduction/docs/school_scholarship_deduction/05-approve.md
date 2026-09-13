@@ -1,6 +1,6 @@
 # Approve Scholarship Deduction
 
-> **Module:** ssi_school_scholarship_deduction\
+> **Module:** `ssi_school_scholarship_deduction`\
 > **Model:** `school_scholarship_deduction`\
 > **Menu:** School > Scholarship > Scholarship Deductions\
 > **Actor:** user in group `Deduction Validator` named as approver on the `approval.template`\

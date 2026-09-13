@@ -1,6 +1,6 @@
 # Create Due Deduction — Scholarship Award
 
-> **Module:** ssi_school_scholarship_deduction\
+> **Module:** `ssi_school_scholarship_deduction`\
 > **Extends:** ssi_school_scholarship — model `school_scholarship_award`\
 > **Model:** `school_scholarship_award`\
 > **Menu:** School > Scholarship > Scholarship Awards\
