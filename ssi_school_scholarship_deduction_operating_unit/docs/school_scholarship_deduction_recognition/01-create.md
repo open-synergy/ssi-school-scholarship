@@ -1,6 +1,6 @@
 # Create Scholarship Deduction Recognition
 
-> **Module:** ssi_school_scholarship_deduction_operating_unit\
+> **Module:** `ssi_school_scholarship_deduction_operating_unit`\
 > **Extends:** ssi_school_scholarship_deduction — model `school_scholarship_deduction_recognition`,
 > action `01-create`
 
