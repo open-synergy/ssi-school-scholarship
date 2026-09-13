@@ -1,6 +1,6 @@
 # Create Scholarship Type
 
-> **Module:** ssi_school_scholarship_operating_unit\
+> **Module:** `ssi_school_scholarship_operating_unit`\
 > **Extends:** ssi_school_scholarship — model `school_scholarship_type`, action `01-create`
 
 ## Additional Fields
