@@ -1,6 +1,6 @@
 # Create Scholarship Deduction Recognition
 
-> **Module:** ssi_school_scholarship_deduction\
+> **Module:** `ssi_school_scholarship_deduction`\
 > **Model:** `school_scholarship_deduction_recognition`\
 > **Menu:** School > Scholarship > Scholarship Deduction Recognitions\
 > **Actor:** user in group `Deduction User`\
