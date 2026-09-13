@@ -1,6 +1,6 @@
 # Generate Scholarship Award Schedule
 
-> **Module:** ssi_school_scholarship\
+> **Module:** `ssi_school_scholarship`\
 > **Model:** `school_scholarship_award`\
 > **Menu:** School > Scholarship > Scholarship Awards\
 > **Actor:** user in group `Award User`\

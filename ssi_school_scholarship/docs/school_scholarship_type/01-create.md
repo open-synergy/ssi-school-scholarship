@@ -1,6 +1,6 @@
 # Create Scholarship Type
 
-> **Module:** ssi_school_scholarship\
+> **Module:** `ssi_school_scholarship`\
 > **Model:** `school_scholarship_type`\
 > **Menu:** School > Configuration > Scholarship > Scholarship Types\
 > **Actor:** user in group `Scholarship Type`\

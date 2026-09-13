@@ -1,6 +1,6 @@
 # Create Scholarship Program
 
-> **Module:** ssi_school_scholarship\
+> **Module:** `ssi_school_scholarship`\
 > **Model:** `school_scholarship_program`\
 > **Menu:** School > Configuration > Scholarship > Scholarship Programs\
 > **Actor:** user in group `Scholarship Program`\

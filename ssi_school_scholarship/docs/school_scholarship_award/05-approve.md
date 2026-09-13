@@ -1,6 +1,6 @@
 # Approve Scholarship Award
 
-> **Module:** ssi_school_scholarship\
+> **Module:** `ssi_school_scholarship`\
 > **Model:** `school_scholarship_award`\
 > **Menu:** School > Scholarship > Scholarship Awards\
 > **Actor:** approver on the pending approval level\
