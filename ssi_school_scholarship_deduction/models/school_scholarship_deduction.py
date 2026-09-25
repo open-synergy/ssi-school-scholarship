@@ -283,14 +283,20 @@ class SchoolScholarshipDeduction(models.Model):
         selection=[
             ("immediate", "Immediate"),
             ("deferred", "Deferred"),
+            ("enrollment", "Enrollment"),
         ],
         compute="_compute_recognition_method",
         store=True,
         readonly=False,
         help="``Deferred`` once Recognition Date falls after this "
         "document's own Date -- meaning the service this deduction "
-        "pays for has not started yet. Defaults automatically but "
-        "may be overridden manually.",
+        "pays for has not started yet. ``Enrollment`` once every "
+        "invoice this document allocates against belongs to an "
+        "enrollment with Revenue Recognition enabled and not yet "
+        "Done -- set automatically by "
+        "``_03_set_enrollment_recognition_method`` right before "
+        "opening, overriding any other value. Defaults automatically "
+        "but may be overridden manually.",
     )
     recognition_date = fields.Date(
         string="Recognition Date",
@@ -603,6 +609,59 @@ Solution: Enable Allow Asymmetric Recognition on the Program, or keep Method Imm
                 )
                 raise ValidationError(_(error_message))
 
+    def _get_revenue_recognition_enrollments(self):
+        """Find every enrollment invoiced by this document's own allocations.
+
+        Traced through ``school_enrollment_payment_term`` -- the model
+        that actually carries the link to an invoice -- rather than
+        directly from ``allocation_ids``, since an allocated invoice
+        need not originate from an enrollment at all.
+
+        :return: ``school_enrollment`` recordset, one per distinct
+            enrollment whose own ``school_enrollment_payment_term``
+            was invoiced by an invoice this document allocates
+            against
+        """
+        self.ensure_one()
+        Term = self.env["school_enrollment_payment_term"]  # noqa: N806
+        invoices = self.allocation_ids.mapped("customer_invoice_id")
+        if not invoices:
+            return self.env["school_enrollment"]
+        terms = Term.sudo().search(
+            [("customer_invoice_id", "in", invoices.ids)],
+        )
+        return terms.mapped("enrollment_id")
+
+    @ssi_decorator.pre_open_action()
+    def _03_set_enrollment_recognition_method(self):
+        """Force Recognition Method to ``enrollment`` when applicable.
+
+        Runs before every other pre-open hook of this model (its own
+        name sorts ahead of ``_05_check_reconcilable``). Overrides
+        any manually-set Recognition Method once every enrollment
+        invoiced by this document's own allocations still has Revenue
+        Recognition enabled and has not yet reached Done -- so this
+        deduction's own discount is deferred to the exact same
+        accounting period as the revenue it reduces, per PSAK 115.
+        A no-op while Deferred Account is empty, no allocated invoice
+        belongs to an enrollment, at least one of those enrollments
+        has Revenue Recognition disabled, or at least one of them has
+        already reached Done.
+
+        :return: nothing; may assign ``recognition_method``
+        """
+        self.ensure_one()
+        if not self.deferred_account_id:
+            return
+        enrollments = self._get_revenue_recognition_enrollments()
+        if not enrollments:
+            return
+        if not all(enrollments.mapped("revenue_recognition")):
+            return
+        if "done" in enrollments.mapped("state"):
+            return
+        self.recognition_method = "enrollment"
+
     @ssi_decorator.pre_cancel_action()
     def _05_check_no_done_recognition(self):
         """Reject cancelling a deduction with a Done Recognition.
@@ -620,6 +679,39 @@ Context: Cancel deduction
 Database ID: %s
 Problem: A Recognition document of this deduction is still in Done status
 Solution: Cancel every Done Recognition document of this deduction first
+""" % (
+                self._description,
+                self.id,
+            )
+            raise UserError(_(error_message))
+
+    @ssi_decorator.pre_cancel_action()
+    def _06_check_no_enrollment_recognition_reference(self):
+        """Reject cancelling once an enrollment already recognized a Line.
+
+        An enrollment-mode Line already moved by its own enrollment's
+        Revenue Recognition entry can no longer be safely unwound by
+        cancelling this document -- that entry references this
+        document's own Line values directly.
+
+        :raises UserError: when at least one of this document's own
+            Lines is already referenced by a
+            ``school_enrollment_revenue_recognition_line``.
+        """
+        self.ensure_one()
+        recognition_line_ids = self.env[
+            "school_enrollment_revenue_recognition_line"
+        ].sudo()
+        referencing = recognition_line_ids.search_count(
+            [("scholarship_deduction_line_id", "in", self.line_ids.ids)]
+        )
+        if referencing:
+            error_message = """
+Document Type: %s
+Context: Cancel deduction
+Database ID: %s
+Problem: A Line of this deduction is referenced by an enrollment's Revenue Recognition
+Solution: This deduction cannot be cancelled once its Revenue Recognition has posted
 """ % (
                 self._description,
                 self.id,

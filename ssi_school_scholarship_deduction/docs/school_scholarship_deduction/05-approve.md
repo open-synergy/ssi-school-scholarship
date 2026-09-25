@@ -28,6 +28,12 @@
   for Amount Total, and debits each Line's own account for its Price Subtotal, carrying
   that line's Analytic Account. Its Move and the resulting Receivable Move Line are
   shown on the **Accounting** tab.
+- If every invoice allocated on this document belongs to an enrollment with Revenue
+  Recognition enabled and not yet Done, Recognition Method is automatically set to
+  **Enrollment**, and every Line's own account above is its Deferred Account instead of
+  its own Final Account -- the amount is later moved to the Final Account by that
+  enrollment's own Revenue Recognition entry when the enrollment reaches Done, not by a
+  `school_scholarship_deduction_recognition` document.
 - The document's Receivable journal item is reconciled against every allocated invoice's
   own receivable journal item — each invoice's Amount Residual drops by its Amount
   Allocated, and an invoice fully covered moves to **Paid**.
