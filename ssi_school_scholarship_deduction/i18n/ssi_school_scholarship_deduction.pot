@@ -36,6 +36,17 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: code:addons/ssi_school_scholarship_deduction/models/school_enrollment.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Finish enrollment\n"
+"Database ID: %s\n"
+"Problem: Scholarship deduction '%s' on this enrollment's own invoice is not yet Open\n"
+"Solution: Confirm and approve that deduction before finishing this enrollment\n"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__deduction_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__deduction_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__deduction_id
@@ -69,8 +80,8 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__account_id
 msgid ""
 "Accounting account this line posts to. Equal to Final Account, unless the "
-"parent document's Recognition Method is ``Deferred``, in which case it is "
-"the parent's own Deferred Account instead."
+"parent document's Recognition Method is ``Deferred`` or ``Enrollment``, in "
+"which case it is the parent's own Deferred Account instead."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -671,7 +682,9 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_customer_invoice__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_revenue_recognition_line__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_funding__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__display_name
@@ -695,6 +708,11 @@ msgstr ""
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__date_start
 msgid "Earliest Schedule Date to process. Leave empty for no lower bound."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields.selection,name:ssi_school_scholarship_deduction.selection__school_scholarship_deduction__recognition_method__enrollment
+msgid "Enrollment"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -775,7 +793,9 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_customer_invoice__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_revenue_recognition_line__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_funding__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__id
@@ -890,7 +910,9 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_customer_invoice____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_revenue_recognition_line____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_funding____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule____last_update
@@ -1371,6 +1393,11 @@ msgid "Scholarship Deduction"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_revenue_recognition_line__scholarship_deduction_line_id
+msgid "Scholarship Deduction Line"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.module.category,name:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_data_ownership_module_category
 #: model:ir.module.category,name:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_workflow_module_category
 msgid "Scholarship Deduction Recognition"
@@ -1403,8 +1430,18 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_enrollment
+msgid "School Enrollment"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model,name:ssi_school_scholarship_deduction.model_school_enrollment_fee_analysis
 msgid "School Enrollment Fee Analysis"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_enrollment_revenue_recognition_line
+msgid "School Enrollment Revenue Recognition - Line"
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
@@ -1575,6 +1612,14 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_enrollment_revenue_recognition_line__scholarship_deduction_line_id
+msgid ""
+"The enrollment-mode scholarship deduction line released by this Recognition "
+"Line, when it originates from a scholarship deduction rather than an "
+"invoiced payment term detail."
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__partner_id
 msgid ""
 "The student's contact partner. Must match the Partner of every allocated "
@@ -1707,8 +1752,12 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_method
 msgid ""
 "``Deferred`` once Recognition Date falls after this document's own Date -- "
-"meaning the service this deduction pays for has not started yet. Defaults "
-"automatically but may be overridden manually."
+"meaning the service this deduction pays for has not started yet. "
+"``Enrollment`` once every invoice this document allocates against belongs to"
+" an enrollment with Revenue Recognition enabled and not yet Done -- set "
+"automatically by ``_03_set_enrollment_recognition_method`` right before "
+"opening, overriding any other value. Defaults automatically but may be "
+"overridden manually."
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
