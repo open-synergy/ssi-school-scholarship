@@ -1,0 +1,2290 @@
+options:
+  auto_refresh: true
+scenarios:
+  - name:
+      "Enrollment Mode: Set On Open, Recognized On Done, Excluded From Wizard, Cancel
+      Rejected After Recognition"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "ea_income_type"
+
+      - step: "Get the account.account.type Receivable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "ea_receivable_type"
+
+      - step: "Get the account.account.type Current Assets reference"
+        action: "ref"
+        xml_id: "account.data_account_type_current_assets"
+        save_as: "ea_asset_type"
+
+      - step: "Create the sale journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "ea_journal"
+        values:
+          name: "EA Journal"
+          code: "JEA"
+          type: "sale"
+
+      - step: "Create the receivable account shared by the invoice and deduction"
+        action: "create"
+        model: "account.account"
+        save_as: "ea_receivable_account"
+        values:
+          name: "EA Receivable Account"
+          code: "EARA"
+          user_type_id: "REC: ea_receivable_type.id"
+          reconcile: true
+
+      - step: "Create the enrollment's own deferred (temp) income account"
+        action: "create"
+        model: "account.account"
+        save_as: "ea_enroll_deferred_account"
+        values:
+          name: "EA Enrollment Deferred Account"
+          code: "EAED"
+          user_type_id: "REC: ea_income_type.id"
+
+      - step: "Create the enrollment's own final income account"
+        action: "create"
+        model: "account.account"
+        save_as: "ea_enroll_final_account"
+        values:
+          name: "EA Enrollment Final Account"
+          code: "EAEF"
+          user_type_id: "REC: ea_income_type.id"
+
+      - step: "Create the scholarship discount's own final account"
+        action: "create"
+        model: "account.account"
+        save_as: "ea_discount_final_account"
+        values:
+          name: "EA Discount Final Account"
+          code: "EADF"
+          user_type_id: "REC: ea_income_type.id"
+
+      - step: "Create the award's own Deferred Discount (temp/holding) account"
+        action: "create"
+        model: "account.account"
+        save_as: "ea_deferred_account"
+        values:
+          name: "EA Deferred Discount Account"
+          code: "EADD"
+          user_type_id: "REC: ea_asset_type.id"
+
+      - step: "Create the customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "ea_ci_type"
+        values:
+          name: "EA Invoice Type"
+          code: "CITEA"
+          journal_id: "REC: ea_journal.id"
+          receivable_account_id: "REC: ea_receivable_account.id"
+
+      - step: "Create the product covered by the enrollment and the benefit"
+        action: "create"
+        model: "product.product"
+        save_as: "ea_product"
+        values:
+          name: "EA Product"
+          type: "service"
+          list_price: 1000000.0
+
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "ea_grade_type"
+        values:
+          name: "EA Grade Type"
+          code: "EAGT"
+          sequence: 10
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "ea_academic_year"
+        values:
+          name: "2026/2027 EA"
+          code: "EAAY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create academic term 1 (enrollment's own term, not last)"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "ea_academic_term"
+        values:
+          name: "Semester 1 EA"
+          code: "EASM1"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: ea_academic_year.id"
+          enrollment_state: "open"
+
+      - step: "Create academic term 2 (last term, unused)"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "ea_academic_term_2"
+        values:
+          name: "Semester 2 EA"
+          code: "EASM2"
+          date_start: 2027-01-01
+          date_end: 2027-06-30
+          year_id: "REC: ea_academic_year.id"
+          enrollment_state: "close"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "ea_school"
+        values:
+          name: "EA School"
+          code: "EASC"
+          grade_type_id: "REC: ea_grade_type.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "ea_grade"
+        values:
+          name: "EA Grade"
+          code: "EAGR"
+          sequence: 10
+          type_id: "REC: ea_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "ea_grade_class"
+        values:
+          name: "EA Class"
+          code: "EACL"
+          school_id: "REC: ea_school.id"
+          grade_id: "REC: ea_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "ea_contact"
+        values:
+          name: "EA Student Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "ea_student"
+        values:
+          name: "EA Student"
+          code: "EAST"
+          contact_id: "REC: ea_contact.id"
+          school_id: "REC: ea_school.id"
+
+      - step: "Create the enrollment with Revenue Recognition enabled"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "ea_enrollment"
+        values:
+          date: 2026-07-01
+          academic_year_id: "REC: ea_academic_year.id"
+          academic_term_id: "REC: ea_academic_term.id"
+          school_id: "REC: ea_school.id"
+          grade_id: "REC: ea_grade.id"
+          grade_class_id: "REC: ea_grade_class.id"
+          student_id: "REC: ea_student.id"
+          currency_id: "REC: company.currency_id.id"
+          receivable_journal_id: "REC: ea_journal.id"
+          receivable_account_id: "REC: ea_receivable_account.id"
+          customer_invoice_type_id: "REC: ea_ci_type.id"
+          revenue_recognition: true
+          recognition_journal_id: "REC: ea_journal.id"
+
+      - step: "Confirm the enrollment"
+        action: "call"
+        target: "ea_enrollment"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the enrollment"
+        action: "call"
+        target: "ea_enrollment"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the payment term to be invoiced"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "ea_term"
+        values:
+          enrollment_id: "REC: ea_enrollment.id"
+          name: "Term EA"
+          sequence: 10
+          date_invoice: 2026-07-05
+          date_due: 2026-07-20
+
+      - step: "Create the term detail"
+        action: "create"
+        model: "school_enrollment_payment_term_detail"
+        save_as: "ea_detail"
+        values:
+          term_id: "REC: ea_term.id"
+          product_id: "REC: ea_product.id"
+          name: "Fee EA"
+          account_id: "REC: ea_enroll_deferred_account.id"
+          final_account_id: "REC: ea_enroll_final_account.id"
+          uom_quantity: 1.0
+          uom_id: "REF: uom.product_uom_unit"
+          price_unit: 1000000.0
+
+      - step: "Invoice the term"
+        action: "call"
+        target: "ea_term"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+
+      - step: "Get the term's generated invoice"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["id", "=", "REC: ea_term.customer_invoice_id.id"]]
+        save_as: "ea_invoice"
+        expect_count: 1
+
+      - step: "Confirm the invoice"
+        action: "call"
+        target: "ea_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Open the invoice"
+        action: "call"
+        target: "ea_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "ea_analytic"
+        values:
+          name: "EA Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "ea_funding_source"
+        values:
+          name: "EA Funding Source"
+          code: "EAFS"
+          analytic_account_id: "REC: ea_analytic.id"
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "ea_type"
+        values:
+          name: "EA Type"
+          code: "EATY"
+          deduction_journal_id: "REC: ea_journal.id"
+          discount_account_id: "REC: ea_discount_final_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "ea_program"
+        values:
+          name: "EA Program"
+          code: "EAPRG"
+          type_id: "REC: ea_type.id"
+          school_id: "REC: ea_school.id"
+          academic_year_id: "REC: ea_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: ea_funding_source.id"]]]
+          deduction_journal_id: "REC: ea_journal.id"
+          discount_account_id: "REC: ea_discount_final_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: ea_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 400000.0
+
+      - step: "Create the award, its Deferred Discount Account already set"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "ea_award"
+        values:
+          program_id: "REC: ea_program.id"
+          student_id: "REC: ea_student.id"
+          enrollment_id: "REC: ea_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          deferred_discount_account_id: "REC: ea_deferred_account.id"
+          recognition_journal_id: "REC: ea_journal.id"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "EA Benefit"
+                product_id: "REC: ea_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: ea_funding_source.id"
+                percentage: 100.0
+
+      - step: "Find the award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: ea_award.id"]]
+        limit: 1
+        save_as: "ea_benefit"
+
+      - step: "Find the award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: ea_award.id"]]
+        limit: 1
+        save_as: "ea_funding"
+
+      - step: "Create the Schedule line realizing the Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "ea_schedule"
+        values:
+          benefit_id: "REC: ea_benefit.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step:
+          "Create the deduction, Date on/after the Award's Start Date (would default to
+          immediate)"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "ea_deduction"
+        values:
+          award_id: "REC: ea_award.id"
+          date: 2026-08-05
+          journal_id: "REC: ea_journal.id"
+          receivable_account_id: "REC: ea_receivable_account.id"
+          deferred_account_id: "REC: ea_deferred_account.id"
+          recognition_journal_id: "REC: ea_journal.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: ea_schedule.id"
+                funding_id: "REC: ea_funding.id"
+                final_account_id: "REC: ea_discount_final_account.id"
+                name: "EA Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: ea_invoice.id"
+                amount_allocated: 400000.0
+
+      - step: "Confirm the deduction"
+        action: "call"
+        target: "ea_deduction"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the deduction, opening it"
+        action: "call"
+        target: "ea_deduction"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          recognition_method:
+            type: "value"
+            expected: "enrollment"
+          recognition_state:
+            type: "value"
+            expected: "not_applicable"
+
+      - step: "Get the deduction's own Line"
+        action: "search"
+        model: "school_scholarship_deduction_line"
+        domain: [["deduction_id", "=", "REC: ea_deduction.id"]]
+        save_as: "ea_line"
+        expect_count: 1
+
+      - step: "Assert the Line posts to the Deferred Discount (temp) account"
+        action: "assert"
+        target: "ea_line"
+        asserts:
+          account_id.id:
+            type: "value"
+            expected: "REC: ea_deferred_account.id"
+
+      - step:
+          "Assert the enrollment-mode deduction is excluded from the recognition
+          wizard's own due domain"
+        action: "search"
+        model: "school_scholarship_deduction"
+        domain:
+          - ["id", "=", "REC: ea_deduction.id"]
+          - ["recognition_state", "=", "pending"]
+        save_as: "ea_wizard_candidates"
+        expect_count: 0
+
+      - step: "Assert the enrollment's own term is not the last term (done is allowed)"
+        action: "assert"
+        target: "ea_enrollment"
+        asserts:
+          academic_term_id.last_term:
+            type: "value"
+            expected: false
+
+      - step: "Finish the enrollment"
+        action: "call"
+        target: "ea_enrollment"
+        method: "action_done"
+        as_user: "base.user_admin"
+
+      - step: "Assert the Revenue Recognition move was posted"
+        action: "assert"
+        target: "ea_enrollment"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          recognition_move_id:
+            type: "value"
+            operator: "is_truthy"
+          recognition_move_id.state:
+            type: "value"
+            expected: "posted"
+
+      - step: "Find the Recognition Line generated for the deduction's own Line"
+        action: "search"
+        model: "school_enrollment_revenue_recognition_line"
+        domain: [["scholarship_deduction_line_id", "=", "REC: ea_line.id"]]
+        save_as: "ea_recognition_line"
+        expect_count: 1
+
+      - step: "Assert the Recognition Line's own accounts and amount"
+        action: "assert"
+        target: "ea_recognition_line"
+        asserts:
+          enrollment_id.id:
+            type: "value"
+            expected: "REC: ea_enrollment.id"
+          debit_account_id.id:
+            type: "value"
+            expected: "REC: ea_deferred_account.id"
+          credit_account_id.id:
+            type: "value"
+            expected: "REC: ea_discount_final_account.id"
+          amount:
+            type: "value"
+            expected: -400000.0
+
+      - step: "Find the journal item posted on the Discount Final Account"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          - ["move_id", "=", "REC: ea_enrollment.recognition_move_id.id"]
+          - ["account_id", "=", "REC: ea_discount_final_account.id"]
+        save_as: "ea_final_ml"
+        expect_count: 1
+
+      - step: "Assert the Discount Final Account was debited"
+        action: "assert"
+        target: "ea_final_ml"
+        asserts:
+          debit:
+            type: "value"
+            expected: 400000.0
+          credit:
+            type: "value"
+            expected: 0.0
+
+      - step: "Find the journal item posted on the Deferred Discount Account"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          - ["move_id", "=", "REC: ea_enrollment.recognition_move_id.id"]
+          - ["account_id", "=", "REC: ea_deferred_account.id"]
+        save_as: "ea_deferred_ml"
+        expect_count: 1
+
+      - step: "Assert the Deferred Discount Account was credited back"
+        action: "assert"
+        target: "ea_deferred_ml"
+        asserts:
+          debit:
+            type: "value"
+            expected: 0.0
+          credit:
+            type: "value"
+            expected: 400000.0
+
+      - step: "Create the cancellation reason"
+        action: "create"
+        model: "base.cancel_reason"
+        save_as: "ea_reason"
+        values:
+          name: "EA Cancel Reason"
+          code: "EACR"
+
+      - step:
+          "Attempt to cancel the deduction now that its Line is referenced by the
+          enrollment's own Revenue Recognition"
+        action: "wizard"
+        model: "base.select_cancel_reason"
+        target: "ea_deduction"
+        as_user: "base.user_admin"
+        values:
+          cancel_reason_id: "REC: ea_reason.id"
+        method: "action_confirm"
+        expect_error:
+          type: "UserError"
+          message_contains: "Revenue Recognition"
+
+  - name: "Revenue Recognition Disabled Leaves The Deduction Immediate"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "eb_income_type"
+
+      - step: "Get the account.account.type Receivable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "eb_receivable_type"
+
+      - step: "Get the account.account.type Current Assets reference"
+        action: "ref"
+        xml_id: "account.data_account_type_current_assets"
+        save_as: "eb_asset_type"
+
+      - step: "Create the sale journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "eb_journal"
+        values:
+          name: "EB Journal"
+          code: "JEB"
+          type: "sale"
+
+      - step: "Create the receivable account shared by the invoice and deduction"
+        action: "create"
+        model: "account.account"
+        save_as: "eb_receivable_account"
+        values:
+          name: "EB Receivable Account"
+          code: "EBRA"
+          user_type_id: "REC: eb_receivable_type.id"
+          reconcile: true
+
+      - step: "Create the enrollment's own deferred (temp) income account"
+        action: "create"
+        model: "account.account"
+        save_as: "eb_enroll_deferred_account"
+        values:
+          name: "EB Enrollment Deferred Account"
+          code: "EBED"
+          user_type_id: "REC: eb_income_type.id"
+
+      - step: "Create the enrollment's own final income account"
+        action: "create"
+        model: "account.account"
+        save_as: "eb_enroll_final_account"
+        values:
+          name: "EB Enrollment Final Account"
+          code: "EBEF"
+          user_type_id: "REC: eb_income_type.id"
+
+      - step: "Create the scholarship discount's own final account"
+        action: "create"
+        model: "account.account"
+        save_as: "eb_discount_final_account"
+        values:
+          name: "EB Discount Final Account"
+          code: "EBDF"
+          user_type_id: "REC: eb_income_type.id"
+
+      - step: "Create the award's own Deferred Discount (temp/holding) account"
+        action: "create"
+        model: "account.account"
+        save_as: "eb_deferred_account"
+        values:
+          name: "EB Deferred Discount Account"
+          code: "EBDD"
+          user_type_id: "REC: eb_asset_type.id"
+
+      - step: "Create the customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "eb_ci_type"
+        values:
+          name: "EB Invoice Type"
+          code: "CITEB"
+          journal_id: "REC: eb_journal.id"
+          receivable_account_id: "REC: eb_receivable_account.id"
+
+      - step: "Create the product"
+        action: "create"
+        model: "product.product"
+        save_as: "eb_product"
+        values:
+          name: "EB Product"
+          type: "service"
+          list_price: 1000000.0
+
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "eb_grade_type"
+        values:
+          name: "EB Grade Type"
+          code: "EBGT"
+          sequence: 10
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "eb_academic_year"
+        values:
+          name: "2026/2027 EB"
+          code: "EBAY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "eb_academic_term"
+        values:
+          name: "Semester EB"
+          code: "EBSM"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+          year_id: "REC: eb_academic_year.id"
+          enrollment_state: "open"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "eb_school"
+        values:
+          name: "EB School"
+          code: "EBSC"
+          grade_type_id: "REC: eb_grade_type.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "eb_grade"
+        values:
+          name: "EB Grade"
+          code: "EBGR"
+          sequence: 10
+          type_id: "REC: eb_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "eb_grade_class"
+        values:
+          name: "EB Class"
+          code: "EBCL"
+          school_id: "REC: eb_school.id"
+          grade_id: "REC: eb_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "eb_contact"
+        values:
+          name: "EB Student Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "eb_student"
+        values:
+          name: "EB Student"
+          code: "EBST"
+          contact_id: "REC: eb_contact.id"
+          school_id: "REC: eb_school.id"
+
+      - step: "Create the enrollment with Revenue Recognition left disabled"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "eb_enrollment"
+        values:
+          date: 2026-07-01
+          academic_year_id: "REC: eb_academic_year.id"
+          academic_term_id: "REC: eb_academic_term.id"
+          school_id: "REC: eb_school.id"
+          grade_id: "REC: eb_grade.id"
+          grade_class_id: "REC: eb_grade_class.id"
+          student_id: "REC: eb_student.id"
+          currency_id: "REC: company.currency_id.id"
+          receivable_journal_id: "REC: eb_journal.id"
+          receivable_account_id: "REC: eb_receivable_account.id"
+          customer_invoice_type_id: "REC: eb_ci_type.id"
+
+      - step: "Confirm the enrollment"
+        action: "call"
+        target: "eb_enrollment"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the enrollment"
+        action: "call"
+        target: "eb_enrollment"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the payment term to be invoiced"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "eb_term"
+        values:
+          enrollment_id: "REC: eb_enrollment.id"
+          name: "Term EB"
+          sequence: 10
+          date_invoice: 2026-07-05
+          date_due: 2026-07-20
+
+      - step: "Create the term detail"
+        action: "create"
+        model: "school_enrollment_payment_term_detail"
+        save_as: "eb_detail"
+        values:
+          term_id: "REC: eb_term.id"
+          product_id: "REC: eb_product.id"
+          name: "Fee EB"
+          account_id: "REC: eb_enroll_deferred_account.id"
+          final_account_id: "REC: eb_enroll_final_account.id"
+          uom_quantity: 1.0
+          uom_id: "REF: uom.product_uom_unit"
+          price_unit: 1000000.0
+
+      - step: "Invoice the term"
+        action: "call"
+        target: "eb_term"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+
+      - step: "Get the term's generated invoice"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["id", "=", "REC: eb_term.customer_invoice_id.id"]]
+        save_as: "eb_invoice"
+        expect_count: 1
+
+      - step: "Confirm the invoice"
+        action: "call"
+        target: "eb_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Open the invoice"
+        action: "call"
+        target: "eb_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "eb_analytic"
+        values:
+          name: "EB Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "eb_funding_source"
+        values:
+          name: "EB Funding Source"
+          code: "EBFS"
+          analytic_account_id: "REC: eb_analytic.id"
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "eb_type"
+        values:
+          name: "EB Type"
+          code: "EBTY"
+          deduction_journal_id: "REC: eb_journal.id"
+          discount_account_id: "REC: eb_discount_final_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "eb_program"
+        values:
+          name: "EB Program"
+          code: "EBPRG"
+          type_id: "REC: eb_type.id"
+          school_id: "REC: eb_school.id"
+          academic_year_id: "REC: eb_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: eb_funding_source.id"]]]
+          deduction_journal_id: "REC: eb_journal.id"
+          discount_account_id: "REC: eb_discount_final_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: eb_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 400000.0
+
+      - step: "Create the award, its Deferred Discount Account already set"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "eb_award"
+        values:
+          program_id: "REC: eb_program.id"
+          student_id: "REC: eb_student.id"
+          enrollment_id: "REC: eb_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          deferred_discount_account_id: "REC: eb_deferred_account.id"
+          recognition_journal_id: "REC: eb_journal.id"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "EB Benefit"
+                product_id: "REC: eb_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: eb_funding_source.id"
+                percentage: 100.0
+
+      - step: "Find the award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: eb_award.id"]]
+        limit: 1
+        save_as: "eb_benefit"
+
+      - step: "Find the award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: eb_award.id"]]
+        limit: 1
+        save_as: "eb_funding"
+
+      - step: "Create the Schedule line realizing the Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "eb_schedule"
+        values:
+          benefit_id: "REC: eb_benefit.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the deduction"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "eb_deduction"
+        values:
+          award_id: "REC: eb_award.id"
+          date: 2026-08-05
+          journal_id: "REC: eb_journal.id"
+          receivable_account_id: "REC: eb_receivable_account.id"
+          deferred_account_id: "REC: eb_deferred_account.id"
+          recognition_journal_id: "REC: eb_journal.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: eb_schedule.id"
+                funding_id: "REC: eb_funding.id"
+                final_account_id: "REC: eb_discount_final_account.id"
+                name: "EB Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: eb_invoice.id"
+                amount_allocated: 400000.0
+
+      - step: "Confirm the deduction"
+        action: "call"
+        target: "eb_deduction"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the deduction, opening it"
+        action: "call"
+        target: "eb_deduction"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          recognition_method:
+            type: "value"
+            expected: "immediate"
+
+  - name: "Award Without A Deferred Discount Account Leaves The Deduction Immediate"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "ef_income_type"
+
+      - step: "Get the account.account.type Receivable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "ef_receivable_type"
+
+      - step: "Create the sale journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "ef_journal"
+        values:
+          name: "EF Journal"
+          code: "JEF"
+          type: "sale"
+
+      - step: "Create the receivable account shared by the invoice and deduction"
+        action: "create"
+        model: "account.account"
+        save_as: "ef_receivable_account"
+        values:
+          name: "EF Receivable Account"
+          code: "EFRA"
+          user_type_id: "REC: ef_receivable_type.id"
+          reconcile: true
+
+      - step: "Create the enrollment's own deferred (temp) income account"
+        action: "create"
+        model: "account.account"
+        save_as: "ef_enroll_deferred_account"
+        values:
+          name: "EF Enrollment Deferred Account"
+          code: "EFED"
+          user_type_id: "REC: ef_income_type.id"
+
+      - step: "Create the enrollment's own final income account"
+        action: "create"
+        model: "account.account"
+        save_as: "ef_enroll_final_account"
+        values:
+          name: "EF Enrollment Final Account"
+          code: "EFEF"
+          user_type_id: "REC: ef_income_type.id"
+
+      - step: "Create the scholarship discount's own final account"
+        action: "create"
+        model: "account.account"
+        save_as: "ef_discount_final_account"
+        values:
+          name: "EF Discount Final Account"
+          code: "EFDF"
+          user_type_id: "REC: ef_income_type.id"
+
+      - step: "Create the customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "ef_ci_type"
+        values:
+          name: "EF Invoice Type"
+          code: "CITEF"
+          journal_id: "REC: ef_journal.id"
+          receivable_account_id: "REC: ef_receivable_account.id"
+
+      - step: "Create the product"
+        action: "create"
+        model: "product.product"
+        save_as: "ef_product"
+        values:
+          name: "EF Product"
+          type: "service"
+          list_price: 1000000.0
+
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "ef_grade_type"
+        values:
+          name: "EF Grade Type"
+          code: "EFGT"
+          sequence: 10
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "ef_academic_year"
+        values:
+          name: "2026/2027 EF"
+          code: "EFAY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "ef_academic_term"
+        values:
+          name: "Semester EF"
+          code: "EFSM"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+          year_id: "REC: ef_academic_year.id"
+          enrollment_state: "open"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "ef_school"
+        values:
+          name: "EF School"
+          code: "EFSC"
+          grade_type_id: "REC: ef_grade_type.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "ef_grade"
+        values:
+          name: "EF Grade"
+          code: "EFGR"
+          sequence: 10
+          type_id: "REC: ef_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "ef_grade_class"
+        values:
+          name: "EF Class"
+          code: "EFCL"
+          school_id: "REC: ef_school.id"
+          grade_id: "REC: ef_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "ef_contact"
+        values:
+          name: "EF Student Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "ef_student"
+        values:
+          name: "EF Student"
+          code: "EFST"
+          contact_id: "REC: ef_contact.id"
+          school_id: "REC: ef_school.id"
+
+      - step: "Create the enrollment with Revenue Recognition enabled"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "ef_enrollment"
+        values:
+          date: 2026-07-01
+          academic_year_id: "REC: ef_academic_year.id"
+          academic_term_id: "REC: ef_academic_term.id"
+          school_id: "REC: ef_school.id"
+          grade_id: "REC: ef_grade.id"
+          grade_class_id: "REC: ef_grade_class.id"
+          student_id: "REC: ef_student.id"
+          currency_id: "REC: company.currency_id.id"
+          receivable_journal_id: "REC: ef_journal.id"
+          receivable_account_id: "REC: ef_receivable_account.id"
+          customer_invoice_type_id: "REC: ef_ci_type.id"
+          revenue_recognition: true
+          recognition_journal_id: "REC: ef_journal.id"
+
+      - step: "Confirm the enrollment"
+        action: "call"
+        target: "ef_enrollment"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the enrollment"
+        action: "call"
+        target: "ef_enrollment"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the payment term to be invoiced"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "ef_term"
+        values:
+          enrollment_id: "REC: ef_enrollment.id"
+          name: "Term EF"
+          sequence: 10
+          date_invoice: 2026-07-05
+          date_due: 2026-07-20
+
+      - step: "Create the term detail"
+        action: "create"
+        model: "school_enrollment_payment_term_detail"
+        save_as: "ef_detail"
+        values:
+          term_id: "REC: ef_term.id"
+          product_id: "REC: ef_product.id"
+          name: "Fee EF"
+          account_id: "REC: ef_enroll_deferred_account.id"
+          final_account_id: "REC: ef_enroll_final_account.id"
+          uom_quantity: 1.0
+          uom_id: "REF: uom.product_uom_unit"
+          price_unit: 1000000.0
+
+      - step: "Invoice the term"
+        action: "call"
+        target: "ef_term"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+
+      - step: "Get the term's generated invoice"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["id", "=", "REC: ef_term.customer_invoice_id.id"]]
+        save_as: "ef_invoice"
+        expect_count: 1
+
+      - step: "Confirm the invoice"
+        action: "call"
+        target: "ef_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Open the invoice"
+        action: "call"
+        target: "ef_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "ef_analytic"
+        values:
+          name: "EF Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "ef_funding_source"
+        values:
+          name: "EF Funding Source"
+          code: "EFFS"
+          analytic_account_id: "REC: ef_analytic.id"
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "ef_type"
+        values:
+          name: "EF Type"
+          code: "EFTY"
+          deduction_journal_id: "REC: ef_journal.id"
+          discount_account_id: "REC: ef_discount_final_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "ef_program"
+        values:
+          name: "EF Program"
+          code: "EFPRG"
+          type_id: "REC: ef_type.id"
+          school_id: "REC: ef_school.id"
+          academic_year_id: "REC: ef_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: ef_funding_source.id"]]]
+          deduction_journal_id: "REC: ef_journal.id"
+          discount_account_id: "REC: ef_discount_final_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: ef_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 400000.0
+
+      - step: "Create the award WITHOUT a Deferred Discount Account"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "ef_award"
+        values:
+          program_id: "REC: ef_program.id"
+          student_id: "REC: ef_student.id"
+          enrollment_id: "REC: ef_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "EF Benefit"
+                product_id: "REC: ef_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: ef_funding_source.id"
+                percentage: 100.0
+
+      - step: "Find the award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: ef_award.id"]]
+        limit: 1
+        save_as: "ef_benefit"
+
+      - step: "Find the award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: ef_award.id"]]
+        limit: 1
+        save_as: "ef_funding"
+
+      - step: "Create the Schedule line realizing the Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "ef_schedule"
+        values:
+          benefit_id: "REC: ef_benefit.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the deduction, Deferred Account left empty"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "ef_deduction"
+        values:
+          award_id: "REC: ef_award.id"
+          date: 2026-08-05
+          journal_id: "REC: ef_journal.id"
+          receivable_account_id: "REC: ef_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: ef_schedule.id"
+                funding_id: "REC: ef_funding.id"
+                final_account_id: "REC: ef_discount_final_account.id"
+                name: "EF Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: ef_invoice.id"
+                amount_allocated: 400000.0
+
+      - step: "Confirm the deduction"
+        action: "call"
+        target: "ef_deduction"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the deduction, opening it"
+        action: "call"
+        target: "ef_deduction"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          recognition_method:
+            type: "value"
+            expected: "immediate"
+
+  - name: "Enrollment Already Done Leaves A New Deduction Immediate"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "ec_income_type"
+
+      - step: "Get the account.account.type Receivable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "ec_receivable_type"
+
+      - step: "Get the account.account.type Current Assets reference"
+        action: "ref"
+        xml_id: "account.data_account_type_current_assets"
+        save_as: "ec_asset_type"
+
+      - step: "Create the sale journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "ec_journal"
+        values:
+          name: "EC Journal"
+          code: "JEC"
+          type: "sale"
+
+      - step: "Create the receivable account shared by the invoice and deduction"
+        action: "create"
+        model: "account.account"
+        save_as: "ec_receivable_account"
+        values:
+          name: "EC Receivable Account"
+          code: "ECRA"
+          user_type_id: "REC: ec_receivable_type.id"
+          reconcile: true
+
+      - step: "Create the enrollment's own deferred (temp) income account"
+        action: "create"
+        model: "account.account"
+        save_as: "ec_enroll_deferred_account"
+        values:
+          name: "EC Enrollment Deferred Account"
+          code: "ECED"
+          user_type_id: "REC: ec_income_type.id"
+
+      - step: "Create the enrollment's own final income account"
+        action: "create"
+        model: "account.account"
+        save_as: "ec_enroll_final_account"
+        values:
+          name: "EC Enrollment Final Account"
+          code: "ECEF"
+          user_type_id: "REC: ec_income_type.id"
+
+      - step: "Create the scholarship discount's own final account"
+        action: "create"
+        model: "account.account"
+        save_as: "ec_discount_final_account"
+        values:
+          name: "EC Discount Final Account"
+          code: "ECDF"
+          user_type_id: "REC: ec_income_type.id"
+
+      - step: "Create the award's own Deferred Discount (temp/holding) account"
+        action: "create"
+        model: "account.account"
+        save_as: "ec_deferred_account"
+        values:
+          name: "EC Deferred Discount Account"
+          code: "ECDD"
+          user_type_id: "REC: ec_asset_type.id"
+
+      - step: "Create the customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "ec_ci_type"
+        values:
+          name: "EC Invoice Type"
+          code: "CITEC"
+          journal_id: "REC: ec_journal.id"
+          receivable_account_id: "REC: ec_receivable_account.id"
+
+      - step: "Create the product"
+        action: "create"
+        model: "product.product"
+        save_as: "ec_product"
+        values:
+          name: "EC Product"
+          type: "service"
+          list_price: 1000000.0
+
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "ec_grade_type"
+        values:
+          name: "EC Grade Type"
+          code: "ECGT"
+          sequence: 10
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "ec_academic_year"
+        values:
+          name: "2026/2027 EC"
+          code: "ECAY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create academic term 1 (enrollment's own term, not last)"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "ec_academic_term"
+        values:
+          name: "Semester 1 EC"
+          code: "ECSM1"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: ec_academic_year.id"
+          enrollment_state: "open"
+
+      - step: "Create academic term 2 (last term, unused)"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "ec_academic_term_2"
+        values:
+          name: "Semester 2 EC"
+          code: "ECSM2"
+          date_start: 2027-01-01
+          date_end: 2027-06-30
+          year_id: "REC: ec_academic_year.id"
+          enrollment_state: "close"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "ec_school"
+        values:
+          name: "EC School"
+          code: "ECSC"
+          grade_type_id: "REC: ec_grade_type.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "ec_grade"
+        values:
+          name: "EC Grade"
+          code: "ECGR"
+          sequence: 10
+          type_id: "REC: ec_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "ec_grade_class"
+        values:
+          name: "EC Class"
+          code: "ECCL"
+          school_id: "REC: ec_school.id"
+          grade_id: "REC: ec_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "ec_contact"
+        values:
+          name: "EC Student Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "ec_student"
+        values:
+          name: "EC Student"
+          code: "ECST"
+          contact_id: "REC: ec_contact.id"
+          school_id: "REC: ec_school.id"
+
+      - step: "Create the enrollment with Revenue Recognition enabled"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "ec_enrollment"
+        values:
+          date: 2026-07-01
+          academic_year_id: "REC: ec_academic_year.id"
+          academic_term_id: "REC: ec_academic_term.id"
+          school_id: "REC: ec_school.id"
+          grade_id: "REC: ec_grade.id"
+          grade_class_id: "REC: ec_grade_class.id"
+          student_id: "REC: ec_student.id"
+          currency_id: "REC: company.currency_id.id"
+          receivable_journal_id: "REC: ec_journal.id"
+          receivable_account_id: "REC: ec_receivable_account.id"
+          customer_invoice_type_id: "REC: ec_ci_type.id"
+          revenue_recognition: true
+          recognition_journal_id: "REC: ec_journal.id"
+
+      - step: "Confirm the enrollment"
+        action: "call"
+        target: "ec_enrollment"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the enrollment"
+        action: "call"
+        target: "ec_enrollment"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the payment term to be invoiced"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "ec_term"
+        values:
+          enrollment_id: "REC: ec_enrollment.id"
+          name: "Term EC"
+          sequence: 10
+          date_invoice: 2026-07-05
+          date_due: 2026-07-20
+
+      - step: "Create the term detail"
+        action: "create"
+        model: "school_enrollment_payment_term_detail"
+        save_as: "ec_detail"
+        values:
+          term_id: "REC: ec_term.id"
+          product_id: "REC: ec_product.id"
+          name: "Fee EC"
+          account_id: "REC: ec_enroll_deferred_account.id"
+          final_account_id: "REC: ec_enroll_final_account.id"
+          uom_quantity: 1.0
+          uom_id: "REF: uom.product_uom_unit"
+          price_unit: 1000000.0
+
+      - step: "Invoice the term"
+        action: "call"
+        target: "ec_term"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+
+      - step: "Get the term's generated invoice"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["id", "=", "REC: ec_term.customer_invoice_id.id"]]
+        save_as: "ec_invoice"
+        expect_count: 1
+
+      - step: "Confirm the invoice"
+        action: "call"
+        target: "ec_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Open the invoice"
+        action: "call"
+        target: "ec_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert the enrollment's own term is not the last term (done is allowed)"
+        action: "assert"
+        target: "ec_enrollment"
+        asserts:
+          academic_term_id.last_term:
+            type: "value"
+            expected: false
+
+      - step: "Finish the enrollment, with nothing left to recognize"
+        action: "call"
+        target: "ec_enrollment"
+        method: "action_done"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "ec_analytic"
+        values:
+          name: "EC Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "ec_funding_source"
+        values:
+          name: "EC Funding Source"
+          code: "ECFS"
+          analytic_account_id: "REC: ec_analytic.id"
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "ec_type"
+        values:
+          name: "EC Type"
+          code: "ECTY"
+          deduction_journal_id: "REC: ec_journal.id"
+          discount_account_id: "REC: ec_discount_final_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "ec_program"
+        values:
+          name: "EC Program"
+          code: "ECPRG"
+          type_id: "REC: ec_type.id"
+          school_id: "REC: ec_school.id"
+          academic_year_id: "REC: ec_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: ec_funding_source.id"]]]
+          deduction_journal_id: "REC: ec_journal.id"
+          discount_account_id: "REC: ec_discount_final_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: ec_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 400000.0
+
+      - step:
+          "Create the award AFTER the enrollment is Done, its Deferred Discount Account
+          already set"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "ec_award"
+        values:
+          program_id: "REC: ec_program.id"
+          student_id: "REC: ec_student.id"
+          enrollment_id: "REC: ec_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          deferred_discount_account_id: "REC: ec_deferred_account.id"
+          recognition_journal_id: "REC: ec_journal.id"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "EC Benefit"
+                product_id: "REC: ec_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: ec_funding_source.id"
+                percentage: 100.0
+
+      - step: "Find the award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: ec_award.id"]]
+        limit: 1
+        save_as: "ec_benefit"
+
+      - step: "Find the award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: ec_award.id"]]
+        limit: 1
+        save_as: "ec_funding"
+
+      - step: "Create the Schedule line realizing the Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "ec_schedule"
+        values:
+          benefit_id: "REC: ec_benefit.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the deduction targeting the invoice of the now-Done enrollment"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "ec_deduction"
+        values:
+          award_id: "REC: ec_award.id"
+          date: 2026-08-05
+          journal_id: "REC: ec_journal.id"
+          receivable_account_id: "REC: ec_receivable_account.id"
+          deferred_account_id: "REC: ec_deferred_account.id"
+          recognition_journal_id: "REC: ec_journal.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: ec_schedule.id"
+                funding_id: "REC: ec_funding.id"
+                final_account_id: "REC: ec_discount_final_account.id"
+                name: "EC Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: ec_invoice.id"
+                amount_allocated: 400000.0
+
+      - step: "Confirm the deduction"
+        action: "call"
+        target: "ec_deduction"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the deduction, opening it"
+        action: "call"
+        target: "ec_deduction"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          recognition_method:
+            type: "value"
+            expected: "immediate"
+
+  - name: "Finishing The Enrollment Is Rejected While Its Own Deduction Is Not Yet Open"
+    steps:
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "ed_income_type"
+
+      - step: "Get the account.account.type Receivable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "ed_receivable_type"
+
+      - step: "Get the account.account.type Current Assets reference"
+        action: "ref"
+        xml_id: "account.data_account_type_current_assets"
+        save_as: "ed_asset_type"
+
+      - step: "Create the sale journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "ed_journal"
+        values:
+          name: "ED Journal"
+          code: "JED"
+          type: "sale"
+
+      - step: "Create the receivable account shared by the invoice and deduction"
+        action: "create"
+        model: "account.account"
+        save_as: "ed_receivable_account"
+        values:
+          name: "ED Receivable Account"
+          code: "EDRA"
+          user_type_id: "REC: ed_receivable_type.id"
+          reconcile: true
+
+      - step: "Create the enrollment's own deferred (temp) income account"
+        action: "create"
+        model: "account.account"
+        save_as: "ed_enroll_deferred_account"
+        values:
+          name: "ED Enrollment Deferred Account"
+          code: "EDED"
+          user_type_id: "REC: ed_income_type.id"
+
+      - step: "Create the enrollment's own final income account"
+        action: "create"
+        model: "account.account"
+        save_as: "ed_enroll_final_account"
+        values:
+          name: "ED Enrollment Final Account"
+          code: "EDEF"
+          user_type_id: "REC: ed_income_type.id"
+
+      - step: "Create the scholarship discount's own final account"
+        action: "create"
+        model: "account.account"
+        save_as: "ed_discount_final_account"
+        values:
+          name: "ED Discount Final Account"
+          code: "EDDF"
+          user_type_id: "REC: ed_income_type.id"
+
+      - step: "Create the award's own Deferred Discount (temp/holding) account"
+        action: "create"
+        model: "account.account"
+        save_as: "ed_deferred_account"
+        values:
+          name: "ED Deferred Discount Account"
+          code: "EDDD"
+          user_type_id: "REC: ed_asset_type.id"
+
+      - step: "Create the customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "ed_ci_type"
+        values:
+          name: "ED Invoice Type"
+          code: "CITED"
+          journal_id: "REC: ed_journal.id"
+          receivable_account_id: "REC: ed_receivable_account.id"
+
+      - step: "Create the product"
+        action: "create"
+        model: "product.product"
+        save_as: "ed_product"
+        values:
+          name: "ED Product"
+          type: "service"
+          list_price: 1000000.0
+
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "ed_grade_type"
+        values:
+          name: "ED Grade Type"
+          code: "EDGT"
+          sequence: 10
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "ed_academic_year"
+        values:
+          name: "2026/2027 ED"
+          code: "EDAY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create academic term 1 (enrollment's own term, not last)"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "ed_academic_term"
+        values:
+          name: "Semester 1 ED"
+          code: "EDSM1"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: ed_academic_year.id"
+          enrollment_state: "open"
+
+      - step: "Create academic term 2 (last term, unused)"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "ed_academic_term_2"
+        values:
+          name: "Semester 2 ED"
+          code: "EDSM2"
+          date_start: 2027-01-01
+          date_end: 2027-06-30
+          year_id: "REC: ed_academic_year.id"
+          enrollment_state: "close"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "ed_school"
+        values:
+          name: "ED School"
+          code: "EDSC"
+          grade_type_id: "REC: ed_grade_type.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "ed_grade"
+        values:
+          name: "ED Grade"
+          code: "EDGR"
+          sequence: 10
+          type_id: "REC: ed_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "ed_grade_class"
+        values:
+          name: "ED Class"
+          code: "EDCL"
+          school_id: "REC: ed_school.id"
+          grade_id: "REC: ed_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "ed_contact"
+        values:
+          name: "ED Student Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "ed_student"
+        values:
+          name: "ED Student"
+          code: "EDST"
+          contact_id: "REC: ed_contact.id"
+          school_id: "REC: ed_school.id"
+
+      - step: "Create the enrollment with Revenue Recognition enabled"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "ed_enrollment"
+        values:
+          date: 2026-07-01
+          academic_year_id: "REC: ed_academic_year.id"
+          academic_term_id: "REC: ed_academic_term.id"
+          school_id: "REC: ed_school.id"
+          grade_id: "REC: ed_grade.id"
+          grade_class_id: "REC: ed_grade_class.id"
+          student_id: "REC: ed_student.id"
+          currency_id: "REC: company.currency_id.id"
+          receivable_journal_id: "REC: ed_journal.id"
+          receivable_account_id: "REC: ed_receivable_account.id"
+          customer_invoice_type_id: "REC: ed_ci_type.id"
+          revenue_recognition: true
+          recognition_journal_id: "REC: ed_journal.id"
+
+      - step: "Confirm the enrollment"
+        action: "call"
+        target: "ed_enrollment"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the enrollment"
+        action: "call"
+        target: "ed_enrollment"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the payment term to be invoiced"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "ed_term"
+        values:
+          enrollment_id: "REC: ed_enrollment.id"
+          name: "Term ED"
+          sequence: 10
+          date_invoice: 2026-07-05
+          date_due: 2026-07-20
+
+      - step: "Create the term detail"
+        action: "create"
+        model: "school_enrollment_payment_term_detail"
+        save_as: "ed_detail"
+        values:
+          term_id: "REC: ed_term.id"
+          product_id: "REC: ed_product.id"
+          name: "Fee ED"
+          account_id: "REC: ed_enroll_deferred_account.id"
+          final_account_id: "REC: ed_enroll_final_account.id"
+          uom_quantity: 1.0
+          uom_id: "REF: uom.product_uom_unit"
+          price_unit: 1000000.0
+
+      - step: "Invoice the term"
+        action: "call"
+        target: "ed_term"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+
+      - step: "Get the term's generated invoice"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["id", "=", "REC: ed_term.customer_invoice_id.id"]]
+        save_as: "ed_invoice"
+        expect_count: 1
+
+      - step: "Confirm the invoice"
+        action: "call"
+        target: "ed_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Open the invoice"
+        action: "call"
+        target: "ed_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "ed_analytic"
+        values:
+          name: "ED Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "ed_funding_source"
+        values:
+          name: "ED Funding Source"
+          code: "EDFS"
+          analytic_account_id: "REC: ed_analytic.id"
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "ed_type"
+        values:
+          name: "ED Type"
+          code: "EDTY"
+          deduction_journal_id: "REC: ed_journal.id"
+          discount_account_id: "REC: ed_discount_final_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "ed_program"
+        values:
+          name: "ED Program"
+          code: "EDPRG"
+          type_id: "REC: ed_type.id"
+          school_id: "REC: ed_school.id"
+          academic_year_id: "REC: ed_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: ed_funding_source.id"]]]
+          deduction_journal_id: "REC: ed_journal.id"
+          discount_account_id: "REC: ed_discount_final_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: ed_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 400000.0
+
+      - step: "Create the award, its Deferred Discount Account already set"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "ed_award"
+        values:
+          program_id: "REC: ed_program.id"
+          student_id: "REC: ed_student.id"
+          enrollment_id: "REC: ed_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          deferred_discount_account_id: "REC: ed_deferred_account.id"
+          recognition_journal_id: "REC: ed_journal.id"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "ED Benefit"
+                product_id: "REC: ed_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: ed_funding_source.id"
+                percentage: 100.0
+
+      - step: "Find the award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: ed_award.id"]]
+        limit: 1
+        save_as: "ed_benefit"
+
+      - step: "Find the award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: ed_award.id"]]
+        limit: 1
+        save_as: "ed_funding"
+
+      - step: "Create the Schedule line realizing the Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "ed_schedule"
+        values:
+          benefit_id: "REC: ed_benefit.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the deduction, left only Confirmed (not yet Open)"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "ed_deduction"
+        values:
+          award_id: "REC: ed_award.id"
+          date: 2026-08-05
+          journal_id: "REC: ed_journal.id"
+          receivable_account_id: "REC: ed_receivable_account.id"
+          deferred_account_id: "REC: ed_deferred_account.id"
+          recognition_journal_id: "REC: ed_journal.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: ed_schedule.id"
+                funding_id: "REC: ed_funding.id"
+                final_account_id: "REC: ed_discount_final_account.id"
+                name: "ED Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: ed_invoice.id"
+                amount_allocated: 400000.0
+
+      - step: "Confirm the deduction, but never approve it"
+        action: "call"
+        target: "ed_deduction"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Assert the enrollment's own term is not the last term (done is allowed)"
+        action: "assert"
+        target: "ed_enrollment"
+        asserts:
+          academic_term_id.last_term:
+            type: "value"
+            expected: false
+
+      - step:
+          "Attempt to finish the enrollment while its own deduction is still Confirmed"
+        action: "call"
+        target: "ed_enrollment"
+        method: "action_done"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "not yet Open"

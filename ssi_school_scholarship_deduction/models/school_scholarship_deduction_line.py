@@ -94,8 +94,8 @@ class SchoolScholarshipDeductionLine(models.Model):
         required=False,
         help="Accounting account this line posts to. Equal to Final "
         "Account, unless the parent document's Recognition Method is "
-        "``Deferred``, in which case it is the parent's own Deferred "
-        "Account instead.",
+        "``Deferred`` or ``Enrollment``, in which case it is the "
+        "parent's own Deferred Account instead.",
     )
     move_line_id = fields.Many2one(
         string="Journal Item",
@@ -149,13 +149,13 @@ class SchoolScholarshipDeductionLine(models.Model):
         "deduction_id.deferred_account_id",
     )
     def _compute_account_id(self):
-        """Copy Final Account, or Deferred Account while deferred.
+        """Copy Final Account, or Deferred Account while deferred/enrollment.
 
         :return: nothing; assigns ``account_id``
         """
         for record in self:
             account = record.final_account_id
-            if record.deduction_id.recognition_method == "deferred":
+            if record.deduction_id.recognition_method in ("deferred", "enrollment"):
                 account = record.deduction_id.deferred_account_id
             record.account_id = account
 
