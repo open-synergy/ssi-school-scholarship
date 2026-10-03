@@ -34,10 +34,11 @@ msgstr ""
 #. module: ssi_school_scholarship_admission
 #: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_scholarship_award__admission_id
 msgid ""
-"Admission this award is billed against. Must already be Open or Done -- an "
-"admission earlier than Open has not yet created its School Student, so it "
-"cannot be billed against. Required when Billing Source is Admission -- "
-"enforced by ``_check_billing_source``, not by this field itself."
+"Admission this award is billed against. Must already be linked to a School "
+"Student (created with Create Student Profile, or when the admission is Open)"
+" and must not be Cancelled or Rejected. Required when Billing Source is "
+"Admission -- enforced by ``_check_billing_source``, not by this field "
+"itself."
 msgstr ""
 
 #. module: ssi_school_scholarship_admission
@@ -60,6 +61,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship_admission
 #: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission_payment_term__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award_schedule__display_name
 msgid "Display Name"
@@ -67,6 +69,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship_admission
 #: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission_payment_term__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award_schedule__id
 msgid "ID"
@@ -74,6 +77,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship_admission
 #: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission_payment_term____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award_schedule____last_update
 msgid "Last Modified on"
@@ -107,6 +111,11 @@ msgstr ""
 #. module: ssi_school_scholarship_admission
 #: model:ir.model,name:ssi_school_scholarship_admission.model_school_admission
 msgid "School Admission"
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model,name:ssi_school_scholarship_admission.model_school_admission_payment_term
+msgid "School Admission Payment Term"
 msgstr ""
 
 #. module: ssi_school_scholarship_admission
