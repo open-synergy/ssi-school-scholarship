@@ -903,6 +903,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment_payment_term__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__display_name
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_funding__display_name
@@ -1298,6 +1299,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment_payment_term__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit__id
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_funding__id
@@ -1459,6 +1461,7 @@ msgstr ""
 
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment_payment_term____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_benefit____last_update
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award_funding____last_update
@@ -2376,6 +2379,11 @@ msgstr ""
 #. module: ssi_school_scholarship
 #: model:ir.model,name:ssi_school_scholarship.model_school_enrollment
 msgid "School Enrollment"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model,name:ssi_school_scholarship.model_school_enrollment_payment_term
+msgid "School Enrollment Payment Term"
 msgstr ""
 
 #. module: ssi_school_scholarship
