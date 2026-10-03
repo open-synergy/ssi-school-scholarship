@@ -1,3 +1,7 @@
+.. image:: https://odoo-community.org/readme-banner-image
+   :target: https://odoo-community.org/get-involved?utm_source=readme
+   :alt: Odoo Community Association
+
 ==============================
 School Scholarship - Admission
 ==============================
@@ -26,7 +30,8 @@ Glue module that lets a School Scholarship Award be billed against a
 ``school_admission`` instead of only a ``school_enrollment``. Adds
 ``admission`` as a second Billing Source value, and derives the award's
 School/Grade/Student and realization schedule from the selected
-Admission's own payment terms once it has reached state Open. Also adds
+Admission's own payment terms once it has a School Student (created with
+Create Student Profile, or when it reaches state Open). Also adds
 Scholarship Amount and an Awards smart button to the Admission form,
 mirroring what the base module already shows on Enrollment.
 
@@ -45,6 +50,12 @@ Scholarship Award
 ^^^^^^^^^^^^^^^^^^
 
 * `Create Scholarship Award <docs/school_scholarship_award/01-create.html>`_
+
+School Admission
+^^^^^^^^^^^^^^^^
+
+* `Edit Admission <docs/school_admission/02-edit.html>`_
+* `Cancel Admission <docs/school_admission/10-cancel.html>`_
 
 Bug Tracker
 ===========

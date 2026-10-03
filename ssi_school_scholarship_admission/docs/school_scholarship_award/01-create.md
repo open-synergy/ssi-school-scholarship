@@ -10,11 +10,12 @@ When this module is installed, **Billing Source** gains a second value:
 - **Billing Source**: now also offers **Admission**, alongside the base module's
   **Enrollment**.
 - **Admission** _(required when Billing Source is Admission)_: Select the admission this
-  award is billed against, restricted to admissions already **Open** or **Done** — an
-  admission earlier than Open has not yet created its School Student, so it cannot be
-  billed against. Hidden when Billing Source is not Admission. Selecting it fills
-  **Student** from the admission's School Student, and **School**/**Grade** from the
-  admission.
+  award is billed against, restricted to admissions that already have a School Student
+  (created with **Create Student Profile** on the Admission, or automatically when the
+  admission is **Open**) and are not **Cancelled** or **Rejected**. An admission without
+  a School Student is not offered. Hidden when Billing Source is not Admission.
+  Selecting it fills **Student** from the admission's School Student, and
+  **School**/**Grade** from the admission.
 
 ## Related Views
 

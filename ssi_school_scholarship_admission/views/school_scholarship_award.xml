@@ -16,7 +16,7 @@
             <xpath expr="//field[@name='enrollment_id']" position="after">
                 <field
                         name="admission_id"
-                        domain="[('state', 'in', ['open', 'done'])]"
+                        domain="[('school_student_id', '!=', False), ('state', 'not in', ['cancel', 'reject'])]"
                         attrs="{'required': [('source_type', '=', 'admission')], 'invisible': [('source_type', '!=', 'admission')]}"
                     />
             </xpath>

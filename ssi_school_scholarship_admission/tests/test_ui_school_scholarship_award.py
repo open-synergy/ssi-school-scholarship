@@ -25,8 +25,8 @@ class TestUiSchoolScholarshipAward(HttpSavepointCase):
 
         The Admission is progressed to Open (Confirm then Approve) so it
         satisfies the Admission field's own domain
-        (``state in ('open', 'done')``) -- the tour picks it from the
-        m2o dropdown by typing its manually assigned ``name``.
+        (a School Student, and not Cancel/Reject) -- the tour picks it
+        from the m2o dropdown by typing its manually assigned ``name``.
         """
         super().setUpClass()
         cls.user_admin = cls.env.ref("base.user_admin")

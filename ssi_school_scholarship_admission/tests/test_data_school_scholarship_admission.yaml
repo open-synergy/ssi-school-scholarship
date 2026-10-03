@@ -1152,7 +1152,7 @@ scenarios:
         model: "school_scholarship_award"
         expect_error:
           type: "ValidationError"
-          message_contains: "has not reached Open"
+          message_contains: "is not yet linked to student data"
         values:
           program_id: "REC: program5.id"
           student_id: "REC: bare_student5.id"
