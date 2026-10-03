@@ -13,4 +13,5 @@ from . import school_scholarship_award_schedule  # noqa: F401
 from . import school_scholarship_letter  # noqa: F401
 from . import school_scholarship_award  # noqa: F401
 from . import school_student  # noqa: F401
+from . import school_enrollment_payment_term  # noqa: F401
 from . import school_enrollment  # noqa: F401
