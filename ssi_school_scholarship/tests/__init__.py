@@ -17,3 +17,4 @@ from . import test_ui_school_scholarship_award
 from . import test_school_student
 from . import test_school_enrollment
 from . import test_module_category
+from . import test_school_scholarship_enrollment_guard
