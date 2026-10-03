@@ -11,11 +11,12 @@ class SchoolScholarshipAward(models.Model):
 
     Registers ``admission`` as a second ``source_type`` value, alongside
     the base module's ``enrollment``, so a scholarship award can also be
-    granted against a ``school_admission`` that has already reached
-    state Open (the point at which ``school_admission`` creates its own
-    ``school_student_id``). All ``_get_source_*``/schedule hooks fall
-    back to ``super()`` whenever ``source_type`` is not ``admission``,
-    so enrollment-sourced awards keep working unmodified.
+    granted against a ``school_admission`` that already has its
+    ``school_student_id`` (created with Create Student Profile, or
+    automatically when the admission reaches state Open). All
+    ``_get_source_*``/schedule hooks fall back to ``super()`` whenever
+    ``source_type`` is not ``admission``, so enrollment-sourced awards
+    keep working unmodified.
     """
 
     _name = "school_scholarship_award"
@@ -39,10 +40,14 @@ class SchoolScholarshipAward(models.Model):
                 ("readonly", False),
             ],
         },
-        domain=[("state", "in", ["open", "done"])],
+        domain=[
+            ("school_student_id", "!=", False),
+            ("state", "not in", ["cancel", "reject"]),
+        ],
         help="Admission this award is billed against. Must already be "
-        "Open or Done -- an admission earlier than Open has not yet "
-        "created its School Student, so it cannot be billed against. "
+        "linked to a School Student (created with Create Student "
+        "Profile, or when the admission is Open) and must not be "
+        "Cancelled or Rejected. "
         "Required when Billing Source is Admission -- enforced by "
         "``_check_billing_source``, not by this field itself.",
     )
@@ -102,10 +107,10 @@ class SchoolScholarshipAward(models.Model):
     def _check_admission_student(self):
         """Require the Admission to already have a matching Student.
 
-        Rejects an Admission that has not yet reached state Open (its
-        ``school_student_id`` is still empty -- the admission has not
-        created a School Student yet), and rejects one whose School
-        Student does not match this award's own Student.
+        Rejects an Admission that is not yet linked to a School
+        Student (its ``school_student_id`` is still empty), and rejects
+        one whose School Student does not match this award's own
+        Student.
 
         :raises ValidationError: when ``admission_id`` is set and
             either its ``school_student_id`` is empty or differs from
@@ -120,8 +125,8 @@ class SchoolScholarshipAward(models.Model):
 Document Type: %s
 Context: Select award admission
 Database ID: %s
-Problem: Admission '%s' has not reached Open yet, so it has no School Student
-Solution: Select an Admission already Open or Done
+Problem: Admission '%s' is not yet linked to student data
+Solution: Use Create Student Profile on the Admission, then select it again
 """ % (
                     self._description,
                     record.id,

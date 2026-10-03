@@ -6,4 +6,5 @@ from . import (
     school_scholarship_award,
     school_scholarship_award_schedule,
     school_admission,
+    school_admission_payment_term,
 )

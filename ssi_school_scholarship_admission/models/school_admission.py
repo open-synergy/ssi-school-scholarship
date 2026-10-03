@@ -2,7 +2,10 @@
 # Copyright 2026 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
+
+from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class SchoolAdmission(models.Model):
@@ -103,3 +106,41 @@ class SchoolAdmission(models.Model):
             }
         )
         return waction
+
+    @ssi_decorator.pre_cancel_action()
+    def _20_check_scholarship_award_active(self):
+        """Reject cancelling an admission with an active award.
+
+        A scholarship award is active while its state is neither
+        ``cancel`` nor ``reject``.
+
+        :raises UserError: when an active scholarship award is
+            sourced from this admission.
+        :return: None
+        """
+        self.ensure_one()
+        award = (
+            self.env["school_scholarship_award"]
+            .sudo()
+            .search(
+                [
+                    ("source_type", "=", "admission"),
+                    ("admission_id", "=", self.id),
+                    ("state", "not in", ["cancel", "reject"]),
+                ],
+                limit=1,
+            )
+        )
+        if award:
+            error_message = """
+Document Type: %s
+Context: Cancel admission
+Database ID: %s
+Problem: Admission has an active scholarship award '%s'
+Solution: Cancel the scholarship award before cancelling this admission
+""" % (
+                self._description,
+                self.id,
+                award.display_name,
+            )
+            raise UserError(_(error_message))
