@@ -89,7 +89,21 @@ msgid "Number of scholarship awards linked to this admission."
 msgstr ""
 
 #. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_amount_deducted_planned
+msgid ""
+"Planned amount of the schedule lines that are already Realized: the sum of "
+"their Amount Planned. Compare with Scholarship Deducted to see the "
+"difference between plan and actual deduction."
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_admission.school_admission_payment_term_view_form_embedded
+msgid "Scholarship"
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
 #: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission__amount_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_amount
 msgid "Scholarship Amount"
 msgstr ""
 
@@ -104,8 +118,57 @@ msgid "Scholarship Awards"
 msgstr ""
 
 #. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_amount_deducted
+msgid "Scholarship Deducted"
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_amount_deducted_planned
+msgid "Scholarship Deducted (Planned)"
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_amount_undeducted
+msgid "Scholarship Not Yet Deducted"
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_schedule_ids
+msgid "Scholarship Schedules"
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_amount_deducted
+msgid ""
+"Scholarship actually deducted from this payment term: the sum of Amount "
+"Realized of its Realized schedule lines."
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_schedule_ids
+msgid ""
+"Scholarship award schedule lines pinned to this payment term. Every "
+"scholarship on a payment term is a deduction (Fee Reduction); Cash benefits "
+"never refer to a payment term."
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
 #: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission__scholarship_award_ids
 msgid "Scholarship awards linked to this admission."
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_amount
+msgid ""
+"Scholarship committed to this payment term: the sum of Amount Planned of its"
+" Scheduled and Realized schedule lines whose award is Open or Done."
+msgstr ""
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_amount_undeducted
+msgid ""
+"Scholarship still waiting to be deducted from this payment term: the sum of "
+"Amount Planned of its Scheduled schedule lines whose award is Open or Done."
 msgstr ""
 
 #. module: ssi_school_scholarship_admission
