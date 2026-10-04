@@ -284,3 +284,57 @@ scenarios:
           scholarship_award_count:
             type: "value"
             expected: 2
+
+      - step: "Assert the Cash scholarship is separate from the deduction"
+        action: "assert"
+        target: "enrollment_se"
+        asserts:
+          amount_scholarship_cash:
+            type: "value"
+            expected: 1000000.0
+          amount_scholarship_undisbursed:
+            type: "value"
+            expected: 1000000.0
+          amount_scholarship_disbursed:
+            type: "value"
+            expected: 0.0
+          amount_scholarship_deduction:
+            type: "value"
+            expected: 0.0
+          amount_deduction:
+            type: "value"
+            expected: 0.0
+
+      - step: "Find the Cash schedule line of the first award"
+        action: "search"
+        model: "school_scholarship_award_schedule"
+        domain: [["award_id", "=", "REC: award_se1.id"]]
+        limit: 1
+        save_as: "sched_se1"
+
+      - step: "Realize the Cash schedule line with 300,000 paid out"
+        action: "write"
+        target: "sched_se1"
+        values:
+          state: "realized"
+          amount_realized: 300000.0
+
+      - step: "Assert the Cash scholarship is split into disbursed and not"
+        action: "assert"
+        target: "enrollment_se"
+        asserts:
+          amount_scholarship_cash:
+            type: "value"
+            expected: 1000000.0
+          amount_scholarship_disbursed:
+            type: "value"
+            expected: 300000.0
+          amount_scholarship_undisbursed:
+            type: "value"
+            expected: 600000.0
+          amount_scholarship:
+            type: "value"
+            expected: 1000000.0
+          amount_deduction:
+            type: "value"
+            expected: 0.0

@@ -26,6 +26,26 @@
             <xpath expr="//group[@name='header_right']" position="inside">
                 <field name="amount_scholarship" />
             </xpath>
+            <xpath expr="//group[@name='billing_amount']" position="after">
+                <group
+                        name="scholarship_amount"
+                        string="Scholarship"
+                        colspan="4"
+                        col="2"
+                        groups="ssi_school_scholarship.school_scholarship_award_viewer_group"
+                    >
+                    <group name="scholarship_amount_deduction_group" colspan="1">
+                        <field name="amount_scholarship_deduction" readonly="1" />
+                        <field name="amount_scholarship_deducted" readonly="1" />
+                        <field name="amount_scholarship_undeducted" readonly="1" />
+                    </group>
+                    <group name="scholarship_amount_cash_group" colspan="1">
+                        <field name="amount_scholarship_cash" readonly="1" />
+                        <field name="amount_scholarship_disbursed" readonly="1" />
+                        <field name="amount_scholarship_undisbursed" readonly="1" />
+                    </group>
+                </group>
+            </xpath>
         </data>
     </field>
 </record>
