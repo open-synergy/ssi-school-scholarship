@@ -22,6 +22,7 @@
     "data": [
         "views/school_scholarship_award.xml",
         "views/school_admission.xml",
+        "views/school_admission_payment_term.xml",
         "views/assets.xml",
     ],
     "demo": [],
