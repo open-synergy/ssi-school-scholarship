@@ -1,0 +1,1215 @@
+scenarios:
+  - name: "Deduction - Open Requires Allocations To Schedule Origin Invoices"
+    steps:
+      # ── Shared fixture chain (suffix O1) ─────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "o1_grade_type"
+        values:
+          name: "O1 Grade Type"
+          code: "O1GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "o1_school"
+        values:
+          name: "O1 School"
+          code: "O1SC"
+          grade_type_id: "REC: o1_grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "o1_academic_year"
+        values:
+          name: "O1 Academic Year"
+          code: "O1AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "o1_academic_term"
+        values:
+          name: "O1 Term"
+          code: "O1TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: o1_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "o1_grade"
+        values:
+          name: "O1 Grade"
+          code: "O1GR"
+          type_id: "REC: o1_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "o1_grade_class"
+        values:
+          name: "O1 Class"
+          code: "O1CL"
+          school_id: "REC: o1_school.id"
+          grade_id: "REC: o1_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "o1_contact"
+        values:
+          name: "O1 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "o1_student"
+        values:
+          name: "O1 Student"
+          code: "O1ST"
+          contact_id: "REC: o1_contact.id"
+          school_id: "REC: o1_school.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "o1_enrollment"
+        values:
+          academic_year_id: "REC: o1_academic_year.id"
+          academic_term_id: "REC: o1_academic_term.id"
+          school_id: "REC: o1_school.id"
+          grade_id: "REC: o1_grade.id"
+          grade_class_id: "REC: o1_grade_class.id"
+          student_id: "REC: o1_student.id"
+
+      - step: "Create the analytic account for funding source A"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "o1_analytic_a"
+        values:
+          name: "O1 Analytic A"
+
+      - step: "Create the analytic account for funding source B"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "o1_analytic_b"
+        values:
+          name: "O1 Analytic B"
+
+      - step: "Create funding source A"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "o1_funding_source_a"
+        values:
+          name: "O1 Funding Source A"
+          code: "O1FSA"
+          analytic_account_id: "REC: o1_analytic_a.id"
+
+      - step: "Create funding source B"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "o1_funding_source_b"
+        values:
+          name: "O1 Funding Source B"
+          code: "O1FSB"
+          analytic_account_id: "REC: o1_analytic_b.id"
+
+      - step: "Create the product covered by the benefit lines"
+        action: "create"
+        model: "product.product"
+        save_as: "o1_product"
+        values:
+          name: "O1 Product"
+          type: "service"
+
+      - step: "Create the sale journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "o1_journal"
+        values:
+          name: "O1 Journal"
+          code: "JO1"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Get the account.account.type Receivable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "account_type_receivable"
+
+      - step: "Create the receivable account shared by the invoices and deductions"
+        action: "create"
+        model: "account.account"
+        save_as: "o1_receivable_account"
+        values:
+          name: "O1 Receivable Account"
+          code: "O1RA"
+          user_type_id: "REC: account_type_receivable.id"
+          reconcile: true
+
+      - step: "Create the discount account the deduction lines post to"
+        action: "create"
+        model: "account.account"
+        save_as: "o1_discount_account"
+        values:
+          name: "O1 Discount Account"
+          code: "O1DA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the income account the invoice lines post to"
+        action: "create"
+        model: "account.account"
+        save_as: "o1_income_account"
+        values:
+          name: "O1 Income Account"
+          code: "O1IA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "o1_invoice_type"
+        values:
+          name: "O1 Invoice Type"
+          code: "/"
+          journal_id: "REC: o1_journal.id"
+          receivable_account_id: "REC: o1_receivable_account.id"
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "o1_type"
+        values:
+          name: "O1 Type"
+          code: "O1TY"
+          deduction_journal_id: "REC: o1_journal.id"
+          discount_account_id: "REC: o1_discount_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "o1_program"
+        values:
+          name: "O1 Program"
+          code: "O1PRG"
+          type_id: "REC: o1_type.id"
+          school_id: "REC: o1_school.id"
+          academic_year_id: "REC: o1_academic_year.id"
+          funding_source_ids:
+            [[6, 0, ["REC: o1_funding_source_a.id", "REC: o1_funding_source_b.id"]]]
+          deduction_journal_id: "REC: o1_journal.id"
+          discount_account_id: "REC: o1_discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: o1_product.id"
+                benefit_type: "fee_reduction"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 100000.0
+                periodicity: "per_payment_term"
+      # ── Negative: schedule of term A allocated to the invoice of
+      # term B (same partner) is rejected on Open ─────────────────────
+
+      - step: "Create the award backing the wrong-invoice deduction"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "o1_award_wrong"
+        values:
+          program_id: "REC: o1_program.id"
+          student_id: "REC: o1_student.id"
+          enrollment_id: "REC: o1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "O1 wrong Benefit"
+                product_id: "REC: o1_product.id"
+                benefit_type: "fee_reduction"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "per_payment_term"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: o1_funding_source_a.id"
+                percentage: 100.0
+
+      - step: "Find the wrong-invoice award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: o1_award_wrong.id"]]
+        limit: 1
+        save_as: "o1_benefit_wrong"
+
+      - step: "Find the wrong-invoice award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: o1_award_wrong.id"]]
+        limit: 1
+        save_as: "o1_funding_wrong"
+
+      - step: "Create the Payment Term of the schedule being deducted"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "o1_term_wrong_a"
+        values:
+          enrollment_id: "REC: o1_enrollment.id"
+          name: "O1 Term wrong_a"
+          sequence: 10
+          date_invoice: 2026-08-01
+          date_due: 2026-08-15
+
+      - step: "Create the Payment Term of the unrelated invoice"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "o1_term_wrong_b"
+        values:
+          enrollment_id: "REC: o1_enrollment.id"
+          name: "O1 Term wrong_b"
+          sequence: 10
+          date_invoice: 2026-08-01
+          date_due: 2026-08-15
+
+      - step: "Create the Schedule line realizing the wrong-invoice Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "o1_schedule_wrong"
+        values:
+          benefit_id: "REC: o1_benefit_wrong.id"
+          payment_term_id: "REC: o1_term_wrong_a.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the schedule-origin invoice"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "o1_invoice_wrong_a"
+        values:
+          type_id: "REC: o1_invoice_type.id"
+          partner_id: "REC: o1_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: o1_journal.id"
+          receivable_account_id: "REC: o1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the schedule-origin invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "o1_invoice_wrong_a_line"
+        values:
+          customer_invoice_id: "REC: o1_invoice_wrong_a.id"
+          name: "O1 wrong_a Invoice Line"
+          account_id: "REC: o1_income_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+
+      - step: "Confirm the schedule-origin invoice"
+        action: "call"
+        target: "o1_invoice_wrong_a"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the schedule-origin invoice and post its journal entry"
+        action: "call"
+        target: "o1_invoice_wrong_a"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          amount_residual:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "Create the unrelated invoice"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "o1_invoice_wrong_b"
+        values:
+          type_id: "REC: o1_invoice_type.id"
+          partner_id: "REC: o1_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: o1_journal.id"
+          receivable_account_id: "REC: o1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the unrelated invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "o1_invoice_wrong_b_line"
+        values:
+          customer_invoice_id: "REC: o1_invoice_wrong_b.id"
+          name: "O1 wrong_b Invoice Line"
+          account_id: "REC: o1_income_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+
+      - step: "Confirm the unrelated invoice"
+        action: "call"
+        target: "o1_invoice_wrong_b"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the unrelated invoice and post its journal entry"
+        action: "call"
+        target: "o1_invoice_wrong_b"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          amount_residual:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "Link the schedule-origin invoice to its Payment Term"
+        action: "write"
+        target: "o1_term_wrong_a"
+        values:
+          customer_invoice_id: "REC: o1_invoice_wrong_a.id"
+
+      - step: "Link the unrelated invoice to its Payment Term"
+        action: "write"
+        target: "o1_term_wrong_b"
+        values:
+          customer_invoice_id: "REC: o1_invoice_wrong_b.id"
+
+      - step: "Create the wrong-invoice deduction"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "o1_deduction_wrong"
+        values:
+          award_id: "REC: o1_award_wrong.id"
+          date: 2026-08-05
+          journal_id: "REC: o1_journal.id"
+          receivable_account_id: "REC: o1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: o1_schedule_wrong.id"
+                funding_id: "REC: o1_funding_wrong.id"
+                final_account_id: "REC: o1_discount_account.id"
+                name: "O1 wrong Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: o1_invoice_wrong_b.id"
+                amount_allocated: 400000.0
+
+      - step: "Confirm the wrong-invoice deduction"
+        action: "call"
+        target: "o1_deduction_wrong"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Assert the wrong-invoice deduction is still confirmed (forces refresh)"
+        action: "assert"
+        target: "o1_deduction_wrong"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approving the wrong-invoice deduction is rejected"
+        action: "call"
+        target: "o1_deduction_wrong"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "is not the origin invoice"
+
+      - step: "Assert the wrong-invoice deduction stays confirmed"
+        action: "assert"
+        target: "o1_deduction_wrong"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      # ── Negative: schedule whose term has no invoice yet is
+      # rejected on Open ──────────────────────────────────────────────
+
+      - step: "Create the award backing the uninvoiced deduction"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "o1_award_noinv"
+        values:
+          program_id: "REC: o1_program.id"
+          student_id: "REC: o1_student.id"
+          enrollment_id: "REC: o1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "O1 noinv Benefit"
+                product_id: "REC: o1_product.id"
+                benefit_type: "fee_reduction"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "per_payment_term"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: o1_funding_source_a.id"
+                percentage: 100.0
+
+      - step: "Find the uninvoiced award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: o1_award_noinv.id"]]
+        limit: 1
+        save_as: "o1_benefit_noinv"
+
+      - step: "Find the uninvoiced award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: o1_award_noinv.id"]]
+        limit: 1
+        save_as: "o1_funding_noinv"
+
+      - step: "Create the Payment Term of the uninvoiced schedule"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "o1_term_noinv"
+        values:
+          enrollment_id: "REC: o1_enrollment.id"
+          name: "O1 Term noinv"
+          sequence: 10
+          date_invoice: 2026-08-01
+          date_due: 2026-08-15
+
+      - step: "Create the Schedule line realizing the uninvoiced Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "o1_schedule_noinv"
+        values:
+          benefit_id: "REC: o1_benefit_noinv.id"
+          payment_term_id: "REC: o1_term_noinv.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the other invoice"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "o1_invoice_noinv_other"
+        values:
+          type_id: "REC: o1_invoice_type.id"
+          partner_id: "REC: o1_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: o1_journal.id"
+          receivable_account_id: "REC: o1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the other invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "o1_invoice_noinv_other_line"
+        values:
+          customer_invoice_id: "REC: o1_invoice_noinv_other.id"
+          name: "O1 noinv_other Invoice Line"
+          account_id: "REC: o1_income_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+
+      - step: "Confirm the other invoice"
+        action: "call"
+        target: "o1_invoice_noinv_other"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the other invoice and post its journal entry"
+        action: "call"
+        target: "o1_invoice_noinv_other"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          amount_residual:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "Create the uninvoiced deduction"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "o1_deduction_noinv"
+        values:
+          award_id: "REC: o1_award_noinv.id"
+          date: 2026-08-05
+          journal_id: "REC: o1_journal.id"
+          receivable_account_id: "REC: o1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: o1_schedule_noinv.id"
+                funding_id: "REC: o1_funding_noinv.id"
+                final_account_id: "REC: o1_discount_account.id"
+                name: "O1 noinv Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: o1_invoice_noinv_other.id"
+                amount_allocated: 400000.0
+
+      - step: "Confirm the uninvoiced deduction"
+        action: "call"
+        target: "o1_deduction_noinv"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Assert the uninvoiced deduction is still confirmed (forces refresh)"
+        action: "assert"
+        target: "o1_deduction_noinv"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approving the uninvoiced deduction is rejected"
+        action: "call"
+        target: "o1_deduction_noinv"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "has no Customer Invoice yet"
+
+      - step: "Assert the uninvoiced deduction stays confirmed"
+        action: "assert"
+        target: "o1_deduction_noinv"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      # ── Positive: two deductions of different awards share one
+      # origin invoice (one Payment Term) and both open ───────────────
+
+      - step: "Create the award backing the first shared deduction"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "o1_award_shared_a"
+        values:
+          program_id: "REC: o1_program.id"
+          student_id: "REC: o1_student.id"
+          enrollment_id: "REC: o1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "O1 shared_a Benefit"
+                product_id: "REC: o1_product.id"
+                benefit_type: "fee_reduction"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "per_payment_term"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: o1_funding_source_a.id"
+                percentage: 100.0
+
+      - step: "Find the first shared award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: o1_award_shared_a.id"]]
+        limit: 1
+        save_as: "o1_benefit_shared_a"
+
+      - step: "Find the first shared award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: o1_award_shared_a.id"]]
+        limit: 1
+        save_as: "o1_funding_shared_a"
+
+      - step: "Create the award backing the second shared deduction"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "o1_award_shared_b"
+        values:
+          program_id: "REC: o1_program.id"
+          student_id: "REC: o1_student.id"
+          enrollment_id: "REC: o1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "O1 shared_b Benefit"
+                product_id: "REC: o1_product.id"
+                benefit_type: "fee_reduction"
+                computation: "fixed"
+                amount_fixed: 300000.0
+                periodicity: "per_payment_term"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: o1_funding_source_a.id"
+                percentage: 100.0
+
+      - step: "Find the second shared award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: o1_award_shared_b.id"]]
+        limit: 1
+        save_as: "o1_benefit_shared_b"
+
+      - step: "Find the second shared award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: o1_award_shared_b.id"]]
+        limit: 1
+        save_as: "o1_funding_shared_b"
+
+      - step: "Create the Payment Term shared by both schedules"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "o1_term_shared"
+        values:
+          enrollment_id: "REC: o1_enrollment.id"
+          name: "O1 Term shared"
+          sequence: 10
+          date_invoice: 2026-08-01
+          date_due: 2026-08-15
+
+      - step: "Create the Schedule line realizing the first shared Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "o1_schedule_shared_a"
+        values:
+          benefit_id: "REC: o1_benefit_shared_a.id"
+          payment_term_id: "REC: o1_term_shared.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the Schedule line realizing the second shared Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "o1_schedule_shared_b"
+        values:
+          benefit_id: "REC: o1_benefit_shared_b.id"
+          payment_term_id: "REC: o1_term_shared.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the shared origin invoice"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "o1_invoice_shared"
+        values:
+          type_id: "REC: o1_invoice_type.id"
+          partner_id: "REC: o1_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: o1_journal.id"
+          receivable_account_id: "REC: o1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the shared origin invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "o1_invoice_shared_line"
+        values:
+          customer_invoice_id: "REC: o1_invoice_shared.id"
+          name: "O1 shared Invoice Line"
+          account_id: "REC: o1_income_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+
+      - step: "Confirm the shared origin invoice"
+        action: "call"
+        target: "o1_invoice_shared"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the shared origin invoice and post its journal entry"
+        action: "call"
+        target: "o1_invoice_shared"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          amount_residual:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "Link the shared origin invoice to its Payment Term"
+        action: "write"
+        target: "o1_term_shared"
+        values:
+          customer_invoice_id: "REC: o1_invoice_shared.id"
+
+      - step: "Create the first shared deduction"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "o1_deduction_shared_a"
+        values:
+          award_id: "REC: o1_award_shared_a.id"
+          date: 2026-08-05
+          journal_id: "REC: o1_journal.id"
+          receivable_account_id: "REC: o1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: o1_schedule_shared_a.id"
+                funding_id: "REC: o1_funding_shared_a.id"
+                final_account_id: "REC: o1_discount_account.id"
+                name: "O1 shared_a Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: o1_invoice_shared.id"
+                amount_allocated: 400000.0
+
+      - step: "Confirm the first shared deduction"
+        action: "call"
+        target: "o1_deduction_shared_a"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Assert the first shared deduction is still confirmed (forces refresh)"
+        action: "assert"
+        target: "o1_deduction_shared_a"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the first shared deduction, opening it"
+        action: "call"
+        target: "o1_deduction_shared_a"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the second shared deduction"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "o1_deduction_shared_b"
+        values:
+          award_id: "REC: o1_award_shared_b.id"
+          date: 2026-08-05
+          journal_id: "REC: o1_journal.id"
+          receivable_account_id: "REC: o1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: o1_schedule_shared_b.id"
+                funding_id: "REC: o1_funding_shared_b.id"
+                final_account_id: "REC: o1_discount_account.id"
+                name: "O1 shared_b Deduction Line"
+                uom_quantity: 1
+                price_unit: 300000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: o1_invoice_shared.id"
+                amount_allocated: 300000.0
+
+      - step: "Confirm the second shared deduction"
+        action: "call"
+        target: "o1_deduction_shared_b"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Assert the second shared deduction is still confirmed (forces refresh)"
+        action: "assert"
+        target: "o1_deduction_shared_b"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the second shared deduction, opening it"
+        action: "call"
+        target: "o1_deduction_shared_b"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert the first shared Schedule line is realized"
+        action: "assert"
+        target: "o1_schedule_shared_a"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "realized"
+
+      - step: "Assert the second shared Schedule line is realized"
+        action: "assert"
+        target: "o1_schedule_shared_b"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "realized"
+
+      # ── Positive: a cancelled deduction does not block a new one
+      # for the same schedule ──────────────────────────────────────────
+
+      - step: "Create the award backing the redone deduction"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "o1_award_redo"
+        values:
+          program_id: "REC: o1_program.id"
+          student_id: "REC: o1_student.id"
+          enrollment_id: "REC: o1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "O1 redo Benefit"
+                product_id: "REC: o1_product.id"
+                benefit_type: "fee_reduction"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "per_payment_term"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: o1_funding_source_a.id"
+                percentage: 100.0
+
+      - step: "Find the redone award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: o1_award_redo.id"]]
+        limit: 1
+        save_as: "o1_benefit_redo"
+
+      - step: "Find the redone award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: o1_award_redo.id"]]
+        limit: 1
+        save_as: "o1_funding_redo"
+
+      - step: "Create the Payment Term of the redone schedule"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "o1_term_redo"
+        values:
+          enrollment_id: "REC: o1_enrollment.id"
+          name: "O1 Term redo"
+          sequence: 10
+          date_invoice: 2026-08-01
+          date_due: 2026-08-15
+
+      - step: "Create the Schedule line realizing the redone Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "o1_schedule_redo"
+        values:
+          benefit_id: "REC: o1_benefit_redo.id"
+          payment_term_id: "REC: o1_term_redo.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the redone origin invoice"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "o1_invoice_redo"
+        values:
+          type_id: "REC: o1_invoice_type.id"
+          partner_id: "REC: o1_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: o1_journal.id"
+          receivable_account_id: "REC: o1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the redone origin invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "o1_invoice_redo_line"
+        values:
+          customer_invoice_id: "REC: o1_invoice_redo.id"
+          name: "O1 redo Invoice Line"
+          account_id: "REC: o1_income_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+
+      - step: "Confirm the redone origin invoice"
+        action: "call"
+        target: "o1_invoice_redo"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the redone origin invoice and post its journal entry"
+        action: "call"
+        target: "o1_invoice_redo"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          amount_residual:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "Link the redone origin invoice to its Payment Term"
+        action: "write"
+        target: "o1_term_redo"
+        values:
+          customer_invoice_id: "REC: o1_invoice_redo.id"
+
+      - step: "Create the first redone deduction"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "o1_deduction_redo_first"
+        values:
+          award_id: "REC: o1_award_redo.id"
+          date: 2026-08-05
+          journal_id: "REC: o1_journal.id"
+          receivable_account_id: "REC: o1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: o1_schedule_redo.id"
+                funding_id: "REC: o1_funding_redo.id"
+                final_account_id: "REC: o1_discount_account.id"
+                name: "O1 redo_first Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: o1_invoice_redo.id"
+                amount_allocated: 400000.0
+
+      - step: "Confirm the first redone deduction"
+        action: "call"
+        target: "o1_deduction_redo_first"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Assert the first redone deduction is still confirmed (forces refresh)"
+        action: "assert"
+        target: "o1_deduction_redo_first"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the first redone deduction, opening it"
+        action: "call"
+        target: "o1_deduction_redo_first"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the cancellation reason"
+        action: "create"
+        model: "base.cancel_reason"
+        save_as: "o1_reason"
+        values:
+          name: "O1 Cancel Reason"
+          code: "O1CR"
+
+      - step: "Cancel the first redone deduction via the wizard"
+        action: "wizard"
+        model: "base.select_cancel_reason"
+        target: "o1_deduction_redo_first"
+        as_user: "base.user_admin"
+        values:
+          cancel_reason_id: "REC: o1_reason.id"
+        method: "action_confirm"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Assert the redone Schedule line is scheduled"
+        action: "assert"
+        target: "o1_schedule_redo"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "scheduled"
+
+      - step: "Create the second redone deduction"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "o1_deduction_redo_second"
+        values:
+          award_id: "REC: o1_award_redo.id"
+          date: 2026-08-05
+          journal_id: "REC: o1_journal.id"
+          receivable_account_id: "REC: o1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: o1_schedule_redo.id"
+                funding_id: "REC: o1_funding_redo.id"
+                final_account_id: "REC: o1_discount_account.id"
+                name: "O1 redo_second Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: o1_invoice_redo.id"
+                amount_allocated: 400000.0
+
+      - step: "Confirm the second redone deduction"
+        action: "call"
+        target: "o1_deduction_redo_second"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Assert the second redone deduction is still confirmed (forces refresh)"
+        action: "assert"
+        target: "o1_deduction_redo_second"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the second redone deduction, opening it"
+        action: "call"
+        target: "o1_deduction_redo_second"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert the redone Schedule line is realized"
+        action: "assert"
+        target: "o1_schedule_redo"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "realized"

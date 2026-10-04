@@ -190,14 +190,21 @@ class TestUiSchoolScholarshipDeduction(HttpSavepointCase):
             }
         )
 
-        def _make_award(name, amount, program=None):
-            """Build an Award with one Cash Benefit and Funding line.
+        def _make_award(name, amount, program=None, fee_reduction=False):
+            """Build an Award with one Benefit and Funding line.
 
             :param name: unique name assigned to the Award
             :param amount: fixed amount of the Award's own Benefit
                 line, also its Schedule line's Amount Planned
             :param program: ``school_scholarship_program`` to link;
                 defaults to ``tour_program`` when not given
+            :param fee_reduction: when true the Benefit line is a
+                Fee Reduction realizing a freshly created Payment
+                Term of the Enrollment, which the caller later links
+                to the invoice the Deduction is allocated against
+                (Open requires every allocated invoice to be a
+                Schedule line's own originating invoice); otherwise
+                the Benefit line is Cash and carries no Payment Term
             :return: the created ``school_scholarship_award`` record,
                 its Benefit, Funding, and Schedule lines
             """
@@ -222,6 +229,7 @@ class TestUiSchoolScholarshipDeduction(HttpSavepointCase):
                     # the Line permanently invalid for the browser to
                     # commit.
                     "expense_account_id": tour_discount_account.id,
+                    "discount_account_id": tour_discount_account.id,
                     "benefit_ids": [
                         (
                             0,
@@ -229,10 +237,14 @@ class TestUiSchoolScholarshipDeduction(HttpSavepointCase):
                             {
                                 "name": "%s Benefit" % name,
                                 "product_id": tour_product.id,
-                                "benefit_type": "cash",
+                                "benefit_type": (
+                                    "fee_reduction" if fee_reduction else "cash"
+                                ),
                                 "computation": "fixed",
                                 "amount_fixed": amount,
-                                "periodicity": "one_time",
+                                "periodicity": (
+                                    "per_payment_term" if fee_reduction else "one_time"
+                                ),
                             },
                         )
                     ],
@@ -250,12 +262,25 @@ class TestUiSchoolScholarshipDeduction(HttpSavepointCase):
             )
             benefit = award.benefit_ids[:1]
             funding = award.funding_ids[:1]
+            schedule_vals = {
+                "benefit_id": benefit.id,
+                "date": "2026-08-01",
+                "state": "scheduled",
+            }
+            if fee_reduction:
+                schedule_vals["payment_term_id"] = (
+                    cls.env["school_enrollment_payment_term"]
+                    .create(
+                        {
+                            "enrollment_id": tour_enrollment.id,
+                            "name": "%s Term" % name,
+                            "sequence": 10,
+                        }
+                    )
+                    .id
+                )
             schedule = cls.env["school_scholarship_award_schedule"].create(
-                {
-                    "benefit_id": benefit.id,
-                    "date": "2026-08-01",
-                    "state": "scheduled",
-                }
+                schedule_vals
             )
             return award, benefit, funding, schedule
 
@@ -383,9 +408,16 @@ class TestUiSchoolScholarshipDeduction(HttpSavepointCase):
             tour_benefit_approve,
             tour_funding_approve,
             tour_schedule_approve,
-        ) = _make_award("TOUR-DEDUCTION-AWARD-APPROVE-001", 400000.0)
+        ) = _make_award(
+            "TOUR-DEDUCTION-AWARD-APPROVE-001", 400000.0, fee_reduction=True
+        )
         tour_invoice_approve = _make_open_invoice(
             "TOUR-DEDUCTION-APPROVE-INV-001", 1000000.0
+        )
+        # Open only accepts an invoice that originates a Schedule line
+        # of the Deduction, so link it to that line's Payment Term.
+        tour_schedule_approve.payment_term_id.write(
+            {"customer_invoice_id": tour_invoice_approve.id}
         )
         cls.tour_deduction_approve = cls.env["school_scholarship_deduction"].create(
             {
@@ -519,9 +551,15 @@ class TestUiSchoolScholarshipDeduction(HttpSavepointCase):
             "TOUR-DEDUCTION-AWARD-RECOGNITION-001",
             400000.0,
             program=tour_program_recognition,
+            fee_reduction=True,
         )
         tour_invoice_recognition = _make_open_invoice(
             "TOUR-DEDUCTION-RECOGNITION-INV-001", 1000000.0
+        )
+        # Open only accepts an invoice that originates a Schedule line
+        # of the Deduction, so link it to that line's Payment Term.
+        tour_schedule_recognition.payment_term_id.write(
+            {"customer_invoice_id": tour_invoice_recognition.id}
         )
         cls.tour_deduction_recognition = cls.env["school_scholarship_deduction"].create(
             {

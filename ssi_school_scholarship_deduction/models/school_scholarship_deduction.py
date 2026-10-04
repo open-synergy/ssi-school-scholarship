@@ -816,6 +816,57 @@ Solution: Allocate the full Amount Total across the Allocation lines
             )
             raise UserError(_(error_message))
 
+    @ssi_decorator.pre_open_action()
+    def _06_check_allocation_invoice_origin(self):
+        """Reject opening unless every allocation targets an origin invoice.
+
+        The origin invoices are the Customer Invoices of the Payment
+        Terms behind this document's own Schedule lines
+        (``line_ids.schedule_id.customer_invoice_id``). Each Line's
+        Schedule must already have one, and each Allocation must
+        target one of them, so a deduction of one enrollment can never
+        be reconciled against another enrollment's invoice. Several
+        documents may still target the same origin invoice, and
+        cancelled documents are never checked since this only runs on
+        Open.
+
+        :raises UserError: when a Line's Schedule has no Customer
+            Invoice yet, or an Allocation's invoice is not the
+            Customer Invoice of any of this document's Schedule lines.
+        """
+        self.ensure_one()
+        for line in self.line_ids:
+            schedule = line.schedule_id
+            if not schedule.customer_invoice_id:
+                error_message = """
+Document Type: %s
+Context: Open deduction
+Database ID: %s
+Problem: Schedule '%s' has no Customer Invoice yet
+Solution: Issue the Customer Invoice of the Schedule's Payment Term first
+""" % (
+                    self._description,
+                    self.id,
+                    schedule.display_name,
+                )
+                raise UserError(_(error_message))
+        origin_invoices = self.line_ids.mapped("schedule_id.customer_invoice_id")
+        for allocation in self.allocation_ids:
+            invoice = allocation.customer_invoice_id
+            if invoice not in origin_invoices:
+                error_message = """
+Document Type: %s
+Context: Open deduction
+Database ID: %s
+Problem: Invoice '%s' is not the origin invoice of any Schedule on this document
+Solution: Allocate only to the Customer Invoice of this document's Schedules
+""" % (
+                    self._description,
+                    self.id,
+                    invoice.display_name,
+                )
+                raise UserError(_(error_message))
+
     @ssi_decorator.post_open_action()
     def _10_create_accounting_entry(self):
         """Create and post this document's ``account.move``.
