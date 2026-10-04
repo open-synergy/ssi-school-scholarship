@@ -476,16 +476,23 @@ Solution: Select a Date Due on or after Date
     def _20_mark_schedule_realized(self):
         """Flip every realized Schedule line to state ``realized``.
 
+        Also records the amount actually disbursed on each Schedule
+        line: the sum of ``price_subtotal`` over every line of this
+        document that points at it (one Schedule line can carry
+        several lines, one per Funding).
+
         :return: nothing
         """
         self.ensure_one()
-        schedules = self.line_ids.mapped("schedule_id")
-        schedules.write(
-            {
-                "disbursement_id": self.id,
-                "state": "realized",
-            }
-        )
+        for schedule in self.line_ids.mapped("schedule_id"):
+            lines = self.line_ids.filtered(lambda r: r.schedule_id == schedule)
+            schedule.write(
+                {
+                    "disbursement_id": self.id,
+                    "state": "realized",
+                    "amount_realized": sum(lines.mapped("price_subtotal")),
+                }
+            )
 
     @ssi_decorator.pre_cancel_check()
     def _10_check_no_payment(self):
@@ -530,6 +537,9 @@ document's payable journal item before cancelling
     def _20_reset_schedule(self):
         """Reset every realized Schedule line back to ``scheduled``.
 
+        The amount realized recorded by ``_20_mark_schedule_realized``
+        is cleared as well.
+
         :return: nothing
         """
         self.ensure_one()
@@ -537,6 +547,7 @@ document's payable journal item before cancelling
             {
                 "disbursement_id": False,
                 "state": "scheduled",
+                "amount_realized": 0.0,
             }
         )
 

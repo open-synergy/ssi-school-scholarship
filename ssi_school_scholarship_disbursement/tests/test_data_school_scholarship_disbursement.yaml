@@ -829,6 +829,157 @@ scenarios:
             type: "m2o"
             expected: "REC: b1_analytic_b"
 
+      # ── Positive: Amount Realized is the sum of the document's
+      # lines for the Schedule line (both Funding lines), and returns
+      # to zero when the opened document is cancelled ────────────────
+      - step: "Confirm the multi-source disbursement as admin"
+        action: "call"
+        target: "b1_disbursement_multi"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step:
+          "Assert multi-source disbursement still confirmed before approving (forces a
+          refresh -- T-04)"
+        action: "assert"
+        target: "b1_disbursement_multi"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the multi-source disbursement, opening it"
+        action: "call"
+        target: "b1_disbursement_multi"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert Amount Realized sums both Funding lines of the Schedule line"
+        action: "assert"
+        target: "b1_schedule_multi"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "realized"
+          amount_realized:
+            type: "value"
+            expected: 400000.0
+
+      - step: "Cancel the multi-source disbursement via the wizard"
+        action: "wizard"
+        model: "base.select_cancel_reason"
+        target: "b1_disbursement_multi"
+        as_user: "base.user_admin"
+        values:
+          cancel_reason_id: "REC: b1_reason.id"
+        method: "action_confirm"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Assert cancelling cleared Amount Realized and reset the Schedule line"
+        action: "assert"
+        target: "b1_schedule_multi"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "scheduled"
+          amount_realized:
+            type: "value"
+            expected: 0.0
+          disbursement_id:
+            type: "value"
+            operator: "is_falsy"
+
+      # ── Positive: Amount Realized follows the edited line amounts,
+      # not the Planned amount ───────────────────────────────────────
+      - step: "Create the Schedule line realized by the edited-amount disbursement"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "b1_schedule_edit"
+        values:
+          benefit_id: "REC: b1_benefit_multi.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the disbursement with lines below the planned amount"
+        action: "create"
+        model: "school_scholarship_disbursement"
+        save_as: "b1_disbursement_edit"
+        values:
+          award_id: "REC: b1_award_multi.id"
+          date: 2026-08-05
+          date_due: 2026-08-10
+          journal_id: "REC: b1_journal.id"
+          payable_account_id: "REC: b1_payable_account.id"
+          payment_method: "cash"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: b1_schedule_edit.id"
+                funding_id: "REC: b1_funding_multi_a.id"
+                final_account_id: "REC: b1_expense_account.id"
+                name: "B1 Edited Disbursement Line A"
+                uom_quantity: 1
+                price_unit: 150000.0
+            - - 0
+              - 0
+              - schedule_id: "REC: b1_schedule_edit.id"
+                funding_id: "REC: b1_funding_multi_b.id"
+                final_account_id: "REC: b1_expense_account.id"
+                name: "B1 Edited Disbursement Line B"
+                uom_quantity: 1
+                price_unit: 100000.0
+
+      - step: "Confirm the edited disbursement as admin"
+        action: "call"
+        target: "b1_disbursement_edit"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step:
+          "Assert edited disbursement still confirmed before approving (forces a refresh
+          -- T-04)"
+        action: "assert"
+        target: "b1_disbursement_edit"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the edited disbursement, opening it"
+        action: "call"
+        target: "b1_disbursement_edit"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert Amount Realized is the edited sum, not the Planned amount"
+        action: "assert"
+        target: "b1_schedule_edit"
+        refresh: true
+        asserts:
+          amount_planned:
+            type: "value"
+            expected: 400000.0
+          amount_realized:
+            type: "value"
+            expected: 250000.0
+
       # ── Onchange (form): selecting Schedule fills Description,
       # Product, and Final Account on a Disbursement line -- b1_award_two
       # carries an Expense Account, so Final Account resolves to it,
