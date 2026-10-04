@@ -880,16 +880,23 @@ Solution: Allocate the full Amount Total across the Allocation lines
     def _30_mark_schedule_realized(self):
         """Flip every realized Schedule line to state ``realized``.
 
+        Also records the amount actually deducted on each Schedule
+        line: the sum of ``price_subtotal`` over every line of this
+        document that points at it (one Schedule line can carry
+        several lines, one per Funding).
+
         :return: nothing
         """
         self.ensure_one()
-        schedules = self.line_ids.mapped("schedule_id")
-        schedules.write(
-            {
-                "deduction_id": self.id,
-                "state": "realized",
-            }
-        )
+        for schedule in self.line_ids.mapped("schedule_id"):
+            lines = self.line_ids.filtered(lambda r: r.schedule_id == schedule)
+            schedule.write(
+                {
+                    "deduction_id": self.id,
+                    "state": "realized",
+                    "amount_realized": sum(lines.mapped("price_subtotal")),
+                }
+            )
 
     @ssi_decorator.post_cancel_action()
     def _10_unreconcile(self):
@@ -918,6 +925,9 @@ Solution: Allocate the full Amount Total across the Allocation lines
     def _30_reset_schedule(self):
         """Reset every realized Schedule line back to ``scheduled``.
 
+        The amount realized recorded by ``_30_mark_schedule_realized``
+        is cleared as well.
+
         :return: nothing
         """
         self.ensure_one()
@@ -925,6 +935,7 @@ Solution: Allocate the full Amount Total across the Allocation lines
             {
                 "deduction_id": False,
                 "state": "scheduled",
+                "amount_realized": 0.0,
             }
         )
 

@@ -432,6 +432,9 @@ scenarios:
           state:
             type: "value"
             expected: "realized"
+          amount_realized:
+            type: "value"
+            expected: 400000.0
 
       - step: "Create the cancellation reason"
         action: "create"
@@ -480,6 +483,234 @@ scenarios:
           state:
             type: "value"
             expected: "scheduled"
+          amount_realized:
+            type: "value"
+            expected: 0.0
+
+      # ── Positive: Amount Realized follows the edited line amounts
+      # (one Schedule line, two lines below the planned amount), then
+      # drops back to zero on cancel ─────────────────────────────────
+      - step: "Create the award backing the edited-amount deduction"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "d1_award_edit"
+        values:
+          program_id: "REC: d1_program.id"
+          student_id: "REC: d1_student.id"
+          enrollment_id: "REC: d1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "D1 Edited Benefit"
+                product_id: "REC: d1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "one_time"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: d1_funding_source_a.id"
+                percentage: 60.0
+            - - 0
+              - 0
+              - funding_source_id: "REC: d1_funding_source_b.id"
+                percentage: 40.0
+
+      - step: "Find the edited award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: d1_award_edit.id"]]
+        limit: 1
+        save_as: "d1_benefit_edit"
+
+      - step: "Find the edited award's 60% Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain:
+          [
+            ["award_id", "=", "REC: d1_award_edit.id"],
+            ["funding_source_id", "=", "REC: d1_funding_source_a.id"],
+          ]
+        limit: 1
+        save_as: "d1_funding_edit_a"
+
+      - step: "Find the edited award's 40% Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain:
+          [
+            ["award_id", "=", "REC: d1_award_edit.id"],
+            ["funding_source_id", "=", "REC: d1_funding_source_b.id"],
+          ]
+        limit: 1
+        save_as: "d1_funding_edit_b"
+
+      - step: "Create the Schedule line realizing the edited Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "d1_schedule_edit"
+        values:
+          benefit_id: "REC: d1_benefit_edit.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the invoice the edited deduction is allocated against"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "d1_invoice_edit"
+        values:
+          type_id: "REC: d1_invoice_type.id"
+          partner_id: "REC: d1_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: d1_journal.id"
+          receivable_account_id: "REC: d1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the edited invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "d1_invoice_edit_line"
+        values:
+          customer_invoice_id: "REC: d1_invoice_edit.id"
+          name: "D1 Edited Invoice Line"
+          account_id: "REC: d1_income_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+
+      - step: "Confirm the edited invoice"
+        action: "call"
+        target: "d1_invoice_edit"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the edited invoice and post its journal entry"
+        action: "call"
+        target: "d1_invoice_edit"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the deduction with two lines below the planned amount"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "d1_deduction_edit"
+        values:
+          award_id: "REC: d1_award_edit.id"
+          date: 2026-08-05
+          journal_id: "REC: d1_journal.id"
+          receivable_account_id: "REC: d1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: d1_schedule_edit.id"
+                funding_id: "REC: d1_funding_edit_a.id"
+                final_account_id: "REC: d1_discount_account.id"
+                name: "D1 Edited Deduction Line A"
+                uom_quantity: 1
+                price_unit: 150000.0
+            - - 0
+              - 0
+              - schedule_id: "REC: d1_schedule_edit.id"
+                funding_id: "REC: d1_funding_edit_b.id"
+                final_account_id: "REC: d1_discount_account.id"
+                name: "D1 Edited Deduction Line B"
+                uom_quantity: 1
+                price_unit: 100000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: d1_invoice_edit.id"
+                amount_allocated: 250000.0
+
+      - step: "Confirm the edited deduction as admin"
+        action: "call"
+        target: "d1_deduction_edit"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step:
+          "Assert d1_deduction_edit still confirmed before approving (forces refresh)"
+        action: "assert"
+        target: "d1_deduction_edit"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the edited deduction, opening it"
+        action: "call"
+        target: "d1_deduction_edit"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert Amount Realized is the sum of the edited lines, not Planned"
+        action: "assert"
+        target: "d1_schedule_edit"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "realized"
+          amount_planned:
+            type: "value"
+            expected: 400000.0
+          amount_realized:
+            type: "value"
+            expected: 250000.0
+
+      - step: "Cancel the edited deduction via the wizard"
+        action: "wizard"
+        model: "base.select_cancel_reason"
+        target: "d1_deduction_edit"
+        as_user: "base.user_admin"
+        values:
+          cancel_reason_id: "REC: d1_reason.id"
+        method: "action_confirm"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Assert cancelling cleared Amount Realized and reset the Schedule"
+        action: "assert"
+        target: "d1_schedule_edit"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "scheduled"
+          amount_realized:
+            type: "value"
+            expected: 0.0
+          deduction_id:
+            type: "value"
+            operator: "is_falsy"
 
       # ── Positive: full allocation fully reconciles the invoice ────
       - step: "Create the award backing the full deduction"
