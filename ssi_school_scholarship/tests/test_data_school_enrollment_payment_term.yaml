@@ -280,6 +280,23 @@ scenarios:
             type: "value"
             expected: 0.0
 
+      - step: "Assert the enrollment header ignores the Draft award"
+        action: "assert"
+        target: "enrollment_pt"
+        asserts:
+          amount_scholarship_deduction:
+            type: "value"
+            expected: 0.0
+          amount_scholarship_cash:
+            type: "value"
+            expected: 0.0
+          amount_scholarship:
+            type: "value"
+            expected: 0.0
+          amount_deduction:
+            type: "value"
+            expected: 0.0
+
       - step: "Confirm the award as admin"
         action: "call"
         target: "award_pt1"
@@ -341,6 +358,38 @@ scenarios:
             type: "value"
             expected: 0.0
 
+      - step: "Assert the enrollment header sums both terms"
+        action: "assert"
+        target: "enrollment_pt"
+        asserts:
+          amount_scholarship_deducted:
+            type: "value"
+            expected: 0.0
+          amount_scholarship_undeducted:
+            type: "value"
+            expected: 1000000.0
+          amount_scholarship_deduction:
+            type: "value"
+            expected: 1000000.0
+          amount_scholarship_cash:
+            type: "value"
+            expected: 0.0
+          amount_scholarship_disbursed:
+            type: "value"
+            expected: 0.0
+          amount_scholarship_undisbursed:
+            type: "value"
+            expected: 0.0
+          amount_scholarship:
+            type: "value"
+            expected: 1000000.0
+          amount_deduction:
+            type: "value"
+            expected: 1000000.0
+          amount_deducted:
+            type: "value"
+            expected: 0.0
+
       - step: "Assert term 2 only counts its own schedule line"
         action: "assert"
         target: "term_pt2"
@@ -377,6 +426,29 @@ scenarios:
             type: "value"
             expected: 200000.0
 
+      - step: "Assert the enrollment header follows the partial deduction"
+        action: "assert"
+        target: "enrollment_pt"
+        asserts:
+          amount_scholarship_deducted:
+            type: "value"
+            expected: 350000.0
+          amount_scholarship_undeducted:
+            type: "value"
+            expected: 600000.0
+          amount_scholarship_deduction:
+            type: "value"
+            expected: 950000.0
+          amount_scholarship:
+            type: "value"
+            expected: 950000.0
+          amount_deduction:
+            type: "value"
+            expected: 950000.0
+          amount_deducted:
+            type: "value"
+            expected: 350000.0
+
       # -- Negative: Skipped and Cancelled lines count nowhere.
       - step: "Skip schedule line B"
         action: "write"
@@ -400,6 +472,23 @@ scenarios:
           scholarship_amount_undeducted:
             type: "value"
             expected: 0.0
+
+      - step: "Assert the enrollment header drops the Skipped line"
+        action: "assert"
+        target: "enrollment_pt"
+        asserts:
+          amount_scholarship_deducted:
+            type: "value"
+            expected: 350000.0
+          amount_scholarship_undeducted:
+            type: "value"
+            expected: 400000.0
+          amount_scholarship_deduction:
+            type: "value"
+            expected: 750000.0
+          amount_deduction:
+            type: "value"
+            expected: 750000.0
 
       - step: "Cancel schedule line B"
         action: "write"
@@ -428,3 +517,20 @@ scenarios:
           scholarship_amount_deducted:
             type: "value"
             expected: 0.0
+
+      - step: "Assert the enrollment header after the term 1 changes"
+        action: "assert"
+        target: "enrollment_pt"
+        asserts:
+          amount_scholarship_deducted:
+            type: "value"
+            expected: 350000.0
+          amount_scholarship_undeducted:
+            type: "value"
+            expected: 400000.0
+          amount_scholarship_deduction:
+            type: "value"
+            expected: 750000.0
+          amount_scholarship:
+            type: "value"
+            expected: 750000.0
