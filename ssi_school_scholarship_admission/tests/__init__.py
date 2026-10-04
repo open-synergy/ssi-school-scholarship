@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from . import (
+    test_school_admission_payment_term,
     test_school_scholarship_admission,
     test_school_scholarship_admission_guard,
     test_school_scholarship_award_schedule_voided,

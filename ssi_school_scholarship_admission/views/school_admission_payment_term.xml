@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="school_admission_payment_term_view_tree" model="ir.ui.view">
+    <field name="name">school scholarship - school_admission_payment_term - tree</field>
+    <field name="model">school_admission_payment_term</field>
+    <field
+            name="inherit_id"
+            ref="ssi_school_admission.school_admission_payment_term_view_tree"
+        />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='amount_unrealized']" position="after">
+                <field name="scholarship_amount" optional="hide" />
+                <field name="scholarship_amount_deducted" optional="hide" />
+                <field name="scholarship_amount_deducted_planned" optional="hide" />
+                <field name="scholarship_amount_undeducted" optional="hide" />
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="school_admission_payment_term_view_form_embedded" model="ir.ui.view">
+    <field
+            name="name"
+        >school scholarship - school_admission_payment_term - form embedded</field>
+    <field name="model">school_admission_payment_term</field>
+    <field
+            name="inherit_id"
+            ref="ssi_school_admission.school_admission_payment_term_view_form_embedded"
+        />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//page[@name='detail']" position="after">
+                <page
+                        name="scholarship"
+                        string="Scholarship"
+                        groups="ssi_school_scholarship.school_scholarship_award_viewer_group"
+                    >
+                    <group name="scholarship_amount_group" colspan="4" col="2">
+                        <field name="scholarship_amount" />
+                        <field name="scholarship_amount_deducted" />
+                        <field name="scholarship_amount_deducted_planned" />
+                        <field name="scholarship_amount_undeducted" />
+                    </group>
+                    <field name="scholarship_schedule_ids" nolabel="1">
+                        <tree>
+                            <field name="award_id" />
+                            <field name="benefit_id" />
+                            <field name="date" />
+                            <field name="currency_id" invisible="1" />
+                            <field name="amount_planned" />
+                            <field name="amount_realized" />
+                            <field name="state" />
+                        </tree>
+                        <form>
+                            <group name="scholarship_schedule_group" col="2">
+                                <field name="award_id" />
+                                <field name="benefit_id" />
+                                <field name="date" />
+                                <field name="currency_id" invisible="1" />
+                                <field name="amount_planned" />
+                                <field name="amount_realized" />
+                                <field name="state" />
+                            </group>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+        </data>
+    </field>
+</record>
+</odoo>
