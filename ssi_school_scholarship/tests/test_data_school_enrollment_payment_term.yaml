@@ -1,0 +1,430 @@
+options:
+  auto_refresh: true
+
+scenarios:
+  - name: "Enrollment Payment Term - Scholarship Amounts"
+    steps:
+      # ── Shared fixture chain (suffix PT) ─────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type_pt"
+        values:
+          name: "PT Grade Type"
+          code: "PTGT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school_pt"
+        values:
+          name: "PT School"
+          code: "PTSC"
+          grade_type_id: "REC: grade_type_pt.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year_pt"
+        values:
+          name: "PT Academic Year"
+          code: "PTAY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term_pt"
+        values:
+          name: "PT Term"
+          code: "PTTM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year_pt.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade_pt"
+        values:
+          name: "PT Grade"
+          code: "PTGR"
+          type_id: "REC: grade_type_pt.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class_pt"
+        values:
+          name: "PT Class"
+          code: "PTCL"
+          school_id: "REC: school_pt.id"
+          grade_id: "REC: grade_pt.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_pt"
+        values:
+          name: "PT Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source_pt"
+        values:
+          name: "PT Funding Source"
+          code: "PTFS"
+          analytic_account_id: "REC: analytic_pt.id"
+
+      - step: "Create the product covered by the benefit lines"
+        action: "create"
+        model: "product.product"
+        save_as: "product_pt"
+        values:
+          name: "PT Product"
+          type: "service"
+
+      - step: "Create the second product covered by the benefit lines"
+        action: "create"
+        model: "product.product"
+        save_as: "product_pt2"
+        values:
+          name: "PT Product 2"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal_pt"
+        values:
+          name: "PT Journal"
+          code: "JPT"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account_pt"
+        values:
+          name: "PT Discount Account"
+          code: "PTDA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type_pt"
+        values:
+          name: "PT Type"
+          code: "PTTY"
+          deduction_journal_id: "REC: journal_pt.id"
+          discount_account_id: "REC: discount_account_pt.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program_pt"
+        values:
+          name: "PT Program"
+          code: "PTPRG"
+          type_id: "REC: type_pt.id"
+          school_id: "REC: school_pt.id"
+          academic_year_id: "REC: academic_year_pt.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source_pt.id"]]]
+          deduction_journal_id: "REC: journal_pt.id"
+          discount_account_id: "REC: discount_account_pt.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product_pt.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product_pt2.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact_pt"
+        values:
+          name: "PT Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "student_pt"
+        values:
+          name: "PT Student"
+          code: "PTST"
+          contact_id: "REC: contact_pt.id"
+          school_id: "REC: school_pt.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment_pt"
+        values:
+          academic_year_id: "REC: academic_year_pt.id"
+          academic_term_id: "REC: academic_term_pt.id"
+          school_id: "REC: school_pt.id"
+          grade_id: "REC: grade_pt.id"
+          grade_class_id: "REC: grade_class_pt.id"
+          student_id: "REC: student_pt.id"
+
+      - step: "Get the account.account.type Income reference (details)"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income2"
+
+      - step: "Create the income account used by the term details"
+        action: "create"
+        model: "account.account"
+        save_as: "income_account_pt"
+        values:
+          name: "PT Income Account"
+          code: "PTIA"
+          user_type_id: "REC: account_type_income2.id"
+          reconcile: false
+
+      - step: "Create term 1 (two details: 1,000,000 and 500,000)"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "term_pt1"
+        values:
+          enrollment_id: "REC: enrollment_pt.id"
+          name: "PT Term 1"
+          date_invoice: 2026-08-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: product_pt.id"
+                name: "PT Detail 1A"
+                account_id: "REC: income_account_pt.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+            - - 0
+              - 0
+              - product_id: "REC: product_pt2.id"
+                name: "PT Detail 1B"
+                account_id: "REC: income_account_pt.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 500000.0
+
+      - step: "Create term 2 (one detail of 1,000,000)"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "term_pt2"
+        values:
+          enrollment_id: "REC: enrollment_pt.id"
+          name: "PT Term 2"
+          date_invoice: 2026-09-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: product_pt.id"
+                name: "PT Detail 2A"
+                account_id: "REC: income_account_pt.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create the award with one fee reduction line per product"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award_pt1"
+        values:
+          program_id: "REC: program_pt.id"
+          student_id: "REC: student_pt.id"
+          enrollment_id: "REC: enrollment_pt.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "PT Benefit A"
+                product_id: "REC: product_pt.id"
+                percentage: 40.0
+            - - 0
+              - 0
+              - name: "PT Benefit B"
+                product_id: "REC: product_pt2.id"
+                percentage: 40.0
+
+      # -- Negative: the award is still Draft, so nothing counts.
+      - step: "Assert term 1 has no committed scholarship while Draft"
+        action: "assert"
+        target: "term_pt1"
+        asserts:
+          scholarship_amount:
+            type: "value"
+            expected: 0.0
+          scholarship_amount_undeducted:
+            type: "value"
+            expected: 0.0
+
+      - step: "Confirm the award as admin"
+        action: "call"
+        target: "award_pt1"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the award as admin"
+        action: "call"
+        target: "award_pt1"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Find the schedule line of benefit A on term 1"
+        action: "search"
+        model: "school_scholarship_award_schedule"
+        domain:
+          [
+            ["payment_term_id", "=", "REC: term_pt1.id"],
+            ["benefit_id.name", "=", "PT Benefit A"],
+          ]
+        limit: 1
+        save_as: "sched_pt1a"
+
+      - step: "Find the schedule line of benefit B on term 1"
+        action: "search"
+        model: "school_scholarship_award_schedule"
+        domain:
+          [
+            ["payment_term_id", "=", "REC: term_pt1.id"],
+            ["benefit_id.name", "=", "PT Benefit B"],
+          ]
+        limit: 1
+        save_as: "sched_pt1b"
+
+      # -- Positive: 400,000 + 200,000 planned, nothing deducted yet.
+      # Term 2's own schedule line (400,000) must not leak into term 1.
+      - step: "Assert term 1 totals before any deduction"
+        action: "assert"
+        target: "term_pt1"
+        asserts:
+          scholarship_amount:
+            type: "value"
+            expected: 600000.0
+          scholarship_amount_undeducted:
+            type: "value"
+            expected: 600000.0
+          scholarship_amount_deducted:
+            type: "value"
+            expected: 0.0
+          scholarship_amount_deducted_planned:
+            type: "value"
+            expected: 0.0
+
+      - step: "Assert term 2 only counts its own schedule line"
+        action: "assert"
+        target: "term_pt2"
+        asserts:
+          scholarship_amount:
+            type: "value"
+            expected: 400000.0
+          scholarship_amount_undeducted:
+            type: "value"
+            expected: 400000.0
+
+      # -- Positive: a Realized line deducting less than planned.
+      - step: "Realize schedule line A with 350,000 actually deducted"
+        action: "write"
+        target: "sched_pt1a"
+        values:
+          state: "realized"
+          amount_realized: 350000.0
+
+      - step: "Assert term 1 splits deducted and not yet deducted"
+        action: "assert"
+        target: "term_pt1"
+        asserts:
+          scholarship_amount:
+            type: "value"
+            expected: 600000.0
+          scholarship_amount_deducted:
+            type: "value"
+            expected: 350000.0
+          scholarship_amount_deducted_planned:
+            type: "value"
+            expected: 400000.0
+          scholarship_amount_undeducted:
+            type: "value"
+            expected: 200000.0
+
+      # -- Negative: Skipped and Cancelled lines count nowhere.
+      - step: "Skip schedule line B"
+        action: "write"
+        target: "sched_pt1b"
+        values:
+          state: "skipped"
+
+      - step: "Assert a Skipped line is dropped from every figure"
+        action: "assert"
+        target: "term_pt1"
+        asserts:
+          scholarship_amount:
+            type: "value"
+            expected: 400000.0
+          scholarship_amount_deducted:
+            type: "value"
+            expected: 350000.0
+          scholarship_amount_deducted_planned:
+            type: "value"
+            expected: 400000.0
+          scholarship_amount_undeducted:
+            type: "value"
+            expected: 0.0
+
+      - step: "Cancel schedule line B"
+        action: "write"
+        target: "sched_pt1b"
+        values:
+          state: "cancelled"
+
+      - step: "Assert a Cancelled line is dropped from every figure"
+        action: "assert"
+        target: "term_pt1"
+        asserts:
+          scholarship_amount:
+            type: "value"
+            expected: 400000.0
+          scholarship_amount_undeducted:
+            type: "value"
+            expected: 0.0
+
+      - step: "Assert term 2 is untouched by changes on term 1"
+        action: "assert"
+        target: "term_pt2"
+        asserts:
+          scholarship_amount:
+            type: "value"
+            expected: 400000.0
+          scholarship_amount_deducted:
+            type: "value"
+            expected: 0.0
