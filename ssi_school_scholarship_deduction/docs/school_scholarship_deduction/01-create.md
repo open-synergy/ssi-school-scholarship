@@ -11,7 +11,10 @@
 - **Data:** A `school_scholarship_award` exists, already `open`, with at least one
   Schedule line (state `scheduled`) and at least one Funding line.
 - **Data:** An open `customer_invoice` exists, billed to the Award's own Partner, with a
-  positive residual.
+  positive residual, and it is the invoice issued from the Payment Term of at least one
+  of the Schedule lines you will add on the Lines tab (the Schedule line's **Customer
+  Invoice**). Only such an invoice lets this document be opened later (see
+  `05-approve`).
 - **Config:** An active `policy.template` for this model grants `confirm_ok` for state
   `draft` to the actor's group (needed later by `04-confirm`).
 - **Access:** User is in group `Deduction User`.
@@ -39,9 +42,12 @@
      total.
 5. On the **Allocations** tab, add **at least one** line:
    - **Customer Invoice** _(required)_: Select an open invoice, restricted to invoices
-     of the selected Award's own Partner with a positive residual. Selecting it fills
-     Invoice Residual and Invoice Receivable Account for reference, and defaults this
-     document's own Receivable Account above when it is still empty.
+     of the selected Award's own Partner with a positive residual. Select the invoice
+     issued from the Payment Term of one of the Schedule lines on the Lines tab; an
+     invoice that originates none of them is saved here but rejected when opening this
+     document. Selecting it fills Invoice Residual and Invoice Receivable Account for
+     reference, and defaults this document's own Receivable Account above when it is
+     still empty.
    - **Amount Allocated** _(required)_: Enter the amount of this document applied to the
      selected invoice. Must not exceed Invoice Residual.
    - The sum of every Allocation line's Amount Allocated must equal the sum of the Lines

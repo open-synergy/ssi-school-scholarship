@@ -267,10 +267,10 @@ scenarios:
               - 0
               - name: "P Benefit"
                 product_id: "REC: p_product.id"
-                benefit_type: "cash"
+                benefit_type: "fee_reduction"
                 computation: "fixed"
                 amount_fixed: 400000.0
-                periodicity: "one_time"
+                periodicity: "per_payment_term"
           funding_ids:
             - - 0
               - 0
@@ -301,12 +301,24 @@ scenarios:
         limit: 1
         save_as: "p_funding"
 
+      - step: "Create the Payment Term the Schedule line realizes"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "p_term"
+        values:
+          enrollment_id: "REC: p_enrollment.id"
+          name: "P TERM"
+          sequence: 10
+          date_invoice: 2026-08-01
+          date_due: 2026-08-15
+
       - step: "Create the Schedule line realizing the Benefit"
         action: "create"
         model: "school_scholarship_award_schedule"
         save_as: "p_schedule"
         values:
           benefit_id: "REC: p_benefit.id"
+          payment_term_id: "REC: p_term.id"
           date: 2026-08-01
           state: "scheduled"
 
@@ -408,6 +420,12 @@ scenarios:
           amount_residual:
             type: "value"
             expected: 400000.0
+
+      - step: "Link the invoice to the Payment Term its Schedule line realizes"
+        action: "write"
+        target: "p_term"
+        values:
+          customer_invoice_id: "REC: p_invoice.id"
 
       - step: "Allocate the full amount against the invoice, same Operating Unit"
         action: "create"
@@ -545,10 +563,10 @@ scenarios:
               - 0
               - name: "P Deferred Benefit"
                 product_id: "REC: p_product.id"
-                benefit_type: "cash"
+                benefit_type: "fee_reduction"
                 computation: "fixed"
                 amount_fixed: 400000.0
-                periodicity: "one_time"
+                periodicity: "per_payment_term"
           funding_ids:
             - - 0
               - 0
@@ -569,12 +587,24 @@ scenarios:
         limit: 1
         save_as: "p_funding_deferred"
 
+      - step: "Create the Payment Term the Schedule line realizes"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "p_term_deferred"
+        values:
+          enrollment_id: "REC: p_enrollment.id"
+          name: "P TERM DEFERRED"
+          sequence: 10
+          date_invoice: 2026-08-01
+          date_due: 2026-08-15
+
       - step: "Create the Schedule line realizing the deferred Benefit"
         action: "create"
         model: "school_scholarship_award_schedule"
         save_as: "p_schedule_deferred"
         values:
           benefit_id: "REC: p_benefit_deferred.id"
+          payment_term_id: "REC: p_term_deferred.id"
           date: 2026-08-01
           state: "scheduled"
 
@@ -625,6 +655,12 @@ scenarios:
           state:
             type: "value"
             expected: "open"
+
+      - step: "Link the invoice to the Payment Term its Schedule line realizes"
+        action: "write"
+        target: "p_term_deferred"
+        values:
+          customer_invoice_id: "REC: p_invoice_deferred.id"
 
       - step: "Create the deferred deduction, Date before the Award's own Start Date"
         action: "create"
@@ -1014,10 +1050,10 @@ scenarios:
               - 0
               - name: "N Benefit"
                 product_id: "REC: n_product.id"
-                benefit_type: "cash"
+                benefit_type: "fee_reduction"
                 computation: "fixed"
                 amount_fixed: 400000.0
-                periodicity: "one_time"
+                periodicity: "per_payment_term"
           funding_ids:
             - - 0
               - 0
@@ -1038,12 +1074,24 @@ scenarios:
         limit: 1
         save_as: "n_funding"
 
+      - step: "Create the Payment Term the Schedule line realizes"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "n_term"
+        values:
+          enrollment_id: "REC: n_enrollment.id"
+          name: "N TERM"
+          sequence: 10
+          date_invoice: 2026-08-01
+          date_due: 2026-08-15
+
       - step: "Create the Schedule line realizing the Benefit"
         action: "create"
         model: "school_scholarship_award_schedule"
         save_as: "n_schedule"
         values:
           benefit_id: "REC: n_benefit.id"
+          payment_term_id: "REC: n_term.id"
           date: 2026-08-01
           state: "scheduled"
 
@@ -1150,6 +1198,15 @@ scenarios:
           journal_id: "REC: n_journal.id"
           receivable_account_id: "REC: n_receivable_account.id"
           user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: n_schedule.id"
+                funding_id: "REC: n_funding.id"
+                final_account_id: "REC: n_discount_account.id"
+                name: "N Bypass Deduction Line"
+                uom_quantity: 1
+                price_unit: 0.0
 
       - step: "The bare deduction has zero Amount Total and Operating Unit A"
         action: "assert"
@@ -1161,6 +1218,12 @@ scenarios:
           operating_unit_id:
             type: "m2o"
             expected: "REC: n_ou_a"
+
+      - step: "Link the invoice to the Payment Term its Schedule line realizes"
+        action: "write"
+        target: "n_term"
+        values:
+          customer_invoice_id: "REC: n_invoice_other_ou.id"
 
       - step: "Bypass the create-time Operating Unit constrain via context"
         action: "create"

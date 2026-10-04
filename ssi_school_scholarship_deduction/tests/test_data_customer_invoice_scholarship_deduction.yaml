@@ -402,10 +402,10 @@ scenarios:
               - 0
               - name: "E2 Benefit"
                 product_id: "REC: e2_product.id"
-                benefit_type: "cash"
+                benefit_type: "fee_reduction"
                 computation: "fixed"
                 amount_fixed: 400000.0
-                periodicity: "one_time"
+                periodicity: "per_payment_term"
           funding_ids:
             - - 0
               - 0
@@ -426,12 +426,24 @@ scenarios:
         limit: 1
         save_as: "e2_funding"
 
+      - step: "Create the Payment Term the Schedule line realizes"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "e2_term"
+        values:
+          enrollment_id: "REC: e2_enrollment.id"
+          name: "E2 TERM"
+          sequence: 10
+          date_invoice: 2026-08-01
+          date_due: 2026-08-15
+
       - step: "Create the Schedule line realizing the Benefit"
         action: "create"
         model: "school_scholarship_award_schedule"
         save_as: "e2_schedule"
         values:
           benefit_id: "REC: e2_benefit.id"
+          payment_term_id: "REC: e2_term.id"
           date: 2026-08-01
           state: "scheduled"
 
@@ -484,6 +496,12 @@ scenarios:
           amount_residual:
             type: "value"
             expected: 1000000.0
+
+      - step: "Link the invoice to the Payment Term its Schedule line realizes"
+        action: "write"
+        target: "e2_term"
+        values:
+          customer_invoice_id: "REC: e2_invoice.id"
 
       - step: "Create the deduction document"
         action: "create"
@@ -908,10 +926,10 @@ scenarios:
               - 0
               - name: "E3 Benefit"
                 product_id: "REC: e3_product.id"
-                benefit_type: "cash"
+                benefit_type: "fee_reduction"
                 computation: "fixed"
                 amount_fixed: 1000000.0
-                periodicity: "one_time"
+                periodicity: "per_payment_term"
           funding_ids:
             - - 0
               - 0
@@ -932,12 +950,24 @@ scenarios:
         limit: 1
         save_as: "e3_funding"
 
+      - step: "Create the Payment Term the Schedule line realizes"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "e3_term"
+        values:
+          enrollment_id: "REC: e3_enrollment.id"
+          name: "E3 TERM"
+          sequence: 10
+          date_invoice: 2026-08-01
+          date_due: 2026-08-15
+
       - step: "Create the Schedule line realizing the Benefit"
         action: "create"
         model: "school_scholarship_award_schedule"
         save_as: "e3_schedule"
         values:
           benefit_id: "REC: e3_benefit.id"
+          payment_term_id: "REC: e3_term.id"
           date: 2026-08-01
           state: "scheduled"
 
@@ -987,6 +1017,12 @@ scenarios:
           state:
             type: "value"
             expected: "open"
+
+      - step: "Link the invoice to the Payment Term its Schedule line realizes"
+        action: "write"
+        target: "e3_term"
+        values:
+          customer_invoice_id: "REC: e3_invoice.id"
 
       - step: "Create the full deduction document"
         action: "create"

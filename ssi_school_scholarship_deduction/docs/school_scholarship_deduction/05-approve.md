@@ -12,6 +12,10 @@
   produced by `04-confirm.md`.
 - **Config:** An active `policy.template` grants `approve_ok` for state `confirm` to the
   active approver.
+- **Data:** Every Schedule line on the document's Lines tab has a **Customer Invoice**
+  (its Payment Term has already been invoiced), and every invoice on the Allocations tab
+  is the Customer Invoice of at least one of those Schedule lines. Otherwise the Approve
+  step is rejected (see the Flow).
 - **Access:** User is the active approver named on the document's `approval.template`.
 
 ## Flow
@@ -20,6 +24,10 @@
 2. Open the record to approve.
 3. Click the **Approve** button in the statusbar.
 4. Click **OK** on the confirmation dialog.
+   - If a Schedule line has no Customer Invoice yet, or an allocated invoice is not the
+     Customer Invoice of any Schedule line on this document, an error dialog appears and
+     the document stays **Waiting for Approval**. Issue the Payment Term's invoice, or
+     allocate to the invoice that Payment Term issued, then Approve again.
 
 ## Post-Condition
 

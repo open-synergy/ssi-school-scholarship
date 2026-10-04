@@ -258,10 +258,10 @@ scenarios:
               - 0
               - name: "R1 Benefit"
                 product_id: "REC: r1_product.id"
-                benefit_type: "cash"
+                benefit_type: "fee_reduction"
                 computation: "fixed"
                 amount_fixed: 5000000.0
-                periodicity: "one_time"
+                periodicity: "per_payment_term"
           funding_ids:
             - - 0
               - 0
@@ -300,12 +300,24 @@ scenarios:
         limit: 1
         save_as: "r1_funding"
 
+      - step: "Create the Payment Term the Schedule line realizes"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "r1_term"
+        values:
+          enrollment_id: "REC: r1_enrollment.id"
+          name: "R1 TERM"
+          sequence: 10
+          date_invoice: 2026-08-01
+          date_due: 2026-08-15
+
       - step: "Create the Schedule line realizing the Benefit"
         action: "create"
         model: "school_scholarship_award_schedule"
         save_as: "r1_schedule"
         values:
           benefit_id: "REC: r1_benefit.id"
+          payment_term_id: "REC: r1_term.id"
           date: 2026-08-01
           state: "scheduled"
 
@@ -358,6 +370,12 @@ scenarios:
           amount_residual:
             type: "value"
             expected: 5000000.0
+
+      - step: "Link the invoice to the Payment Term its Schedule line realizes"
+        action: "write"
+        target: "r1_term"
+        values:
+          customer_invoice_id: "REC: r1_invoice.id"
 
       - step: "Create the deferred deduction, Date before the Award's Start Date"
         action: "create"

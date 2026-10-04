@@ -350,10 +350,10 @@ scenarios:
               - 0
               - name: "EA Benefit"
                 product_id: "REC: ea_product.id"
-                benefit_type: "cash"
+                benefit_type: "fee_reduction"
                 computation: "fixed"
                 amount_fixed: 400000.0
-                periodicity: "one_time"
+                periodicity: "per_payment_term"
           funding_ids:
             - - 0
               - 0
@@ -380,6 +380,7 @@ scenarios:
         save_as: "ea_schedule"
         values:
           benefit_id: "REC: ea_benefit.id"
+          payment_term_id: "REC: ea_term.id"
           date: 2026-08-01
           state: "scheduled"
 
@@ -913,10 +914,10 @@ scenarios:
               - 0
               - name: "EB Benefit"
                 product_id: "REC: eb_product.id"
-                benefit_type: "cash"
+                benefit_type: "fee_reduction"
                 computation: "fixed"
                 amount_fixed: 400000.0
-                periodicity: "one_time"
+                periodicity: "per_payment_term"
           funding_ids:
             - - 0
               - 0
@@ -943,6 +944,7 @@ scenarios:
         save_as: "eb_schedule"
         values:
           benefit_id: "REC: eb_benefit.id"
+          payment_term_id: "REC: eb_term.id"
           date: 2026-08-01
           state: "scheduled"
 
@@ -1317,10 +1319,10 @@ scenarios:
               - 0
               - name: "EF Benefit"
                 product_id: "REC: ef_product.id"
-                benefit_type: "cash"
+                benefit_type: "fee_reduction"
                 computation: "fixed"
                 amount_fixed: 400000.0
-                periodicity: "one_time"
+                periodicity: "per_payment_term"
           funding_ids:
             - - 0
               - 0
@@ -1347,6 +1349,7 @@ scenarios:
         save_as: "ef_schedule"
         values:
           benefit_id: "REC: ef_benefit.id"
+          payment_term_id: "REC: ef_term.id"
           date: 2026-08-01
           state: "scheduled"
 
@@ -1768,10 +1771,10 @@ scenarios:
               - 0
               - name: "EC Benefit"
                 product_id: "REC: ec_product.id"
-                benefit_type: "cash"
+                benefit_type: "fee_reduction"
                 computation: "fixed"
                 amount_fixed: 400000.0
-                periodicity: "one_time"
+                periodicity: "per_payment_term"
           funding_ids:
             - - 0
               - 0
@@ -1798,6 +1801,7 @@ scenarios:
         save_as: "ec_schedule"
         values:
           benefit_id: "REC: ec_benefit.id"
+          payment_term_id: "REC: ec_term.id"
           date: 2026-08-01
           state: "scheduled"
 

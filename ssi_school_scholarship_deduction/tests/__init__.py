@@ -13,3 +13,4 @@ from . import test_customer_invoice_scholarship_deduction  # noqa: F401
 from . import test_create_due_scholarship_recognition  # noqa: F401
 from . import test_module_category  # noqa: F401
 from . import test_school_scholarship_deduction_enrollment_recognition  # noqa: F401
+from . import test_school_scholarship_deduction_invoice_origin  # noqa: F401
