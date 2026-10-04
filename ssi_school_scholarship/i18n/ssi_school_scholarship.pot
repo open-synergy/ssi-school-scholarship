@@ -975,6 +975,14 @@ msgid "Draft"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_enrollment__amount_scholarship_deduction
+msgid ""
+"Effective scholarship deduction: Scholarship Deducted plus Scholarship Not "
+"Yet Deducted. The part of a partially realized schedule line that was not "
+"deducted stays billable and is deliberately not counted."
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_scholarship_program_view_form
 msgid "Eligibility"
 msgstr ""
@@ -2252,6 +2260,7 @@ msgstr ""
 #: model:ir.ui.menu,name:ssi_school_scholarship.menu_school_scholarship_configuration
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_enrollment_payment_term_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_enrollment_payment_term_view_form_embedded
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_enrollment_view_form
 msgid "Scholarship"
 msgstr ""
 
@@ -2282,6 +2291,26 @@ msgid "Scholarship Awards"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment__amount_scholarship_cash
+msgid "Scholarship Cash"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_enrollment__amount_scholarship_disbursed
+msgid ""
+"Scholarship Cash already paid out: the sum of Amount Realized of the "
+"Realized Cash schedule lines."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_enrollment__amount_scholarship_undisbursed
+msgid ""
+"Scholarship Cash still waiting to be paid out: the sum of Amount Planned of "
+"the Scheduled Cash schedule lines of Open or Done awards."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment__amount_scholarship_deducted
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment_payment_term__scholarship_amount_deducted
 msgid "Scholarship Deducted"
 msgstr ""
@@ -2289,6 +2318,16 @@ msgstr ""
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment_payment_term__scholarship_amount_deducted_planned
 msgid "Scholarship Deducted (Planned)"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment__amount_scholarship_deduction
+msgid "Scholarship Deduction"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment__amount_scholarship_disbursed
+msgid "Scholarship Disbursed"
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -2303,8 +2342,14 @@ msgid "Scholarship Funding Sources"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment__amount_scholarship_undeducted
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment_payment_term__scholarship_amount_undeducted
 msgid "Scholarship Not Yet Deducted"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment__amount_scholarship_undisbursed
+msgid "Scholarship Not Yet Disbursed"
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -2341,6 +2386,14 @@ msgstr ""
 msgid ""
 "Scholarship actually deducted from this payment term: the sum of Amount "
 "Realized of its Realized schedule lines."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_enrollment__amount_scholarship_deducted
+msgid ""
+"Scholarship already deducted from the payment terms of this enrollment: the "
+"sum of Scholarship Deducted of its payment terms that are neither cancelled "
+"nor voided."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -2392,6 +2445,14 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_enrollment__amount_scholarship_cash
+msgid ""
+"Scholarship paid to the student in cash: the sum of Amount Planned of the "
+"Cash schedule lines that are Scheduled or Realized, of Open or Done awards. "
+"It does not reduce the billing."
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__program_id
 msgid "Scholarship program this award is granted under."
 msgstr ""
@@ -2404,6 +2465,14 @@ msgstr ""
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program_scope__program_id
 msgid "Scholarship program this scope line belongs to."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_enrollment__amount_scholarship_undeducted
+msgid ""
+"Scholarship still waiting to be deducted from the payment terms of this "
+"enrollment: the sum of Scholarship Not Yet Deducted of its payment terms "
+"that are neither cancelled nor voided."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -2676,15 +2745,6 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship
-#: model:ir.model.fields,help:ssi_school_scholarship.field_school_enrollment__amount_scholarship
-msgid ""
-"Total amount awarded by this enrollment's Open or Done scholarship awards. A"
-" commitment figure, not a realization -- realization becomes available once "
-"the deduction module ships. Restricted to the Scholarship Award Viewer "
-"group."
-msgstr ""
-
-#. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_funding_source__amount_committed
 msgid ""
 "Total amount committed against this funding source by awards whose Funding "
@@ -2696,6 +2756,15 @@ msgstr ""
 msgid ""
 "Total amount of this award already realized: the sum of its Schedule lines' "
 "Amount Planned that are in state Realized."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_enrollment__amount_scholarship
+msgid ""
+"Total scholarship of this enrollment: Scholarship Deduction plus Scholarship"
+" Cash. Only the deduction part reduces the billing; Cash is paid to the "
+"student and does not reduce it. Restricted to the Scholarship Award Viewer "
+"group."
 msgstr ""
 
 #. module: ssi_school_scholarship
