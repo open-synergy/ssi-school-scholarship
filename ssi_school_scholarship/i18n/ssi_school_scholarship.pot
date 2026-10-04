@@ -1914,6 +1914,14 @@ msgid "Periodicity"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_enrollment_payment_term__scholarship_amount_deducted_planned
+msgid ""
+"Planned amount of the schedule lines that are already Realized: the sum of "
+"their Amount Planned. Compare with Scholarship Deducted to see the "
+"difference between plan and actual deduction."
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__policy_template_id
 msgid "Policy Template"
 msgstr ""
@@ -2242,11 +2250,14 @@ msgstr ""
 #. module: ssi_school_scholarship
 #: model:ir.ui.menu,name:ssi_school_scholarship.menu_school_scholarship
 #: model:ir.ui.menu,name:ssi_school_scholarship.menu_school_scholarship_configuration
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_enrollment_payment_term_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship.school_enrollment_payment_term_view_form_embedded
 msgid "Scholarship"
 msgstr ""
 
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment__amount_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment_payment_term__scholarship_amount
 msgid "Scholarship Amount"
 msgstr ""
 
@@ -2271,6 +2282,16 @@ msgid "Scholarship Awards"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment_payment_term__scholarship_amount_deducted
+msgid "Scholarship Deducted"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment_payment_term__scholarship_amount_deducted_planned
+msgid "Scholarship Deducted (Planned)"
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:res.groups,name:ssi_school_scholarship.school_scholarship_funding_source_group
 msgid "Scholarship Funding Source"
 msgstr ""
@@ -2282,6 +2303,11 @@ msgid "Scholarship Funding Sources"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment_payment_term__scholarship_amount_undeducted
+msgid "Scholarship Not Yet Deducted"
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:res.groups,name:ssi_school_scholarship.school_scholarship_program_group
 msgid "Scholarship Program"
 msgstr ""
@@ -2290,6 +2316,11 @@ msgstr ""
 #: model:ir.actions.act_window,name:ssi_school_scholarship.school_scholarship_program_action
 #: model:ir.ui.menu,name:ssi_school_scholarship.school_scholarship_program_menu
 msgid "Scholarship Programs"
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_enrollment_payment_term__scholarship_schedule_ids
+msgid "Scholarship Schedules"
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -2306,11 +2337,26 @@ msgid "Scholarship Types"
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_enrollment_payment_term__scholarship_amount_deducted
+msgid ""
+"Scholarship actually deducted from this payment term: the sum of Amount "
+"Realized of its Realized schedule lines."
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_schedule__award_id
 msgid ""
 "Scholarship award of the linked Benefit line, kept as a stored column so "
 "this model's own domains and record rules do not have to traverse through "
 "Benefit."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_enrollment_payment_term__scholarship_schedule_ids
+msgid ""
+"Scholarship award schedule lines pinned to this payment term. Every "
+"scholarship on a payment term is a deduction (Fee Reduction); Cash benefits "
+"never refer to a payment term."
 msgstr ""
 
 #. module: ssi_school_scholarship
@@ -2339,6 +2385,13 @@ msgid "Scholarship awards linked to this enrollment."
 msgstr ""
 
 #. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_enrollment_payment_term__scholarship_amount
+msgid ""
+"Scholarship committed to this payment term: the sum of Amount Planned of its"
+" Scheduled and Realized schedule lines whose award is Open or Done."
+msgstr ""
+
+#. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__program_id
 msgid "Scholarship program this award is granted under."
 msgstr ""
@@ -2351,6 +2404,13 @@ msgstr ""
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_program_scope__program_id
 msgid "Scholarship program this scope line belongs to."
+msgstr ""
+
+#. module: ssi_school_scholarship
+#: model:ir.model.fields,help:ssi_school_scholarship.field_school_enrollment_payment_term__scholarship_amount_undeducted
+msgid ""
+"Scholarship still waiting to be deducted from this payment term: the sum of "
+"Amount Planned of its Scheduled schedule lines whose award is Open or Done."
 msgstr ""
 
 #. module: ssi_school_scholarship
