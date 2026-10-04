@@ -1294,3 +1294,391 @@ scenarios:
           date_start: 2026-07-01
           date_end: 2026-12-31
           discount_account_id: "REC: discount_account5.id"
+
+  - name: "Admission - Scholarship Cash Header"
+    steps:
+      # ── Shared fixture chain (suffix SC) ────────────────────────
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type_sc"
+        values:
+          name: "SC Grade Type"
+          code: "SCGT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "school_sc"
+        values:
+          name: "SC School"
+          code: "SCSC"
+          grade_type_id: "REC: grade_type_sc.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year_sc"
+        values:
+          name: "SC Academic Year"
+          code: "SCAY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term_sc"
+        values:
+          name: "SC Term"
+          code: "SCTM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: academic_year_sc.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade_sc"
+        values:
+          name: "SC Grade"
+          code: "SCGR"
+          type_id: "REC: grade_type_sc.id"
+
+      - step: "Create the admission student's contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "admission_contact_sc"
+        values:
+          name: "SC Admission Contact"
+
+      - step: "Create the admission"
+        action: "create"
+        model: "school_admission"
+        save_as: "admission_sc"
+        values:
+          academic_year_id: "REC: academic_year_sc.id"
+          academic_term_id: "REC: academic_term_sc.id"
+          school_id: "REC: school_sc.id"
+          grade_id: "REC: grade_sc.id"
+          student_id: "REC: admission_contact_sc.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Confirm the admission as admin"
+        action: "call"
+        target: "admission_sc"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      # Refresh point required before Approve -- test-traps.md T-04.
+      - step: "Assert the admission reached Confirm before approving"
+        action: "assert"
+        target: "admission_sc"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the admission as admin (auto-opens)"
+        action: "call"
+        target: "admission_sc"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "analytic_sc"
+        values:
+          name: "SC Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "funding_source_sc"
+        values:
+          name: "SC Funding Source"
+          code: "SCFS"
+          analytic_account_id: "REC: analytic_sc.id"
+
+      - step: "Create the product covered by the Benefit line"
+        action: "create"
+        model: "product.product"
+        save_as: "product_sc"
+        values:
+          name: "SC Product"
+          type: "service"
+
+      - step: "Create the sale journal used by the scholarship type"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal_sc"
+        values:
+          name: "SC Journal"
+          code: "JSC"
+          type: "sale"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "account_type_income"
+
+      - step: "Create the discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "discount_account_sc"
+        values:
+          name: "SC Discount Account"
+          code: "SCDA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the income account used by the payment term detail"
+        action: "create"
+        model: "account.account"
+        save_as: "income_account_sc"
+        values:
+          name: "SC Income Account"
+          code: "SCIA"
+          user_type_id: "REC: account_type_income.id"
+          reconcile: false
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "type_sc"
+        values:
+          name: "SC Type"
+          code: "SCTY"
+          deduction_journal_id: "REC: journal_sc.id"
+          discount_account_id: "REC: discount_account_sc.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "program_sc"
+        values:
+          name: "SC Program"
+          code: "SCPRG"
+          type_id: "REC: type_sc.id"
+          school_id: "REC: school_sc.id"
+          academic_year_id: "REC: academic_year_sc.id"
+          funding_source_ids: [[6, 0, ["REC: funding_source_sc.id"]]]
+          deduction_journal_id: "REC: journal_sc.id"
+          discount_account_id: "REC: discount_account_sc.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: product_sc.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+
+      - step: "Create the admission payment term (1,000,000)"
+        action: "create"
+        model: "school_admission_payment_term"
+        save_as: "term_sc"
+        values:
+          admission_id: "REC: admission_sc.id"
+          name: "SC Payment Term"
+          date_invoice: 2026-08-01
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: product_sc.id"
+                name: "SC Payment Term Fee"
+                account_id: "REC: income_account_sc.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create the award with a Fee Reduction and a Cash benefit"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "award_sc"
+        values:
+          program_id: "REC: program_sc.id"
+          source_type: "admission"
+          admission_id: "REC: admission_sc.id"
+          student_id: "REC: admission_sc.school_student_id.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: discount_account_sc.id"
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "SC Fee Reduction"
+                product_id: "REC: product_sc.id"
+                percentage: 40.0
+            - - 0
+              - 0
+              - name: "SC Cash Benefit"
+                benefit_type: "cash"
+                computation: "fixed"
+                amount_fixed: 300000.0
+                product_id: "REC: product_sc.id"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: funding_source_sc.id"
+                percentage: 100.0
+
+      - step: "Assert the Draft award is not counted in the header"
+        action: "assert"
+        target: "admission_sc"
+        asserts:
+          amount_scholarship:
+            type: "value"
+            expected: 0.0
+          amount_scholarship_cash:
+            type: "value"
+            expected: 0.0
+
+      - step: "Confirm the award as admin"
+        action: "call"
+        target: "award_sc"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      # Refresh point required before Approve -- test-traps.md T-04.
+      - step: "Assert the award reached Confirm before approving"
+        action: "assert"
+        target: "award_sc"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the award as admin"
+        action: "call"
+        target: "award_sc"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Find the Cash schedule line"
+        action: "search"
+        model: "school_scholarship_award_schedule"
+        domain:
+          [
+            ["award_id", "=", "REC: award_sc.id"],
+            ["benefit_id.name", "=", "SC Cash Benefit"],
+          ]
+        limit: 1
+        save_as: "sched_cash_sc"
+
+      - step: "Find the Fee Reduction schedule line"
+        action: "search"
+        model: "school_scholarship_award_schedule"
+        domain:
+          [
+            ["award_id", "=", "REC: award_sc.id"],
+            ["benefit_id.name", "=", "SC Fee Reduction"],
+          ]
+        limit: 1
+        save_as: "sched_fee_sc"
+
+      - step: "Assert the Cash is separate from the deduction"
+        action: "assert"
+        target: "admission_sc"
+        asserts:
+          amount_scholarship_deduction:
+            type: "value"
+            expected: 400000.0
+          amount_scholarship_undeducted:
+            type: "value"
+            expected: 400000.0
+          amount_scholarship_deducted:
+            type: "value"
+            expected: 0.0
+          amount_scholarship_cash:
+            type: "value"
+            expected: 300000.0
+          amount_scholarship_undisbursed:
+            type: "value"
+            expected: 300000.0
+          amount_scholarship_disbursed:
+            type: "value"
+            expected: 0.0
+          amount_scholarship:
+            type: "value"
+            expected: 700000.0
+          amount_deduction:
+            type: "value"
+            expected: 400000.0
+
+      - step: "Realize the Cash schedule line with 300,000 paid out"
+        action: "write"
+        target: "sched_cash_sc"
+        values:
+          state: "realized"
+          amount_realized: 300000.0
+
+      - step: "Assert the Cash is disbursed and the billing is untouched"
+        action: "assert"
+        target: "admission_sc"
+        asserts:
+          amount_scholarship_cash:
+            type: "value"
+            expected: 300000.0
+          amount_scholarship_disbursed:
+            type: "value"
+            expected: 300000.0
+          amount_scholarship_undisbursed:
+            type: "value"
+            expected: 0.0
+          amount_scholarship:
+            type: "value"
+            expected: 700000.0
+          amount_deduction:
+            type: "value"
+            expected: 400000.0
+          amount_deducted:
+            type: "value"
+            expected: 0.0
+
+      # -- Negative: a Skipped Cash line and a Cancelled deduction line
+      # count nowhere.
+      - step: "Skip the Cash schedule line"
+        action: "write"
+        target: "sched_cash_sc"
+        values:
+          state: "skipped"
+
+      - step: "Cancel the Fee Reduction schedule line"
+        action: "write"
+        target: "sched_fee_sc"
+        values:
+          state: "cancelled"
+
+      - step: "Assert skipped and cancelled lines are dropped"
+        action: "assert"
+        target: "admission_sc"
+        asserts:
+          amount_scholarship_deduction:
+            type: "value"
+            expected: 0.0
+          amount_scholarship_cash:
+            type: "value"
+            expected: 0.0
+          amount_scholarship_disbursed:
+            type: "value"
+            expected: 0.0
+          amount_scholarship_undisbursed:
+            type: "value"
+            expected: 0.0
+          amount_scholarship:
+            type: "value"
+            expected: 0.0
+          amount_deduction:
+            type: "value"
+            expected: 0.0

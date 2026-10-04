@@ -287,6 +287,23 @@ scenarios:
             type: "value"
             expected: 0.0
 
+      - step: "Assert the admission header ignores the Draft award"
+        action: "assert"
+        target: "admission_pt"
+        asserts:
+          amount_scholarship_deduction:
+            type: "value"
+            expected: 0.0
+          amount_scholarship_cash:
+            type: "value"
+            expected: 0.0
+          amount_scholarship:
+            type: "value"
+            expected: 0.0
+          amount_deduction:
+            type: "value"
+            expected: 0.0
+
       - step: "Confirm the award as admin"
         action: "call"
         target: "award_pt1"
@@ -363,6 +380,38 @@ scenarios:
             type: "value"
             expected: 400000.0
 
+      - step: "Assert the admission header sums both terms"
+        action: "assert"
+        target: "admission_pt"
+        asserts:
+          amount_scholarship_deducted:
+            type: "value"
+            expected: 0.0
+          amount_scholarship_undeducted:
+            type: "value"
+            expected: 1000000.0
+          amount_scholarship_deduction:
+            type: "value"
+            expected: 1000000.0
+          amount_scholarship_cash:
+            type: "value"
+            expected: 0.0
+          amount_scholarship_disbursed:
+            type: "value"
+            expected: 0.0
+          amount_scholarship_undisbursed:
+            type: "value"
+            expected: 0.0
+          amount_scholarship:
+            type: "value"
+            expected: 1000000.0
+          amount_deduction:
+            type: "value"
+            expected: 1000000.0
+          amount_deducted:
+            type: "value"
+            expected: 0.0
+
       # -- Positive: a Realized line deducting less than planned.
       - step: "Realize schedule line A with 350,000 actually deducted"
         action: "write"
@@ -387,6 +436,29 @@ scenarios:
           scholarship_amount_undeducted:
             type: "value"
             expected: 200000.0
+
+      - step: "Assert the admission header follows the partial deduction"
+        action: "assert"
+        target: "admission_pt"
+        asserts:
+          amount_scholarship_deducted:
+            type: "value"
+            expected: 350000.0
+          amount_scholarship_undeducted:
+            type: "value"
+            expected: 600000.0
+          amount_scholarship_deduction:
+            type: "value"
+            expected: 950000.0
+          amount_scholarship:
+            type: "value"
+            expected: 950000.0
+          amount_deduction:
+            type: "value"
+            expected: 950000.0
+          amount_deducted:
+            type: "value"
+            expected: 350000.0
 
       # -- Negative: Skipped and Cancelled lines count nowhere.
       - step: "Skip schedule line B"
@@ -439,3 +511,81 @@ scenarios:
           scholarship_amount_deducted:
             type: "value"
             expected: 0.0
+
+      - step: "Assert the admission header after the term 1 changes"
+        action: "assert"
+        target: "admission_pt"
+        asserts:
+          amount_scholarship_deducted:
+            type: "value"
+            expected: 350000.0
+          amount_scholarship_undeducted:
+            type: "value"
+            expected: 400000.0
+          amount_scholarship_deduction:
+            type: "value"
+            expected: 750000.0
+          amount_scholarship:
+            type: "value"
+            expected: 750000.0
+          amount_deduction:
+            type: "value"
+            expected: 750000.0
+          amount_deducted:
+            type: "value"
+            expected: 350000.0
+
+      # -- Negative: a Cancelled or Voided term is dropped from the
+      # admission header, just like the Total of the billing breakdown.
+      # ``state`` is a stored compute with no inverse, so a direct write
+      # stands in for the admission/detail changes that would drive it.
+      - step: "Mark term 2 as Cancelled"
+        action: "write"
+        target: "term_pt2"
+        values:
+          state: "cancelled"
+
+      - step: "Assert the admission header drops the Cancelled term"
+        action: "assert"
+        target: "admission_pt"
+        asserts:
+          amount_scholarship_deducted:
+            type: "value"
+            expected: 350000.0
+          amount_scholarship_undeducted:
+            type: "value"
+            expected: 0.0
+          amount_scholarship_deduction:
+            type: "value"
+            expected: 350000.0
+          amount_deduction:
+            type: "value"
+            expected: 350000.0
+
+      - step: "Mark term 2 as Voided"
+        action: "write"
+        target: "term_pt2"
+        values:
+          state: "voided"
+
+      - step: "Assert the admission header drops the Voided term"
+        action: "assert"
+        target: "admission_pt"
+        asserts:
+          amount_scholarship_undeducted:
+            type: "value"
+            expected: 0.0
+          amount_scholarship_deduction:
+            type: "value"
+            expected: 350000.0
+          amount_scholarship:
+            type: "value"
+            expected: 350000.0
+
+      - step: "Assert the term itself still holds its own figure"
+        action: "assert"
+        target: "term_pt2"
+        asserts:
+          scholarship_amount_undeducted:
+            type: "value"
+            expected: 400000.0
