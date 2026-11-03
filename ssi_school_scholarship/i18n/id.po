@@ -512,8 +512,8 @@ msgid ""
 "or its Product Category when the Benefit line targets one. Zero when no "
 "Payment Term is linked."
 msgstr ""
-"Jumlah tagihan yang menjadi dasar Perhitungan baris jadwal ini: total baris "
-"detail Termin Pembayaran terkait yang cocok dengan Produk pada baris "
+"Jumlah penagihan yang menjadi dasar Perhitungan baris jadwal ini: total "
+"baris detail Termin Pembayaran terkait yang cocok dengan Produk pada baris "
 "Manfaat, atau Kategori Produknya bila baris Manfaat menargetkan kategori. "
 "Nol bila tidak ada Termin Pembayaran yang terhubung."
 
@@ -524,7 +524,7 @@ msgid ""
 "Enrollment -- extension modules add further values with ``selection_add`` "
 "and override the ``_get_source_*`` hooks to match."
 msgstr ""
-"Sumber penagihan yang menjadi dasar tagihan pemberian ini. Modul ini hanya "
+"Sumber penagihan yang menjadi dasar penagihan pemberian ini. Modul ini hanya "
 "mendaftarkan Pendaftaran -- modul ekstensi menambahkan nilai lain dengan "
 "``selection_add`` dan menimpa hook ``_get_source_*`` agar sesuai."
 
@@ -1165,10 +1165,11 @@ msgid ""
 "``_check_billing_source``, not by this field itself, so an extension "
 "module's own billing source is not forced to also be a required field."
 msgstr ""
-"Pendaftaran yang menjadi dasar tagihan pemberian ini. Harus milik Siswa yang "
-"dipilih. Wajib bila Sumber Penagihan adalah Pendaftaran -- diberlakukan oleh "
-"``_check_billing_source``, bukan oleh bidang ini sendiri, sehingga sumber "
-"penagihan milik modul ekstensi tidak ikut dipaksa menjadi bidang wajib."
+"Pendaftaran yang menjadi dasar penagihan pemberian ini. Harus milik Siswa "
+"yang dipilih. Wajib bila Sumber Penagihan adalah Pendaftaran -- diberlakukan "
+"oleh ``_check_billing_source``, bukan oleh bidang ini sendiri, sehingga "
+"sumber penagihan milik modul ekstensi tidak ikut dipaksa menjadi bidang "
+"wajib."
 
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_criteria__evaluation_method
@@ -1230,8 +1231,8 @@ msgid ""
 "benefit applies to, and how much each one covers. At least one line is "
 "required for the program to reduce any fee."
 msgstr ""
-"Baris cakupan biaya yang menentukan dengan tepat komponen tagihan mana yang "
-"dikenai manfaat program ini, dan berapa yang ditanggung masing-masing. "
+"Baris cakupan biaya yang menentukan dengan tepat komponen penagihan mana "
+"yang dikenai manfaat program ini, dan berapa yang ditanggung masing-masing. "
 "Setidaknya satu baris diperlukan agar program dapat mengurangi biaya."
 
 #. module: ssi_school_scholarship
@@ -1437,7 +1438,7 @@ msgid ""
 "How the benefit amount is computed: a percentage of the billing component, a "
 "fixed amount, or full coverage."
 msgstr ""
-"Cara jumlah manfaat dihitung: persentase dari komponen tagihan, jumlah "
+"Cara jumlah manfaat dihitung: persentase dari komponen penagihan, jumlah "
 "tetap, atau cakupan penuh."
 
 #. module: ssi_school_scholarship
@@ -1515,7 +1516,7 @@ msgstr "Jika dicentang, beberapa pesan mengalami kesalahan pengiriman."
 #. module: ssi_school_scholarship
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_schedule__payment_term_state__invoiced
 msgid "Invoiced"
-msgstr "Telah Ditagih"
+msgstr "Difaktur"
 
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__is_employee_benefit
@@ -2032,7 +2033,7 @@ msgid ""
 "confidential, must not leak through export or reports."
 msgstr ""
 "Pemberian terbuka yang periodenya mencakup hari ini, yaitu beasiswa yang "
-"sedang berlaku untuk siswa ini. Dibatasi untuk grup Pelihat Pemberian "
+"sedang berlaku untuk siswa ini. Dibatasi untuk grup Penampil Pemberian "
 "Beasiswa -- bersifat rahasia, tidak boleh bocor melalui ekspor atau laporan."
 
 #. module: ssi_school_scholarship
@@ -2125,7 +2126,7 @@ msgid ""
 "Percentage of the billing component covered by this line. Must be above 0 "
 "and at most 100 when Computation is Percentage."
 msgstr ""
-"Persentase komponen tagihan yang ditanggung baris ini. Harus di atas 0 dan "
+"Persentase komponen penagihan yang ditanggung baris ini. Harus di atas 0 dan "
 "paling banyak 100 bila Perhitungan adalah Persentase."
 
 #. module: ssi_school_scholarship
@@ -2134,7 +2135,7 @@ msgid ""
 "Percentage of the billing component covered by this line. Only relevant when "
 "Computation is Percentage."
 msgstr ""
-"Persentase komponen tagihan yang ditanggung baris ini. Hanya relevan bila "
+"Persentase komponen penagihan yang ditanggung baris ini. Hanya relevan bila "
 "Perhitungan adalah Persentase."
 
 #. module: ssi_school_scholarship
@@ -2685,7 +2686,7 @@ msgid ""
 msgstr ""
 "Beasiswa yang sudah dipotong dari termin pembayaran pendaftaran ini: total "
 "Beasiswa Terpotong dari termin pembayarannya yang tidak dibatalkan maupun "
-"dibatalkan-buku (void)."
+"dialihkan."
 
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award_schedule__award_id
@@ -2753,7 +2754,7 @@ msgid ""
 msgstr ""
 "Beasiswa yang dibayarkan kepada siswa secara tunai: total Jumlah "
 "Direncanakan dari baris jadwal Tunai yang Terjadwal atau Terealisasi, milik "
-"pemberian berstatus Terbuka atau Selesai. Tidak mengurangi tagihan."
+"pemberian berstatus Terbuka atau Selesai. Tidak mengurangi penagihan."
 
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__program_id
@@ -2779,7 +2780,7 @@ msgid ""
 msgstr ""
 "Beasiswa yang masih menunggu dipotong dari termin pembayaran pendaftaran "
 "ini: total Beasiswa Belum Terpotong dari termin pembayarannya yang tidak "
-"dibatalkan maupun dibatalkan-buku (void)."
+"dibatalkan maupun dialihkan."
 
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_enrollment_payment_term__scholarship_amount_undeducted
@@ -2820,12 +2821,12 @@ msgstr "Sekolah"
 #. module: ssi_school_scholarship
 #: model:ir.model,name:ssi_school_scholarship.model_school_enrollment
 msgid "School Enrollment"
-msgstr "Pendaftaran Sekolah"
+msgstr "Pendaftaran Siswa"
 
 #. module: ssi_school_scholarship
 #: model:ir.model,name:ssi_school_scholarship.model_school_enrollment_payment_term
 msgid "School Enrollment Payment Term"
-msgstr "Termin Pembayaran Pendaftaran Sekolah"
+msgstr "Termin Pembayaran Pendaftaran Siswa"
 
 #. module: ssi_school_scholarship
 #: model:ir.model,name:ssi_school_scholarship.model_school_scholarship_award
@@ -3105,8 +3106,9 @@ msgid ""
 "group."
 msgstr ""
 "Total beasiswa pendaftaran ini: Potongan Beasiswa ditambah Beasiswa Tunai. "
-"Hanya bagian potongan yang mengurangi tagihan; Tunai dibayarkan kepada siswa "
-"dan tidak mengurangi tagihan. Dibatasi untuk grup Pelihat Pemberian Beasiswa."
+"Hanya bagian potongan yang mengurangi penagihan; Tunai dibayarkan kepada "
+"siswa dan tidak mengurangi penagihan. Dibatasi untuk grup Penampil Pemberian "
+"Beasiswa."
 
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,help:ssi_school_scholarship.field_school_scholarship_award__amount_awarded
@@ -3151,7 +3153,7 @@ msgid ""
 "the general student tree view or on class reports."
 msgstr ""
 "Benar bila siswa ini memiliki setidaknya satu pemberian beasiswa Terbuka "
-"atau Selesai. Dibatasi untuk grup Pelihat Pemberian Beasiswa -- tidak boleh "
+"atau Selesai. Dibatasi untuk grup Penampil Pemberian Beasiswa -- tidak boleh "
 "ditampilkan pada tampilan daftar siswa umum maupun pada laporan kelas."
 
 #. module: ssi_school_scholarship
@@ -3166,7 +3168,7 @@ msgstr "Jenis aktivitas pengecualian pada catatan."
 #. module: ssi_school_scholarship
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_schedule__payment_term_state__uninvoiced
 msgid "Uninvoiced"
-msgstr "Belum Ditagih"
+msgstr "Belum Difaktur"
 
 #. module: ssi_school_scholarship
 #: model:ir.model.fields,field_description:ssi_school_scholarship.field_school_scholarship_award__message_unread
@@ -3246,12 +3248,12 @@ msgstr "Validator"
 #. module: ssi_school_scholarship
 #: model:res.groups,name:ssi_school_scholarship.school_scholarship_award_viewer_group
 msgid "Viewer"
-msgstr "Pelihat"
+msgstr "Penampil"
 
 #. module: ssi_school_scholarship
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award_schedule__payment_term_state__voided
 msgid "Voided"
-msgstr "Dibatalkan-buku"
+msgstr "Dialihkan"
 
 #. module: ssi_school_scholarship
 #: model:ir.model.fields.selection,name:ssi_school_scholarship.selection__school_scholarship_award__compliance_state__warning
