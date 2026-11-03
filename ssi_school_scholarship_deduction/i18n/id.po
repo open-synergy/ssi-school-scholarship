@@ -1567,17 +1567,17 @@ msgstr ""
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model,name:ssi_school_scholarship_deduction.model_school_enrollment
 msgid "School Enrollment"
-msgstr "Pendaftaran Sekolah"
+msgstr "Pendaftaran Siswa"
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model,name:ssi_school_scholarship_deduction.model_school_enrollment_fee_analysis
 msgid "School Enrollment Fee Analysis"
-msgstr "Analisis Biaya Pendaftaran Sekolah"
+msgstr "Analisis Biaya Pendaftaran Siswa"
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model,name:ssi_school_scholarship_deduction.model_school_enrollment_revenue_recognition_line
 msgid "School Enrollment Revenue Recognition - Line"
-msgstr "Pengakuan Pendapatan Pendaftaran Sekolah - Baris"
+msgstr "Pengakuan Pendapatan Pendaftaran Siswa - Baris"
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model,name:ssi_school_scholarship_deduction.model_school_scholarship_award
@@ -1774,7 +1774,7 @@ msgid ""
 msgstr ""
 "Baris potongan beasiswa mode pendaftaran yang dilepas oleh Baris Pengakuan "
 "ini, bila berasal dari potongan beasiswa dan bukan dari detail termin "
-"pembayaran yang difakturkan."
+"pembayaran yang difaktur."
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__partner_id
@@ -1916,7 +1916,7 @@ msgstr "Validator"
 #: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_viewer_group
 #: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_viewer_group
 msgid "Viewer"
-msgstr "Pelihat"
+msgstr "Penampil"
 
 #. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__website_message_ids
