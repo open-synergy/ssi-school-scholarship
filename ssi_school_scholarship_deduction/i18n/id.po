@@ -1,0 +1,1963 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ssi_school_scholarship_deduction
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: id\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: ssi_school_scholarship_deduction
+#: code:addons/ssi_school_scholarship_deduction/wizards/create_due_scholarship_deduction.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Create due scholarship deduction\n"
+"Database ID: %s\n"
+"Problem: No Deduction document was created for the selected Award(s)\n"
+"Solution: Check that the period's invoice has already been issued\n"
+msgstr ""
+"\n"
+"Konteks: Membuat potongan beasiswa jatuh tempo\n"
+"ID Basis Data: %s\n"
+"Masalah: Tidak ada dokumen Potongan yang dibuat untuk Pemberian yang "
+"dipilih\n"
+"Solusi: Periksa apakah faktur periode tersebut sudah diterbitkan\n"
+
+#. module: ssi_school_scholarship_deduction
+#: code:addons/ssi_school_scholarship_deduction/wizards/create_due_scholarship_recognition.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Create due scholarship recognition\n"
+"Database ID: %s\n"
+"Problem: No Deduction is due for recognition as of the selected Date\n"
+"Solution: Pick a later Date, or check the deductions' own Recognition Date\n"
+msgstr ""
+"\n"
+"Konteks: Membuat pengakuan beasiswa jatuh tempo\n"
+"ID Basis Data: %s\n"
+"Masalah: Tidak ada Potongan yang jatuh tempo untuk diakui per Tanggal yang "
+"dipilih\n"
+"Solusi: Pilih Tanggal yang lebih akhir, atau periksa Tanggal Pengakuan milik "
+"potongan itu sendiri\n"
+
+#. module: ssi_school_scholarship_deduction
+#: code:addons/ssi_school_scholarship_deduction/models/school_enrollment.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Finish enrollment\n"
+"Database ID: %s\n"
+"Problem: Scholarship deduction '%s' on this enrollment's own invoice is not "
+"yet Open\n"
+"Solution: Confirm and approve that deduction before finishing this "
+"enrollment\n"
+msgstr ""
+"\n"
+"Konteks: Menyelesaikan pendaftaran\n"
+"ID Basis Data: %s\n"
+"Masalah: Potongan beasiswa '%s' pada faktur pendaftaran ini sendiri belum "
+"berstatus Terbuka\n"
+"Solusi: Konfirmasi dan setujui potongan tersebut sebelum menyelesaikan "
+"pendaftaran ini\n"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__deduction_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__deduction_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__deduction_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__deduction_id
+msgid "# Deduction"
+msgstr "# Potongan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__name
+msgid "# Document"
+msgstr "No. Dokumen"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__recognition_id
+msgid "# Recognition"
+msgstr "# Pengakuan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__account_id
+msgid "Account"
+msgstr "Akun"
+
+#. module: ssi_school_scholarship_deduction
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_form
+msgid "Accounting"
+msgstr "Akuntansi"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__account_id
+msgid ""
+"Accounting account this line posts to. Equal to Final Account, unless the "
+"parent document's Recognition Method is ``Deferred`` or ``Enrollment``, in "
+"which case it is the parent's own Deferred Account instead."
+msgstr ""
+"Akun akuntansi tempat baris ini diposting. Sama dengan Akun Akhir, kecuali "
+"Metode Pengakuan dokumen induk adalah ``Deferred`` atau ``Enrollment``, "
+"dalam hal ini yang dipakai adalah Akun Ditangguhkan milik induk."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__date
+msgid "Accounting date inherited from the parent Recognition document."
+msgstr "Tanggal akuntansi yang diwarisi dari dokumen Pengakuan induk."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__date
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__date
+msgid "Accounting date of this deduction document."
+msgstr "Tanggal akuntansi dokumen potongan ini."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__date
+msgid ""
+"Accounting date of this recognition document. May not be earlier than the "
+"deduction's own Date."
+msgstr ""
+"Tanggal akuntansi dokumen pengakuan ini. Tidak boleh lebih awal dari Tanggal "
+"potongan itu sendiri."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__journal_id
+msgid ""
+"Accounting journal in which the resulting accounting entry of this document "
+"will be posted."
+msgstr ""
+"Jurnal akuntansi tempat entri akuntansi hasil dokumen ini akan diposting."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__journal_id
+msgid "Accounting journal this document's own entry posts to."
+msgstr "Jurnal akuntansi tempat entri dokumen ini sendiri diposting."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_needaction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_needaction
+msgid "Action Needed"
+msgstr "Perlu Tindakan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__active_approval_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__active_approval_ids
+msgid "Active Approvals"
+msgstr "Persetujuan Aktif"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__active_approver_partner_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__active_approver_partner_ids
+msgid "Active Partners"
+msgstr "Mitra Aktif"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__active_approver_user_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__active_approver_user_ids
+msgid "Active Users"
+msgstr "Pengguna Aktif"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_ids
+msgid "Activities"
+msgstr "Aktivitas"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_exception_decoration
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Dekorasi Pengecualian Aktivitas"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_state
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_state
+msgid "Activity State"
+msgstr "Status Aktivitas"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_type_icon
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Ikon Jenis Aktivitas"
+
+#. module: ssi_school_scholarship_deduction
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_all_group
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_all_group
+msgid "All"
+msgstr "Semua"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__allocation_ids
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_form
+msgid "Allocations"
+msgstr "Alokasi"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__allowed_policy_template_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__allowed_policy_template_ids
+msgid "Allowed Policy Templates"
+msgstr "Templat Kebijakan yang Diizinkan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__allowed_pricelist_ids
+msgid "Allowed Pricelists"
+msgstr "Daftar Harga yang Diizinkan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__allowed_uom_ids
+msgid "Allowed UoMs"
+msgstr "Satuan Ukur yang Diizinkan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__allowed_usage_ids
+msgid "Allowed Usages"
+msgstr "Penggunaan yang Diizinkan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__amount
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__amount
+msgid "Amount"
+msgstr "Jumlah"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_allocated
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__amount_allocated
+msgid "Amount Allocated"
+msgstr "Jumlah Dialokasikan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_deferred
+msgid "Amount Deferred"
+msgstr "Jumlah Ditangguhkan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_recognized
+msgid "Amount Recognized"
+msgstr "Jumlah Diakui"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_total
+msgid "Amount Total"
+msgstr "Jumlah Total"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_unallocated
+msgid ""
+"Amount Total not yet assigned to an Allocation line. Must be zero before "
+"this document can be opened."
+msgstr ""
+"Jumlah Total yang belum ditetapkan ke baris Alokasi. Harus nol sebelum "
+"dokumen ini dapat dibuka."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_deferred
+msgid ""
+"Amount Total not yet moved out of the Deferred Account by a Recognition "
+"document. Reaches zero once fully recognized."
+msgstr ""
+"Jumlah Total yang belum dipindahkan keluar dari Akun Ditangguhkan oleh "
+"dokumen Pengakuan. Mencapai nol setelah diakui sepenuhnya."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_unallocated
+msgid "Amount Unallocated"
+msgstr "Jumlah Belum Dialokasikan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__analytic_account_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__analytic_account_id
+msgid "Analytic Account"
+msgstr "Akun Analitik"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__analytic_account_id
+msgid ""
+"Analytic Account of the Deduction Line's own Funding source, carried on both "
+"the debit and credit side."
+msgstr ""
+"Akun Analitik dari Sumber dana milik Baris Potongan itu sendiri, dibawa pada "
+"sisi debit maupun kredit."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__analytic_account_id
+msgid "Analytic account of the selected Funding Source."
+msgstr "Akun analitik dari Sumber Dana yang dipilih."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__approval_template_id
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__approval_template_id
+msgid "Approval Configuration"
+msgstr "Konfigurasi Persetujuan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__approval_template_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__approval_template_id
+msgid "Approval Template"
+msgstr "Templat Persetujuan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__approval_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__approval_ids
+msgid "Approvals"
+msgstr "Persetujuan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__approve_ok
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__approve_ok
+msgid ""
+"Approve policy\n"
+"\n"
+"* If active user can see and execute 'Approve' button"
+msgstr ""
+"Kebijakan setujui\n"
+"\n"
+"* Jika pengguna aktif dapat melihat dan menjalankan tombol 'Setujui'"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__approved
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__approved
+msgid "Approved"
+msgstr "Disetujui"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_attachment_count
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_attachment_count
+msgid "Attachment Count"
+msgstr "Jumlah Lampiran"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__award_id
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_search
+msgid "Award"
+msgstr "Pemberian"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__funding_id
+msgid "Award Funding line this line's amount is drawn from."
+msgstr "Baris Pendanaan Pemberian yang menjadi sumber jumlah baris ini."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__schedule_id
+msgid "Award Schedule line this deduction line realizes."
+msgstr "Baris Jadwal Pemberian yang direalisasikan baris potongan ini."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__schedule_ids
+msgid ""
+"Award Schedule lines realized by this document. Filled when this document "
+"opens; cleared again if it is cancelled."
+msgstr ""
+"Baris Jadwal Pemberian yang direalisasikan oleh dokumen ini. Terisi saat "
+"dokumen ini dibuka; dikosongkan kembali bila dibatalkan."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__award_ids
+msgid "Awards"
+msgstr "Pemberian"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__award_ids
+msgid ""
+"Awards whose due Schedule lines will be realized into Deduction documents."
+msgstr ""
+"Pemberian yang baris Jadwal jatuh temponya akan direalisasikan menjadi "
+"dokumen Potongan."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__benefit_id
+msgid "Benefit"
+msgstr "Manfaat"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__benefit_id
+msgid "Benefit line of the selected Schedule line."
+msgstr "Baris manfaat dari baris Jadwal yang dipilih."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__approve_ok
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__approve_ok
+msgid "Can Approve"
+msgstr "Dapat Menyetujui"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__cancel_ok
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__cancel_ok
+msgid "Can Cancel"
+msgstr "Dapat Membatalkan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__confirm_ok
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__confirm_ok
+msgid "Can Confirm"
+msgstr "Dapat Mengonfirmasi"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__done_ok
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__done_ok
+msgid "Can Finished"
+msgstr "Dapat Diselesaikan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__manual_number_ok
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__manual_number_ok
+msgid "Can Input Manual Document Number"
+msgstr "Dapat Memasukkan Nomor Dokumen Manual"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__reject_ok
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__reject_ok
+msgid "Can Reject"
+msgstr "Dapat Menolak"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__restart_ok
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__restart_ok
+msgid "Can Restart"
+msgstr "Dapat Memulai Ulang"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__restart_approval_ok
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__restart_approval_ok
+msgid "Can Restart Approval"
+msgstr "Dapat Memulai Ulang Persetujuan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__open_ok
+msgid "Can Start"
+msgstr "Dapat Memulai"
+
+#. module: ssi_school_scholarship_deduction
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.create_due_scholarship_deduction_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.create_due_scholarship_recognition_view_form
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__cancel_reason_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__cancel_reason_id
+msgid "Cancel Reason"
+msgstr "Alasan Pembatalan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__cancel_ok
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__cancel_ok
+msgid ""
+"Cancel policy\n"
+"\n"
+"* If active user can see and execute 'Cancel' button"
+msgstr ""
+"Kebijakan batal\n"
+"\n"
+"* Jika pengguna aktif dapat melihat dan menjalankan tombol 'Batal'"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__company_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__company_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__company_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__company_id
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_company_group
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_company_group
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__company_currency_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__company_currency_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__company_currency_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__company_currency_id
+msgid "Company Currency"
+msgstr "Mata Uang Perusahaan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__company_partner_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__company_partner_id
+msgid "Company Partner"
+msgstr "Mitra Perusahaan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_company_child_group
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_company_child_group
+msgid "Company and All Child Companies"
+msgstr "Perusahaan dan Semua Perusahaan Turunan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__company_currency_id
+msgid "Company currency inherited from the parent Recognition document."
+msgstr "Mata uang perusahaan yang diwarisi dari dokumen Pengakuan induk."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__company_id
+msgid "Company inherited from the parent Recognition document."
+msgstr "Perusahaan yang diwarisi dari dokumen Pengakuan induk."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__company_id
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__company_id
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__company_id
+msgid ""
+"Company that own the document\n"
+"\n"
+"* Automatically filled with user's company.\n"
+"  Default company can be changed"
+msgstr ""
+"Perusahaan pemilik dokumen\n"
+"\n"
+"* Terisi otomatis dengan perusahaan pengguna.\n"
+"  Perusahaan default dapat diubah"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__confirm_ok
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__confirm_ok
+msgid ""
+"Confirm policy\n"
+"\n"
+"* If active user can see and execute 'Confirm' button"
+msgstr ""
+"Kebijakan konfirmasi\n"
+"\n"
+"* Jika pengguna aktif dapat melihat dan menjalankan tombol 'Konfirmasi'"
+
+#. module: ssi_school_scholarship_deduction
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.create_due_scholarship_deduction_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_award_view_form_create_due_deduction
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_award_view_tree_create_due_deduction
+msgid "Create Due Deduction"
+msgstr "Buat Potongan Jatuh Tempo"
+
+#. module: ssi_school_scholarship_deduction
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.create_due_scholarship_recognition_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_tree
+msgid "Create Due Recognition"
+msgstr "Buat Pengakuan Jatuh Tempo"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.actions.act_window,name:ssi_school_scholarship_deduction.create_due_scholarship_deduction_action
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_create_due_scholarship_deduction
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.create_due_scholarship_deduction_view_form
+msgid "Create Due Scholarship Deduction"
+msgstr "Buat Potongan Beasiswa Jatuh Tempo"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.actions.act_window,name:ssi_school_scholarship_deduction.create_due_scholarship_recognition_action
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_create_due_scholarship_recognition
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.create_due_scholarship_recognition_view_form
+msgid "Create Due Scholarship Recognition"
+msgstr "Buat Pengakuan Beasiswa Jatuh Tempo"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__create_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__create_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__create_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__create_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__create_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__create_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__create_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__create_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__create_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__create_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__create_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__create_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__credit_account_id
+msgid "Credit Account"
+msgstr "Akun Kredit"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__currency_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__currency_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__currency_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__currency_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__currency_id
+msgid "Currency"
+msgstr "Mata Uang"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__currency_id
+msgid "Currency inherited from the parent Recognition document."
+msgstr "Mata uang yang diwarisi dari dokumen Pengakuan induk."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__currency_id
+msgid "Currency of the parent document."
+msgstr "Mata uang dokumen induk."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__currency_id
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__currency_id
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__currency_id
+msgid ""
+"Currency this document is expressed in. This document does not support a "
+"currency other than the Company Currency."
+msgstr ""
+"Mata uang yang dipakai dokumen ini. Dokumen ini tidak mendukung mata uang "
+"selain Mata Uang Perusahaan."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_customer_invoice
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__customer_invoice_id
+msgid "Customer Invoice"
+msgstr "Faktur Pelanggan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__allocation_ids
+msgid ""
+"Customer invoices this deduction is reconciled against. Their Amount "
+"Allocated must add up to exactly this document's Amount Total before it can "
+"be opened."
+msgstr ""
+"Faktur pelanggan yang direkonsiliasi dengan potongan ini. Jumlah "
+"Dialokasikan-nya harus berjumlah tepat Jumlah Total dokumen ini sebelum "
+"dapat dibuka."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__date
+msgid "Date"
+msgstr "Tanggal"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__date_end
+msgid "Date End"
+msgstr "Tanggal Akhir"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__date_start
+msgid "Date Start"
+msgstr "Tanggal Mulai"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__debit_account_id
+msgid "Debit Account"
+msgstr "Akun Debit"
+
+#. module: ssi_school_scholarship_deduction
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_view_search
+msgid "Deduction"
+msgstr "Potongan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__deduction_line_id
+msgid "Deduction Line"
+msgstr "Baris Potongan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__deduction_line_id
+msgid "Deduction Line released by this Recognition Line."
+msgstr "Baris Potongan yang dilepas oleh Baris Pengakuan ini."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__deduction_id
+msgid ""
+"Deduction document that realizes this schedule line. Filled automatically "
+"once a deduction line targets this schedule line and its document is opened; "
+"cleared again if that document is cancelled."
+msgstr ""
+"Dokumen potongan yang merealisasikan baris jadwal ini. Terisi otomatis "
+"begitu baris potongan menargetkan baris jadwal ini dan dokumennya dibuka; "
+"dikosongkan kembali bila dokumen tersebut dibatalkan."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__deduction_id
+msgid "Deduction document this allocation line belongs to."
+msgstr "Dokumen potongan yang memiliki baris alokasi ini."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__deduction_id
+msgid "Deduction document this line belongs to."
+msgstr "Dokumen potongan yang memiliki baris ini."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__line_ids
+msgid ""
+"Deduction lines, one per (Schedule line, Funding line) pairing. Their sum is "
+"this document's Amount Total."
+msgstr ""
+"Baris potongan, satu untuk setiap pasangan (baris Jadwal, baris Pendanaan). "
+"Totalnya adalah Jumlah Total dokumen ini."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__deduction_ids
+msgid "Deductions"
+msgstr "Potongan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields.selection,name:ssi_school_scholarship_deduction.selection__school_scholarship_deduction__recognition_method__deferred
+msgid "Deferred"
+msgstr "Ditangguhkan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__deferred_account_id
+msgid "Deferred Account"
+msgstr "Akun Ditangguhkan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__credit_account_id
+msgid ""
+"Deferred Account of the Deduction Line, credited by this Recognition Line."
+msgstr ""
+"Akun Ditangguhkan dari Baris Potongan, dikredit oleh Baris Pengakuan ini."
+
+#. module: ssi_school_scholarship_deduction
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_form
+msgid "Deferred Recognition"
+msgstr "Pengakuan Ditangguhkan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__deduction_id
+msgid "Deferred deduction document this document releases."
+msgstr "Dokumen potongan ditangguhkan yang dilepas oleh dokumen ini."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__deduction_ids
+msgid ""
+"Deferred deductions due for recognition as of Date, computed automatically."
+msgstr ""
+"Potongan ditangguhkan yang jatuh tempo untuk diakui per Tanggal, dihitung "
+"otomatis."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__name
+msgid "Description"
+msgstr "Deskripsi"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_customer_invoice__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_revenue_recognition_line__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_funding__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__display_name
+msgid "Display Name"
+msgstr "Nama Tampilan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__done_ok
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__done_ok
+msgid ""
+"Done policy\n"
+"\n"
+"* If active user can see and execute 'Done' button"
+msgstr ""
+"Kebijakan selesai\n"
+"\n"
+"* Jika pengguna aktif dapat melihat dan menjalankan tombol 'Selesai'"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__date_start
+msgid "Earliest Schedule Date to process. Leave empty for no lower bound."
+msgstr ""
+"Tanggal Jadwal paling awal yang diproses. Kosongkan bila tanpa batas bawah."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields.selection,name:ssi_school_scholarship_deduction.selection__school_scholarship_deduction__recognition_method__enrollment
+msgid "Enrollment"
+msgstr "Pendaftaran"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__final_account_id
+msgid "Final Account"
+msgstr "Akun Akhir"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__debit_account_id
+msgid "Final Account of the Deduction Line, debited by this Recognition Line."
+msgstr "Akun Akhir dari Baris Potongan, didebit oleh Baris Pengakuan ini."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__final_account_id
+msgid ""
+"Final accounting destination of this line, copied from the Benefit line's "
+"own Account. Always the eventual target, even while the parent document's "
+"Recognition Method is ``Deferred`` and ``account_id`` posts to the Deferred "
+"Account instead."
+msgstr ""
+"Tujuan akhir akuntansi baris ini, disalin dari Akun milik baris Manfaat. "
+"Selalu menjadi target akhir, bahkan saat Metode Pengakuan dokumen induk "
+"adalah ``Deferred`` dan ``account_id`` diposting ke Akun Ditangguhkan."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_follower_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_follower_ids
+msgid "Followers"
+msgstr "Pengikut"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_channel_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_channel_ids
+msgid "Followers (Channels)"
+msgstr "Pengikut (Saluran)"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_partner_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Pengikut (Mitra)"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_type_icon
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Ikon Font Awesome, mis. fa-tasks"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__note
+msgid "Free-form note about this recognition document."
+msgstr "Catatan bebas tentang dokumen pengakuan ini."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__funding_id
+msgid "Funding"
+msgstr "Pendanaan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__funding_source_id
+msgid "Funding Source"
+msgstr "Sumber Dana"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__funding_source_id
+msgid "Funding source of the selected Funding line."
+msgstr "Sumber dana dari baris Pendanaan yang dipilih."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis__amount_gross
+msgid "Gross Realized"
+msgstr "Terealisasi Kotor"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_customer_invoice__has_scholarship
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.customer_invoice_view_search_scholarship_deduction
+msgid "Has Scholarship"
+msgstr "Memiliki Beasiswa"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_customer_invoice__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_revenue_recognition_line__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_funding__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__id
+msgid "ID"
+msgstr "ID"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_exception_icon
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_exception_icon
+msgid "Icon"
+msgstr "Ikon"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_exception_icon
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Ikon untuk menandai aktivitas pengecualian."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_needaction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_unread
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_needaction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_unread
+msgid "If checked, new messages require your attention."
+msgstr "Jika dicentang, pesan baru memerlukan perhatian Anda."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_has_error
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_has_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Jika dicentang, beberapa pesan mengalami kesalahan pengiriman."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields.selection,name:ssi_school_scholarship_deduction.selection__school_scholarship_deduction__recognition_method__immediate
+msgid "Immediate"
+msgstr "Segera"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__invoice_account_id
+msgid "Invoice Receivable Account"
+msgstr "Akun Piutang Faktur"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__invoice_move_line_id
+msgid "Invoice Receivable Move Line"
+msgstr "Baris Jurnal Piutang Faktur"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__invoice_residual
+msgid "Invoice Residual"
+msgstr "Sisa Faktur"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_is_follower
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_is_follower
+msgid "Is Follower"
+msgstr "Adalah Pengikut"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__journal_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__journal_id
+msgid "Journal"
+msgstr "Jurnal"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__move_line_id
+msgid "Journal Item"
+msgstr "Item Jurnal"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_journal_id
+msgid ""
+"Journal a Recognition document of this deduction posts its entry to. "
+"Defaulted from the Award's own Recognition Journal."
+msgstr ""
+"Jurnal tempat dokumen Pengakuan dari potongan ini memposting entrinya. Diisi "
+"otomatis dari Jurnal Pengakuan milik Pemberian."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__move_id
+msgid "Journal entry generated when this document is Done."
+msgstr "Entri jurnal yang dibuat saat dokumen ini Selesai."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__move_id
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__move_id
+msgid "Journal entry generated when this document is opened."
+msgstr "Entri jurnal yang dibuat saat dokumen ini dibuka."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__move_id
+msgid "Journal entry of the parent Recognition document."
+msgstr "Entri jurnal dari dokumen Pengakuan induk."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__move_line_id
+msgid "Journal item created for this line once the parent document is opened."
+msgstr "Item jurnal yang dibuat untuk baris ini setelah dokumen induk dibuka."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__receivable_move_line_id
+msgid ""
+"Journal item on the Receivable Account created together with ``move_id``, "
+"then reconciled against every allocated invoice's own receivable journal "
+"item."
+msgstr ""
+"Item jurnal pada Akun Piutang yang dibuat bersama ``move_id``, lalu "
+"direkonsiliasi terhadap item jurnal piutang milik setiap faktur yang "
+"dialokasikan."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_customer_invoice____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_revenue_recognition_line____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_funding____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line____last_update
+msgid "Last Modified on"
+msgstr "Terakhir Diubah pada"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__write_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__write_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__write_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__write_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__write_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__write_uid
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir Diperbarui oleh"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__write_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__write_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__write_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__write_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__write_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__write_date
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__write_date
+msgid "Last Updated on"
+msgstr "Terakhir Diperbarui pada"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_create_due_scholarship_deduction__date_end
+msgid "Latest Schedule Date to process."
+msgstr "Tanggal Jadwal paling akhir yang diproses."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__line_ids
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_form
+msgid "Lines"
+msgstr "Baris"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_main_attachment_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Lampiran Utama"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__manual_number_ok
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__manual_number_ok
+msgid ""
+"Manual number assignment policy\n"
+"\n"
+"* If active user can edit document number"
+msgstr ""
+"Kebijakan penetapan nomor manual\n"
+"\n"
+"* Jika pengguna aktif dapat mengubah nomor dokumen"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_has_error
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_has_error
+msgid "Message Delivery error"
+msgstr "Kesalahan Pengiriman Pesan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_ids
+msgid "Messages"
+msgstr "Pesan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__move_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__move_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__move_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__move_id
+msgid "Move"
+msgstr "Pemindahan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__my_activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Batas Waktu Aktivitas Saya"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__need_validation
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__need_validation
+msgid "Need Validation"
+msgstr "Perlu Validasi"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis__amount_net
+msgid "Net Cash"
+msgstr "Kas Bersih"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Batas Waktu Aktivitas Berikutnya"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_summary
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_summary
+msgid "Next Activity Summary"
+msgstr "Ringkasan Aktivitas Berikutnya"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_type_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_type_id
+msgid "Next Activity Type"
+msgstr "Jenis Aktivitas Berikutnya"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__next_approval_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__next_approval_ids
+msgid "Next Approvals"
+msgstr "Persetujuan Berikutnya"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields.selection,name:ssi_school_scholarship_deduction.selection__school_scholarship_deduction__recognition_state__not_applicable
+msgid "Not Applicable"
+msgstr "Tidak Berlaku"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__note
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__note
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__note
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_view_form
+msgid "Note"
+msgstr "Catatan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_needaction_counter
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Jumlah Tindakan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_has_error_counter
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_has_error_counter
+msgid "Number of errors"
+msgstr "Jumlah kesalahan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_needaction_counter
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "Jumlah pesan yang memerlukan tindakan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_has_error_counter
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Jumlah pesan dengan kesalahan pengiriman"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_unread_counter
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_unread_counter
+msgid "Number of unread messages"
+msgstr "Jumlah pesan yang belum dibaca"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__recognition_line_ids
+msgid ""
+"One technical line per deduction Line, each carrying the debit/credit pair "
+"posted for it. Generated when this document is Done; cleared again if it is "
+"cancelled."
+msgstr ""
+"Satu baris teknis untuk setiap Baris potongan, masing-masing membawa "
+"pasangan debit/kredit yang diposting untuknya. Dibuat saat dokumen ini "
+"Selesai; dikosongkan kembali bila dibatalkan."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__customer_invoice_id
+msgid ""
+"Open customer invoice this allocation reconciles against. Restricted to "
+"invoices of this document's own Partner with a positive residual."
+msgstr ""
+"Faktur pelanggan terbuka yang direkonsiliasi dengan alokasi ini. Dibatasi "
+"pada faktur milik Mitra dokumen ini sendiri dengan sisa positif."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__partial_reconcile_id
+msgid "Partial Reconcile"
+msgstr "Rekonsiliasi Parsial"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields.selection,name:ssi_school_scholarship_deduction.selection__school_scholarship_deduction__recognition_state__partial
+msgid "Partially Recognized"
+msgstr "Diakui Sebagian"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__partner_id
+msgid "Partner"
+msgstr "Mitra"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields.selection,name:ssi_school_scholarship_deduction.selection__school_scholarship_deduction__recognition_state__pending
+msgid "Pending"
+msgstr "Tertunda"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__policy_template_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__policy_template_id
+msgid "Policy Template"
+msgstr "Templat Kebijakan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_customer_invoice__amount_settled_by_scholarship
+msgid ""
+"Portion of Realized Amount settled by scholarship deductions rather than an "
+"actual cash deposit. Excluded from Settled by Cash and from cash receipt "
+"reports."
+msgstr ""
+"Bagian dari Jumlah Terealisasi yang diselesaikan oleh potongan beasiswa dan "
+"bukan oleh setoran tunai yang sebenarnya. Dikecualikan dari Diselesaikan "
+"dengan Kas dan dari laporan penerimaan kas."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__amount
+msgid ""
+"Portion of the Recognition document's own Amount released for this Deduction "
+"Line, already rounded to the currency's own precision."
+msgstr ""
+"Bagian dari Jumlah milik dokumen Pengakuan itu sendiri yang dilepas untuk "
+"Baris Potongan ini, sudah dibulatkan sesuai presisi mata uangnya."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__amount
+msgid ""
+"Portion of the deduction's own Amount Deferred released by this document. "
+"The sum of every Done Recognition's Amount may not exceed the deduction's "
+"own Amount Total."
+msgstr ""
+"Bagian dari Jumlah Ditangguhkan milik potongan itu sendiri yang dilepas oleh "
+"dokumen ini. Total Jumlah dari setiap Pengakuan yang Selesai tidak boleh "
+"melebihi Jumlah Total milik potongan itu sendiri."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis__amount_scholarship
+msgid ""
+"Portion of the linked invoice's Realized Amount settled by a scholarship "
+"deduction. Zero when the fee line has no linked invoice yet."
+msgstr ""
+"Bagian dari Jumlah Terealisasi faktur terkait yang diselesaikan oleh "
+"potongan beasiswa. Nol bila baris biaya belum memiliki faktur terkait."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__amount_allocated
+msgid ""
+"Portion of this document's Amount Total applied to the selected invoice. May "
+"not exceed Invoice Residual."
+msgstr ""
+"Bagian dari Jumlah Total dokumen ini yang diterapkan pada faktur yang "
+"dipilih. Tidak boleh melebihi Sisa Faktur."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__price_subtotal
+msgid "Price Subtotal"
+msgstr "Subtotal Harga"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__price_unit
+msgid "Price Unit"
+msgstr "Harga Satuan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__pricelist_id
+msgid "Pricelist"
+msgstr "Daftar Harga"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__product_id
+msgid "Product"
+msgstr "Produk"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__product_category_id
+msgid "Product Category"
+msgstr "Kategori Produk"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__quantity
+msgid "Quantity"
+msgstr "Kuantitas"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__ratio
+msgid "Ratio"
+msgstr "Rasio"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_customer_invoice__amount_settled_by_cash
+msgid ""
+"Realized Amount net of the portion settled by scholarship. Cash receipt "
+"reports must use this field instead of Realized Amount, or they overstate "
+"actual deposits on invoices partly or fully covered by a scholarship."
+msgstr ""
+"Jumlah Terealisasi dikurangi bagian yang diselesaikan oleh beasiswa. Laporan "
+"penerimaan kas harus memakai bidang ini, bukan Jumlah Terealisasi, atau "
+"laporan akan melebihkan setoran aktual pada faktur yang sebagian atau "
+"seluruhnya ditanggung beasiswa."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis__amount_net
+msgid ""
+"Realized Amount of the linked invoice net of the scholarship-settled portion "
+"-- the figure fee analysis reports should use as actual cash received."
+msgstr ""
+"Jumlah Terealisasi faktur terkait dikurangi bagian yang diselesaikan "
+"beasiswa -- angka yang harus dipakai laporan analisis biaya sebagai kas "
+"aktual yang diterima."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis__amount_gross
+msgid ""
+"Realized Amount of the linked invoice, before splitting off the scholarship-"
+"settled portion. Equal to ``amount_scholarship`` plus ``amount_net``."
+msgstr ""
+"Jumlah Terealisasi faktur terkait, sebelum bagian yang diselesaikan beasiswa "
+"dipisahkan. Sama dengan ``amount_scholarship`` ditambah ``amount_net``."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__schedule_ids
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_form
+msgid "Realized Schedule"
+msgstr "Jadwal Terealisasi"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__receivable_account_id
+msgid "Receivable Account"
+msgstr "Akun Piutang"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__receivable_move_line_id
+msgid "Receivable Move Line"
+msgstr "Baris Jurnal Piutang"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__receivable_account_id
+msgid ""
+"Receivable account credited for the total deduction amount. Must be "
+"identical to the Receivable Account of every allocated invoice, or "
+"reconciliation fails when this document is opened."
+msgstr ""
+"Akun piutang yang dikredit sebesar jumlah total potongan. Harus identik "
+"dengan Akun Piutang setiap faktur yang dialokasikan, atau rekonsiliasi gagal "
+"saat dokumen ini dibuka."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__invoice_account_id
+msgid ""
+"Receivable account of the selected invoice. Must match this document's own "
+"Receivable Account, or opening this document is rejected."
+msgstr ""
+"Akun piutang dari faktur yang dipilih. Harus sama dengan Akun Piutang "
+"dokumen ini sendiri, atau pembukaan dokumen ini ditolak."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__invoice_move_line_id
+msgid ""
+"Receivable journal item of the selected invoice, reconciled against this "
+"document's own receivable journal item once this document is opened."
+msgstr ""
+"Item jurnal piutang dari faktur yang dipilih, direkonsiliasi terhadap item "
+"jurnal piutang dokumen ini sendiri setelah dokumen ini dibuka."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_date
+msgid "Recognition Date"
+msgstr "Tanggal Pengakuan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_journal_id
+msgid "Recognition Journal"
+msgstr "Jurnal Pengakuan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__recognition_line_ids
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_view_form
+msgid "Recognition Lines"
+msgstr "Baris Pengakuan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_method
+msgid "Recognition Method"
+msgstr "Metode Pengakuan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_state
+msgid "Recognition Status"
+msgstr "Status Pengakuan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition_line__recognition_id
+msgid "Recognition document this line belongs to."
+msgstr "Dokumen Pengakuan yang memiliki baris ini."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_create_due_scholarship_recognition__date
+msgid ""
+"Recognition documents are created for every deduction whose own Recognition "
+"Date falls on or before this date, and this is also the Date of every "
+"document created."
+msgstr ""
+"Dokumen pengakuan dibuat untuk setiap potongan yang Tanggal Pengakuan-nya "
+"jatuh pada atau sebelum tanggal ini, dan ini juga menjadi Tanggal setiap "
+"dokumen yang dibuat."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_ids
+msgid ""
+"Recognition documents that move this deduction's deferred amount from the "
+"Deferred Account to each Line's own Final Account."
+msgstr ""
+"Dokumen pengakuan yang memindahkan jumlah ditangguhkan potongan ini dari "
+"Akun Ditangguhkan ke Akun Akhir masing-masing Baris."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_ids
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_deduction.school_scholarship_deduction_view_form
+msgid "Recognitions"
+msgstr "Pengakuan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields.selection,name:ssi_school_scholarship_deduction.selection__school_scholarship_deduction__recognition_state__recognized
+msgid "Recognized"
+msgstr "Diakui"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__reconciled
+msgid "Reconciled"
+msgstr "Direkonsiliasi"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__partial_reconcile_id
+msgid ""
+"Reconciliation record created by the header's ``_20_reconcile`` hook once "
+"this document is opened."
+msgstr ""
+"Catatan rekonsiliasi yang dibuat oleh hook ``_20_reconcile`` pada header "
+"setelah dokumen ini dibuka."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__reject_ok
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__reject_ok
+msgid ""
+"Reject policy\n"
+"\n"
+"* If active user can see and execute 'Reject' button"
+msgstr ""
+"Kebijakan tolak\n"
+"\n"
+"* Jika pengguna aktif dapat melihat dan menjalankan tombol 'Tolak'"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__rejected
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__rejected
+msgid "Rejected"
+msgstr "Ditolak"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__invoice_residual
+msgid ""
+"Residual amount still outstanding on the selected invoice. Amount Allocated "
+"may not exceed this."
+msgstr ""
+"Jumlah sisa yang masih terutang pada faktur yang dipilih. Jumlah "
+"Dialokasikan tidak boleh melebihi ini."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__user_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__user_id
+msgid "Responsible"
+msgstr "Penanggung Jawab"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_user_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_user_id
+msgid "Responsible User"
+msgstr "Pengguna Penanggung Jawab"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__restart_approval_ok
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__restart_approval_ok
+msgid ""
+"Restart approval policy\n"
+"\n"
+"* If active user can see and execute 'Restart Approval' button"
+msgstr ""
+"Kebijakan mulai ulang persetujuan\n"
+"\n"
+"* Jika pengguna aktif dapat melihat dan menjalankan tombol 'Mulai Ulang "
+"Persetujuan'"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__restart_ok
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__restart_ok
+msgid ""
+"Restart policy\n"
+"\n"
+"* If active user can see and execute 'Restart' button"
+msgstr ""
+"Kebijakan mulai ulang\n"
+"\n"
+"* Jika pengguna aktif dapat melihat dan menjalankan tombol 'Mulai Ulang'"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__reviewer_id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__reviewer_id
+msgid "Reviewer"
+msgstr "Pemeriksa"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__schedule_id
+msgid "Schedule"
+msgstr "Jadwal"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_fee_analysis__amount_scholarship
+msgid "Scholarship"
+msgstr "Beasiswa"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.module.category,name:ssi_school_scholarship_deduction.school_scholarship_deduction_data_ownership_module_category
+#: model:ir.module.category,name:ssi_school_scholarship_deduction.school_scholarship_deduction_workflow_module_category
+msgid "Scholarship Deduction"
+msgstr "Potongan Beasiswa"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_enrollment_revenue_recognition_line__scholarship_deduction_line_id
+msgid "Scholarship Deduction Line"
+msgstr "Baris Potongan Beasiswa"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.module.category,name:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_data_ownership_module_category
+#: model:ir.module.category,name:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_workflow_module_category
+msgid "Scholarship Deduction Recognition"
+msgstr "Pengakuan Potongan Beasiswa"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.actions.act_window,name:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_action
+#: model:ir.ui.menu,name:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_menu
+msgid "Scholarship Deduction Recognitions"
+msgstr "Pengakuan Potongan Beasiswa"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.actions.act_window,name:ssi_school_scholarship_deduction.school_scholarship_deduction_action
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_customer_invoice__scholarship_deduction_ids
+#: model:ir.ui.menu,name:ssi_school_scholarship_deduction.school_scholarship_deduction_menu
+msgid "Scholarship Deductions"
+msgstr "Potongan Beasiswa"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__award_id
+msgid "Scholarship award this deduction realizes."
+msgstr "Pemberian beasiswa yang direalisasikan potongan ini."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_customer_invoice__scholarship_deduction_ids
+msgid ""
+"Scholarship deduction documents that allocate part of their own Amount Total "
+"to this invoice, traced through their own Allocation lines. Not stored -- "
+"always reflects the current set of allocations."
+msgstr ""
+"Dokumen potongan beasiswa yang mengalokasikan sebagian Jumlah Total mereka "
+"ke faktur ini, ditelusuri melalui baris Alokasi mereka sendiri. Tidak "
+"disimpan -- selalu mencerminkan kumpulan alokasi saat ini."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_enrollment
+msgid "School Enrollment"
+msgstr "Pendaftaran Sekolah"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_enrollment_fee_analysis
+msgid "School Enrollment Fee Analysis"
+msgstr "Analisis Biaya Pendaftaran Sekolah"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_enrollment_revenue_recognition_line
+msgid "School Enrollment Revenue Recognition - Line"
+msgstr "Pengakuan Pendapatan Pendaftaran Sekolah - Baris"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_scholarship_award
+msgid "School Scholarship Award"
+msgstr "Pemberian Beasiswa Sekolah"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_scholarship_award_funding
+msgid "School Scholarship Award Funding"
+msgstr "Pendanaan Pemberian Beasiswa Sekolah"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_scholarship_award_schedule
+msgid "School Scholarship Award Schedule"
+msgstr "Jadwal Pemberian Beasiswa Sekolah"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_scholarship_deduction
+msgid "School Scholarship Deduction"
+msgstr "Potongan Beasiswa Sekolah"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_scholarship_deduction_allocation
+msgid "School Scholarship Deduction - Allocation"
+msgstr "Potongan Beasiswa Sekolah - Alokasi"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_scholarship_deduction_line
+msgid "School Scholarship Deduction - Line"
+msgstr "Potongan Beasiswa Sekolah - Baris"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_scholarship_deduction_recognition
+msgid "School Scholarship Deduction Recognition"
+msgstr "Pengakuan Potongan Beasiswa Sekolah"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model,name:ssi_school_scholarship_deduction.model_school_scholarship_deduction_recognition_line
+msgid "School Scholarship Deduction Recognition - Line"
+msgstr "Pengakuan Potongan Beasiswa Sekolah - Baris"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__product_category_id
+msgid "Select category for the current product"
+msgstr "Pilih kategori untuk produk saat ini"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__sequence
+msgid "Sequence"
+msgstr "Urutan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_customer_invoice__amount_settled_by_cash
+msgid "Settled by Cash"
+msgstr "Diselesaikan dengan Kas"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_customer_invoice__amount_settled_by_scholarship
+msgid "Settled by Scholarship"
+msgstr "Diselesaikan dengan Beasiswa"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__standard_price_subtotal
+msgid "Standard Price Subtotal"
+msgstr "Subtotal Harga Standar"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__standard_price_subtotal_diff
+msgid "Standard Price Subtotal Diff."
+msgstr "Selisih Subtotal Harga Standar"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__standard_price_unit
+msgid "Standard Price Unit"
+msgstr "Harga Satuan Standar"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__standard_price_unit_diff
+msgid "Standard Price Unit Diff."
+msgstr "Selisih Harga Satuan Standar"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_date
+msgid ""
+"Start of the period the underlying service is actually delivered -- the "
+"later of this document's own Date and the Award's own Start Date. Defaults "
+"automatically but may be overridden manually."
+msgstr ""
+"Awal periode saat layanan terkait benar-benar diberikan -- yang lebih akhir "
+"antara Tanggal dokumen ini sendiri dan Tanggal Mulai milik Pemberian. Terisi "
+"otomatis tetapi dapat diubah secara manual."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__open_ok
+msgid ""
+"Start policy\n"
+"\n"
+"* If active user can see and execute 'Start' button"
+msgstr ""
+"Kebijakan mulai\n"
+"\n"
+"* Jika pengguna aktif dapat melihat dan menjalankan tombol 'Mulai'"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__state
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__state
+msgid "State"
+msgstr "Status"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_state
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Status berdasarkan aktivitas\n"
+"Terlambat: Tanggal jatuh tempo sudah lewat\n"
+"Hari ini: Tanggal aktivitas adalah hari ini\n"
+"Direncanakan: Aktivitas mendatang."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__student_id
+msgid "Student"
+msgstr "Siswa"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__student_id
+msgid "Student of the selected Award."
+msgstr "Siswa dari Pemberian yang dipilih."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_allocated
+msgid "Sum of the Allocation lines' Amount Allocated."
+msgstr "Total Jumlah Dialokasikan dari baris Alokasi."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_total
+msgid ""
+"Sum of the Deduction lines' Price Subtotal. This is also the amount credited "
+"to the Receivable Account."
+msgstr ""
+"Total Subtotal Harga dari baris Potongan. Ini juga jumlah yang dikredit ke "
+"Akun Piutang."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__amount_recognized
+msgid ""
+"Sum of this deduction's own Recognition documents' Amount, counting only "
+"those in Done status."
+msgstr ""
+"Total Jumlah dari dokumen Pengakuan milik potongan ini sendiri, hanya yang "
+"berstatus Selesai."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__price_tax
+msgid "Tax"
+msgstr "Pajak"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__tax_ids
+msgid "Tax(es)"
+msgstr "Pajak"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__reconciled
+msgid ""
+"Technical flag mirroring whether the receivable journal item has been fully "
+"reconciled."
+msgstr ""
+"Penanda teknis yang mencerminkan apakah item jurnal piutang telah "
+"direkonsiliasi sepenuhnya."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__deferred_account_id
+msgid ""
+"Temporary asset account each Line posts to instead of its own Final Account "
+"while Recognition Method is ``Deferred``. Defaulted from the Award's own "
+"Deferred Discount Account. Required while Recognition Method is ``Deferred``."
+msgstr ""
+"Akun aset sementara tempat setiap Baris diposting sebagai pengganti Akun "
+"Akhir miliknya selama Metode Pengakuan adalah ``Deferred``. Diisi otomatis "
+"dari Akun Diskon Ditangguhkan milik Pemberian. Wajib selama Metode Pengakuan "
+"adalah ``Deferred``."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_enrollment_revenue_recognition_line__scholarship_deduction_line_id
+msgid ""
+"The enrollment-mode scholarship deduction line released by this Recognition "
+"Line, when it originates from a scholarship deduction rather than an "
+"invoiced payment term detail."
+msgstr ""
+"Baris potongan beasiswa mode pendaftaran yang dilepas oleh Baris Pengakuan "
+"ini, bila berasal dari potongan beasiswa dan bukan dari detail termin "
+"pembayaran yang difakturkan."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__partner_id
+msgid ""
+"The student's contact partner. Must match the Partner of every allocated "
+"invoice."
+msgstr ""
+"Mitra kontak siswa. Harus sama dengan Mitra setiap faktur yang dialokasikan."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__ratio
+msgid ""
+"This document's own Amount divided by the deduction's own Amount Total -- "
+"the proportion of each Line released by this document."
+msgstr ""
+"Jumlah dokumen ini sendiri dibagi Jumlah Total milik potongan itu sendiri -- "
+"proporsi setiap Baris yang dilepas oleh dokumen ini."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__price_total
+msgid "Total"
+msgstr "Total"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__name
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__name
+msgid ""
+"Transaction/document number\n"
+"\n"
+"* Unique indentifer of transaction\n"
+"* Leave '/' to automatically generate number\n"
+"* Change '/' into any number/identifier to manually assign number.\n"
+"  Manual number assignment can be done in 'Draft' state\n"
+"  Only user with 'Can Manualy Assign Number' policy can manually assign "
+"number.\n"
+"* Transaction with number other than '/' can not be deleted."
+msgstr ""
+"Nomor transaksi/dokumen\n"
+"\n"
+"* Pengenal unik transaksi\n"
+"* Biarkan '/' agar nomor dibuat otomatis\n"
+"* Ubah '/' menjadi nomor/pengenal apa pun untuk menetapkan nomor secara "
+"manual.\n"
+"  Penetapan nomor manual dapat dilakukan pada status 'Draf'\n"
+"  Hanya pengguna dengan kebijakan 'Dapat Menetapkan Nomor Secara Manual' "
+"yang dapat menetapkan nomor secara manual.\n"
+"* Transaksi dengan nomor selain '/' tidak dapat dihapus."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_customer_invoice__has_scholarship
+msgid ""
+"True once at least part of this invoice has been settled by a scholarship "
+"deduction."
+msgstr ""
+"Benar setelah setidaknya sebagian faktur ini diselesaikan oleh potongan "
+"beasiswa."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__activity_exception_decoration
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Jenis aktivitas pengecualian pada catatan."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_unread
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_unread
+msgid "Unread Messages"
+msgstr "Pesan yang Belum Dibaca"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__message_unread_counter
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "Penghitung Pesan yang Belum Dibaca"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__uom_id
+msgid "UoM"
+msgstr "Satuan Ukur"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__uom_quantity
+msgid "UoM Quantity"
+msgstr "Kuantitas Satuan Ukur"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__usage_id
+msgid "Usage"
+msgstr "Penggunaan"
+
+#. module: ssi_school_scholarship_deduction
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_user_group
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_user_group
+msgid "User"
+msgstr "Pengguna"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__user_id
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__user_id
+msgid ""
+"User that responsible for document\n"
+"\n"
+"* Create user can be different with responsible user\n"
+"* Automatically filled with user that initiate document creation.\n"
+"  Default responsible can be changed."
+msgstr ""
+"Pengguna yang bertanggung jawab atas dokumen\n"
+"\n"
+"* Pengguna pembuat dapat berbeda dengan pengguna penanggung jawab\n"
+"* Terisi otomatis dengan pengguna yang memulai pembuatan dokumen.\n"
+"  Penanggung jawab default dapat diubah."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__reviewer_id
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__reviewer_id
+msgid ""
+"User that responsible to review document\n"
+"\n"
+"* Unless it configured to approve reviewer does not equal to approver"
+msgstr ""
+"Pengguna yang bertanggung jawab memeriksa dokumen\n"
+"\n"
+"* Kecuali dikonfigurasi untuk menyetujui, pemeriksa tidak sama dengan "
+"penyetuju"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__active_approver_user_ids
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__active_approver_user_ids
+msgid "Users that can approve/reject document"
+msgstr "Pengguna yang dapat menyetujui/menolak dokumen"
+
+#. module: ssi_school_scholarship_deduction
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_validator_group
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_validator_group
+msgid "Validator"
+msgstr "Validator"
+
+#. module: ssi_school_scholarship_deduction
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_recognition_viewer_group
+#: model:res.groups,name:ssi_school_scholarship_deduction.school_scholarship_deduction_viewer_group
+msgid "Viewer"
+msgstr "Pelihat"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction__website_message_ids
+#: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__website_message_ids
+msgid "Website Messages"
+msgstr "Pesan Situs Web"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__website_message_ids
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction_recognition__website_message_ids
+msgid "Website communication history"
+msgstr "Riwayat komunikasi situs web"
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_method
+msgid ""
+"``Deferred`` once Recognition Date falls after this document's own Date -- "
+"meaning the service this deduction pays for has not started yet. "
+"``Enrollment`` once every invoice this document allocates against belongs to "
+"an enrollment with Revenue Recognition enabled and not yet Done -- set "
+"automatically by ``_03_set_enrollment_recognition_method`` right before "
+"opening, overriding any other value. Defaults automatically but may be "
+"overridden manually."
+msgstr ""
+"``Deferred`` begitu Tanggal Pengakuan jatuh setelah Tanggal dokumen ini "
+"sendiri -- artinya layanan yang dibayar potongan ini belum dimulai. "
+"``Enrollment`` begitu setiap faktur yang dialokasikan dokumen ini milik "
+"pendaftaran dengan Pengakuan Pendapatan aktif dan belum Selesai -- diatur "
+"otomatis oleh ``_03_set_enrollment_recognition_method`` tepat sebelum "
+"dibuka, menimpa nilai lain apa pun. Terisi otomatis tetapi dapat diubah "
+"secara manual."
+
+#. module: ssi_school_scholarship_deduction
+#: model:ir.model.fields,help:ssi_school_scholarship_deduction.field_school_scholarship_deduction__recognition_state
+msgid ""
+"``Not Applicable`` while Recognition Method is ``Immediate``; otherwise "
+"``Pending`` before any Recognition is Done, ``Partially Recognized`` while "
+"Amount Recognized is below Amount Total, and ``Recognized`` once it reaches "
+"it."
+msgstr ""
+"``Not Applicable`` selama Metode Pengakuan adalah ``Immediate``; selain itu "
+"``Pending`` sebelum Pengakuan mana pun Selesai, ``Partially Recognized`` "
+"selama Jumlah Diakui di bawah Jumlah Total, dan ``Recognized`` begitu "
+"mencapainya."
