@@ -43,7 +43,7 @@ msgid ""
 "and must not be Cancelled or Rejected. Required when Billing Source is "
 "Admission -- enforced by ``_check_billing_source``, not by this field itself."
 msgstr ""
-"Penerimaan yang menjadi dasar tagihan pemberian ini. Harus sudah terhubung "
+"Penerimaan yang menjadi dasar penagihan pemberian ini. Harus sudah terhubung "
 "ke Siswa Sekolah (dibuat dengan Buat Profil Siswa, atau saat penerimaan "
 "berstatus Terbuka) dan tidak boleh Dibatalkan atau Ditolak. Wajib bila "
 "Sumber Penagihan adalah Penerimaan -- diberlakukan oleh "
@@ -66,7 +66,7 @@ msgid ""
 "Enrollment -- extension modules add further values with ``selection_add`` "
 "and override the ``_get_source_*`` hooks to match."
 msgstr ""
-"Sumber penagihan yang menjadi dasar tagihan pemberian ini. Modul ini hanya "
+"Sumber penagihan yang menjadi dasar penagihan pemberian ini. Modul ini hanya "
 "mendaftarkan Pendaftaran -- modul ekstensi menambahkan nilai lain dengan "
 "``selection_add`` dan menimpa hook ``_get_source_*`` agar sesuai."
 
@@ -222,7 +222,7 @@ msgid ""
 msgstr ""
 "Beasiswa yang sudah dipotong dari termin pembayaran penerimaan ini: total "
 "Beasiswa Terpotong dari termin pembayarannya yang tidak dibatalkan maupun "
-"dibatalkan-buku (void)."
+"dialihkan."
 
 #. module: ssi_school_scholarship_admission
 #: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_schedule_ids
@@ -259,7 +259,7 @@ msgid ""
 msgstr ""
 "Beasiswa yang dibayarkan kepada siswa secara tunai: total Jumlah "
 "Direncanakan dari baris jadwal Tunai yang Terjadwal atau Terealisasi, milik "
-"pemberian berstatus Terbuka atau Selesai. Tidak mengurangi tagihan."
+"pemberian berstatus Terbuka atau Selesai. Tidak mengurangi penagihan."
 
 #. module: ssi_school_scholarship_admission
 #: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission__amount_scholarship_undeducted
@@ -270,7 +270,7 @@ msgid ""
 msgstr ""
 "Beasiswa yang masih menunggu dipotong dari termin pembayaran penerimaan ini: "
 "total Beasiswa Belum Terpotong dari termin pembayarannya yang tidak "
-"dibatalkan maupun dibatalkan-buku (void)."
+"dibatalkan maupun dialihkan."
 
 #. module: ssi_school_scholarship_admission
 #: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_amount_undeducted
@@ -285,12 +285,12 @@ msgstr ""
 #. module: ssi_school_scholarship_admission
 #: model:ir.model,name:ssi_school_scholarship_admission.model_school_admission
 msgid "School Admission"
-msgstr "Penerimaan Sekolah"
+msgstr "Penerimaan Siswa"
 
 #. module: ssi_school_scholarship_admission
 #: model:ir.model,name:ssi_school_scholarship_admission.model_school_admission_payment_term
 msgid "School Admission Payment Term"
-msgstr "Termin Pembayaran Penerimaan Sekolah"
+msgstr "Termin Pembayaran Penerimaan Siswa"
 
 #. module: ssi_school_scholarship_admission
 #: model:ir.model,name:ssi_school_scholarship_admission.model_school_scholarship_award
@@ -311,5 +311,6 @@ msgid ""
 "group."
 msgstr ""
 "Total beasiswa penerimaan ini: Potongan Beasiswa ditambah Beasiswa Tunai. "
-"Hanya bagian potongan yang mengurangi tagihan; Tunai dibayarkan kepada siswa "
-"dan tidak mengurangi tagihan. Dibatasi untuk grup Pelihat Pemberian Beasiswa."
+"Hanya bagian potongan yang mengurangi penagihan; Tunai dibayarkan kepada "
+"siswa dan tidak mengurangi penagihan. Dibatasi untuk grup Penampil Pemberian "
+"Beasiswa."
