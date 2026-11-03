@@ -1,0 +1,316 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ssi_school_scholarship_admission
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: id\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award__admission_id
+#: model:ir.model.fields.selection,name:ssi_school_scholarship_admission.selection__school_scholarship_award__source_type__admission
+msgid "Admission"
+msgstr "Penerimaan"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award_schedule__admission_payment_term_id
+msgid "Admission Payment Term"
+msgstr "Termin Pembayaran Penerimaan"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_scholarship_award_schedule__admission_payment_term_id
+msgid ""
+"Admission payment term this Schedule line realizes. Set instead of Payment "
+"Term when this line was generated from an Admission-sourced award."
+msgstr ""
+"Termin pembayaran penerimaan yang direalisasikan baris Jadwal ini. Diisi "
+"sebagai pengganti Termin Pembayaran bila baris ini dibuat dari pemberian "
+"yang bersumber dari Penerimaan."
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_scholarship_award__admission_id
+msgid ""
+"Admission this award is billed against. Must already be linked to a School "
+"Student (created with Create Student Profile, or when the admission is Open) "
+"and must not be Cancelled or Rejected. Required when Billing Source is "
+"Admission -- enforced by ``_check_billing_source``, not by this field itself."
+msgstr ""
+"Penerimaan yang menjadi dasar penagihan pemberian ini. Harus sudah terhubung "
+"ke Siswa Sekolah (dibuat dengan Buat Profil Siswa, atau saat penerimaan "
+"berstatus Terbuka) dan tidak boleh Dibatalkan atau Ditolak. Wajib bila "
+"Sumber Penagihan adalah Penerimaan -- diberlakukan oleh "
+"``_check_billing_source``, bukan oleh bidang ini sendiri."
+
+#. module: ssi_school_scholarship_admission
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_admission.school_admission_view_form
+msgid "Awards"
+msgstr "Pemberian"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award__source_type
+msgid "Billing Source"
+msgstr "Sumber Penagihan"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_scholarship_award__source_type
+msgid ""
+"Billing source this award is billed against. This module only registers "
+"Enrollment -- extension modules add further values with ``selection_add`` "
+"and override the ``_get_source_*`` hooks to match."
+msgstr ""
+"Sumber penagihan yang menjadi dasar penagihan pemberian ini. Modul ini hanya "
+"mendaftarkan Pendaftaran -- modul ekstensi menambahkan nilai lain dengan "
+"``selection_add`` dan menimpa hook ``_get_source_*`` agar sesuai."
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission_payment_term__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award__display_name
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award_schedule__display_name
+msgid "Display Name"
+msgstr "Nama Tampilan"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission__amount_scholarship_deduction
+msgid ""
+"Effective scholarship deduction: Scholarship Deducted plus Scholarship Not "
+"Yet Deducted. The part of a partially realized schedule line that was not "
+"deducted stays billable and is deliberately not counted."
+msgstr ""
+"Potongan beasiswa efektif: Beasiswa Terpotong ditambah Beasiswa Belum "
+"Terpotong. Bagian dari baris jadwal yang terealisasi sebagian dan tidak "
+"dipotong tetap dapat ditagih dan sengaja tidak dihitung."
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission_payment_term__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award__id
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award_schedule__id
+msgid "ID"
+msgstr "ID"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission_payment_term____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award____last_update
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_scholarship_award_schedule____last_update
+msgid "Last Modified on"
+msgstr "Terakhir Diubah pada"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission__scholarship_award_count
+msgid "Number of scholarship awards linked to this admission."
+msgstr "Jumlah pemberian beasiswa yang terkait dengan penerimaan ini."
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_amount_deducted_planned
+msgid ""
+"Planned amount of the schedule lines that are already Realized: the sum of "
+"their Amount Planned. Compare with Scholarship Deducted to see the "
+"difference between plan and actual deduction."
+msgstr ""
+"Jumlah direncanakan dari baris jadwal yang sudah Terealisasi: total Jumlah "
+"Direncanakan-nya. Bandingkan dengan Beasiswa Terpotong untuk melihat selisih "
+"antara rencana dan potongan aktual."
+
+#. module: ssi_school_scholarship_admission
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_admission.school_admission_payment_term_view_form_embedded
+#: model_terms:ir.ui.view,arch_db:ssi_school_scholarship_admission.school_admission_view_form
+msgid "Scholarship"
+msgstr "Beasiswa"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission__amount_scholarship
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_amount
+msgid "Scholarship Amount"
+msgstr "Jumlah Beasiswa"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission__scholarship_award_count
+msgid "Scholarship Award Count"
+msgstr "Jumlah Pemberian Beasiswa"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission__scholarship_award_ids
+msgid "Scholarship Awards"
+msgstr "Pemberian Beasiswa"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission__amount_scholarship_cash
+msgid "Scholarship Cash"
+msgstr "Beasiswa Tunai"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission__amount_scholarship_disbursed
+msgid ""
+"Scholarship Cash already paid out: the sum of Amount Realized of the "
+"Realized Cash schedule lines."
+msgstr ""
+"Beasiswa Tunai yang sudah dibayarkan: total Jumlah Terealisasi dari baris "
+"jadwal Tunai yang Terealisasi."
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission__amount_scholarship_undisbursed
+msgid ""
+"Scholarship Cash still waiting to be paid out: the sum of Amount Planned of "
+"the Scheduled Cash schedule lines of Open or Done awards."
+msgstr ""
+"Beasiswa Tunai yang masih menunggu dibayarkan: total Jumlah Direncanakan "
+"dari baris jadwal Tunai yang Terjadwal milik pemberian berstatus Terbuka "
+"atau Selesai."
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission__amount_scholarship_deducted
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_amount_deducted
+msgid "Scholarship Deducted"
+msgstr "Beasiswa Terpotong"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_amount_deducted_planned
+msgid "Scholarship Deducted (Planned)"
+msgstr "Beasiswa Terpotong (Direncanakan)"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission__amount_scholarship_deduction
+msgid "Scholarship Deduction"
+msgstr "Potongan Beasiswa"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission__amount_scholarship_disbursed
+msgid "Scholarship Disbursed"
+msgstr "Beasiswa Dicairkan"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission__amount_scholarship_undeducted
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_amount_undeducted
+msgid "Scholarship Not Yet Deducted"
+msgstr "Beasiswa Belum Terpotong"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission__amount_scholarship_undisbursed
+msgid "Scholarship Not Yet Disbursed"
+msgstr "Beasiswa Belum Dicairkan"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,field_description:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_schedule_ids
+msgid "Scholarship Schedules"
+msgstr "Jadwal Beasiswa"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_amount_deducted
+msgid ""
+"Scholarship actually deducted from this payment term: the sum of Amount "
+"Realized of its Realized schedule lines."
+msgstr ""
+"Beasiswa yang benar-benar dipotong dari termin pembayaran ini: total Jumlah "
+"Terealisasi dari baris jadwalnya yang Terealisasi."
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission__amount_scholarship_deducted
+msgid ""
+"Scholarship already deducted from the payment terms of this admission: the "
+"sum of Scholarship Deducted of its payment terms that are neither cancelled "
+"nor voided."
+msgstr ""
+"Beasiswa yang sudah dipotong dari termin pembayaran penerimaan ini: total "
+"Beasiswa Terpotong dari termin pembayarannya yang tidak dibatalkan maupun "
+"dialihkan."
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_schedule_ids
+msgid ""
+"Scholarship award schedule lines pinned to this payment term. Every "
+"scholarship on a payment term is a deduction (Fee Reduction); Cash benefits "
+"never refer to a payment term."
+msgstr ""
+"Baris jadwal pemberian beasiswa yang terikat pada termin pembayaran ini. "
+"Setiap beasiswa pada termin pembayaran adalah potongan (Pengurangan Biaya); "
+"manfaat Tunai tidak pernah merujuk ke termin pembayaran."
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission__scholarship_award_ids
+msgid "Scholarship awards linked to this admission."
+msgstr "Pemberian beasiswa yang terkait dengan penerimaan ini."
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_amount
+msgid ""
+"Scholarship committed to this payment term: the sum of Amount Planned of its "
+"Scheduled and Realized schedule lines whose award is Open or Done."
+msgstr ""
+"Beasiswa yang dikomitmenkan pada termin pembayaran ini: total Jumlah "
+"Direncanakan dari baris jadwalnya yang Terjadwal dan Terealisasi, yang "
+"pemberiannya berstatus Terbuka atau Selesai."
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission__amount_scholarship_cash
+msgid ""
+"Scholarship paid to the student in cash: the sum of Amount Planned of the "
+"Cash schedule lines that are Scheduled or Realized, of Open or Done awards. "
+"It does not reduce the billing."
+msgstr ""
+"Beasiswa yang dibayarkan kepada siswa secara tunai: total Jumlah "
+"Direncanakan dari baris jadwal Tunai yang Terjadwal atau Terealisasi, milik "
+"pemberian berstatus Terbuka atau Selesai. Tidak mengurangi penagihan."
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission__amount_scholarship_undeducted
+msgid ""
+"Scholarship still waiting to be deducted from the payment terms of this "
+"admission: the sum of Scholarship Not Yet Deducted of its payment terms that "
+"are neither cancelled nor voided."
+msgstr ""
+"Beasiswa yang masih menunggu dipotong dari termin pembayaran penerimaan ini: "
+"total Beasiswa Belum Terpotong dari termin pembayarannya yang tidak "
+"dibatalkan maupun dialihkan."
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission_payment_term__scholarship_amount_undeducted
+msgid ""
+"Scholarship still waiting to be deducted from this payment term: the sum of "
+"Amount Planned of its Scheduled schedule lines whose award is Open or Done."
+msgstr ""
+"Beasiswa yang masih menunggu dipotong dari termin pembayaran ini: total "
+"Jumlah Direncanakan dari baris jadwalnya yang Terjadwal, yang pemberiannya "
+"berstatus Terbuka atau Selesai."
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model,name:ssi_school_scholarship_admission.model_school_admission
+msgid "School Admission"
+msgstr "Penerimaan Siswa"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model,name:ssi_school_scholarship_admission.model_school_admission_payment_term
+msgid "School Admission Payment Term"
+msgstr "Termin Pembayaran Penerimaan Siswa"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model,name:ssi_school_scholarship_admission.model_school_scholarship_award
+msgid "School Scholarship Award"
+msgstr "Pemberian Beasiswa Sekolah"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model,name:ssi_school_scholarship_admission.model_school_scholarship_award_schedule
+msgid "School Scholarship Award Schedule"
+msgstr "Jadwal Pemberian Beasiswa Sekolah"
+
+#. module: ssi_school_scholarship_admission
+#: model:ir.model.fields,help:ssi_school_scholarship_admission.field_school_admission__amount_scholarship
+msgid ""
+"Total scholarship of this admission: Scholarship Deduction plus Scholarship "
+"Cash. Only the deduction part reduces the billing; Cash is paid to the "
+"student and does not reduce it. Restricted to the Scholarship Award Viewer "
+"group."
+msgstr ""
+"Total beasiswa penerimaan ini: Potongan Beasiswa ditambah Beasiswa Tunai. "
+"Hanya bagian potongan yang mengurangi penagihan; Tunai dibayarkan kepada "
+"siswa dan tidak mengurangi penagihan. Dibatasi untuk grup Penampil Pemberian "
+"Beasiswa."
