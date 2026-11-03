@@ -1240,7 +1240,7 @@ msgstr "Validator"
 #. module: ssi_school_scholarship_disbursement
 #: model:res.groups,name:ssi_school_scholarship_disbursement.school_scholarship_disbursement_viewer_group
 msgid "Viewer"
-msgstr "Pelihat"
+msgstr "Penampil"
 
 #. module: ssi_school_scholarship_disbursement
 #: model:ir.model.fields,field_description:ssi_school_scholarship_disbursement.field_school_scholarship_disbursement__website_message_ids
