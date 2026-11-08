@@ -1,8 +1,9 @@
 scenarios:
   # ══════════════════════════════════════════════════════════════════
-  # Negative: force delete of an invoice referenced by a scholarship
-  # deduction allocation (contract K1) is rejected with a UserError
-  # naming the allocation, and nothing changes. The deduction stays in
+  # Negative: the enrollment term Force Delete Invoice action, run as the
+  # validator on an open invoice referenced by a scholarship deduction
+  # allocation (contract K1), is rejected with a UserError naming the
+  # allocation, and nothing changes. The deduction stays in
   # draft on purpose: the restrict reference holds in any state.
   # Each scenario builds its own uniquely-coded fixtures (no shared
   # setup: block, see the sibling file for the reason).
@@ -390,15 +391,43 @@ scenarios:
               - customer_invoice_id: "REC: f1_invoice.id"
                 amount_allocated: 400000.0
 
-      - step: "Force delete check names the scholarship deduction allocation"
+      - step: "Open the enrollment so the Force Delete policy can apply"
+        action: "write"
+        target: "f1_enrollment"
+        values:
+          state: "open"
+
+      - step: "Assert the term is Invoiced and the validator may force delete"
+        action: "assert"
+        target: "f1_term"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "invoiced"
+          force_delete_term_ok:
+            type: "value"
+            expected: true
+
+      - step: "Force delete of the term invoice is rejected naming the allocation"
         action: "call"
-        target: "f1_invoice"
-        method: "_check_force_delete_allowed"
+        target: "f1_term"
+        method: "action_force_delete_invoice"
+        as_user: "base.user_admin"
         expect_error:
           type: "UserError"
           message_contains: "scholarship deduction allocation"
 
-      - step: "Assert the invoice and the allocation are untouched"
+      - step: "Assert the invoice is untouched"
+        action: "assert"
+        target: "f1_invoice"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert the allocation still exists"
         action: "assert"
         target: "f1_deduction"
         refresh: true
@@ -408,7 +437,7 @@ scenarios:
             check: "count"
             expected_count: 1
 
-      - step: "Assert the invoice is still open and the term still holds it"
+      - step: "Assert the term still holds its invoice"
         action: "assert"
         target: "f1_term"
         refresh: true
@@ -416,6 +445,9 @@ scenarios:
           customer_invoice_id:
             type: "m2o"
             expected: "REC: f1_invoice"
+          state:
+            type: "value"
+            expected: "invoiced"
 
   # ══════════════════════════════════════════════════════════════════
   # Positive: an invoice no allocation refers to is not rejected.
