@@ -1,0 +1,534 @@
+scenarios:
+  # ══════════════════════════════════════════════════════════════════
+  # Negative: force delete of an invoice referenced by a scholarship
+  # deduction allocation (contract K1) is rejected with a UserError
+  # naming the allocation, and nothing changes. The deduction stays in
+  # draft on purpose: the restrict reference holds in any state.
+  # Each scenario builds its own uniquely-coded fixtures (no shared
+  # setup: block, see the sibling file for the reason).
+  # ══════════════════════════════════════════════════════════════════
+  - name: "Force Delete Of An Allocated Invoice Is Rejected"
+    steps:
+      - step: "Create the grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "f1_grade_type"
+        values:
+          name: "F1 Grade Type"
+          code: "F1GT"
+
+      - step: "Create the school"
+        action: "create"
+        model: "school"
+        save_as: "f1_school"
+        values:
+          name: "F1 School"
+          code: "F1SC"
+          grade_type_id: "REC: f1_grade_type.id"
+
+      - step: "Create the academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "f1_academic_year"
+        values:
+          name: "F1 Academic Year"
+          code: "F1AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Create the academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "f1_academic_term"
+        values:
+          name: "F1 Term"
+          code: "F1TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: f1_academic_year.id"
+
+      - step: "Create the grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "f1_grade"
+        values:
+          name: "F1 Grade"
+          code: "F1GR"
+          type_id: "REC: f1_grade_type.id"
+
+      - step: "Create the grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "f1_grade_class"
+        values:
+          name: "F1 Class"
+          code: "F1CL"
+          school_id: "REC: f1_school.id"
+          grade_id: "REC: f1_grade.id"
+
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "f1_contact"
+        values:
+          name: "F1 Contact"
+
+      - step: "Create the student"
+        action: "create"
+        model: "school_student"
+        save_as: "f1_student"
+        values:
+          name: "F1 Student"
+          code: "F1ST"
+          contact_id: "REC: f1_contact.id"
+          school_id: "REC: f1_school.id"
+
+      - step: "Create the enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "f1_enrollment"
+        values:
+          academic_year_id: "REC: f1_academic_year.id"
+          academic_term_id: "REC: f1_academic_term.id"
+          school_id: "REC: f1_school.id"
+          grade_id: "REC: f1_grade.id"
+          grade_class_id: "REC: f1_grade_class.id"
+          student_id: "REC: f1_student.id"
+
+      - step: "Create the analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "f1_analytic"
+        values:
+          name: "F1 Analytic"
+
+      - step: "Create the funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "f1_funding_source"
+        values:
+          name: "F1 Funding Source"
+          code: "F1FS"
+          analytic_account_id: "REC: f1_analytic.id"
+
+      - step: "Create the product covered by the benefit lines"
+        action: "create"
+        model: "product.product"
+        save_as: "f1_product"
+        values:
+          name: "F1 Product"
+          type: "service"
+
+      # ── Two DIFFERENT journals, so the compute's own journal-based
+      # split is genuinely exercised: the scholarship journal only
+      # ever posts deduction documents, and the bank journal only
+      # ever posts the plain cash top-up that must NEVER be mistaken
+      # for a scholarship. ──────────────────────────────────────────
+      - step: "Create the sales journal used by the invoice's own move"
+        action: "create"
+        model: "account.journal"
+        save_as: "f1_invoice_journal"
+        values:
+          name: "F1 Invoice Journal"
+          code: "F1IJ"
+          type: "sale"
+
+      - step: "Create the journal used by scholarship deduction documents"
+        action: "create"
+        model: "account.journal"
+        save_as: "f1_scholarship_journal"
+        values:
+          name: "F1 Scholarship Journal"
+          code: "F1SJ"
+          type: "general"
+
+      - step: "Create the bank journal used by the plain cash top-up"
+        action: "create"
+        model: "account.journal"
+        save_as: "f1_bank_journal"
+        values:
+          name: "F1 Bank Journal"
+          code: "F1BJ"
+          type: "bank"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "f1_account_type_income"
+
+      - step: "Get the account.account.type Receivable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "f1_account_type_receivable"
+
+      - step: "Get the account.account.type Liquidity reference"
+        action: "ref"
+        xml_id: "account.data_account_type_liquidity"
+        save_as: "f1_account_type_liquidity"
+
+      - step: "Create the receivable account shared by the invoice and the deduction"
+        action: "create"
+        model: "account.account"
+        save_as: "f1_receivable_account"
+        values:
+          name: "F1 Receivable Account"
+          code: "F1RA"
+          user_type_id: "REC: f1_account_type_receivable.id"
+          reconcile: true
+
+      - step: "Create the discount account the deduction line posts to"
+        action: "create"
+        model: "account.account"
+        save_as: "f1_discount_account"
+        values:
+          name: "F1 Discount Account"
+          code: "F1DA"
+          user_type_id: "REC: f1_account_type_income.id"
+          reconcile: false
+
+      - step: "Create the income account the invoice line posts to"
+        action: "create"
+        model: "account.account"
+        save_as: "f1_income_account"
+        values:
+          name: "F1 Income Account"
+          code: "F1IA"
+          user_type_id: "REC: f1_account_type_income.id"
+          reconcile: false
+
+      - step: "Create the bank account the cash top-up debits"
+        action: "create"
+        model: "account.account"
+        save_as: "f1_bank_account"
+        values:
+          name: "F1 Bank Account"
+          code: "F1BA"
+          user_type_id: "REC: f1_account_type_liquidity.id"
+          reconcile: false
+
+      - step: "Create the customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "f1_invoice_type"
+        values:
+          name: "F1 Invoice Type"
+          code: "/"
+          journal_id: "REC: f1_invoice_journal.id"
+          receivable_account_id: "REC: f1_receivable_account.id"
+
+      - step: "Create the scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "f1_type"
+        values:
+          name: "F1 Type"
+          code: "F1TY"
+          deduction_journal_id: "REC: f1_scholarship_journal.id"
+          discount_account_id: "REC: f1_discount_account.id"
+
+      - step: "Create the scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "f1_program"
+        values:
+          name: "F1 Program"
+          code: "F1PR"
+          type_id: "REC: f1_type.id"
+          school_id: "REC: f1_school.id"
+          academic_year_id: "REC: f1_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: f1_funding_source.id"]]]
+          deduction_journal_id: "REC: f1_scholarship_journal.id"
+          discount_account_id: "REC: f1_discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: f1_product.id"
+                benefit_type: "cash"
+                computation: "fixed"
+                percentage: 0.0
+                amount_fixed: 100000.0
+
+      - step: "Create the award backing the partial deduction"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "f1_award"
+        values:
+          program_id: "REC: f1_program.id"
+          student_id: "REC: f1_student.id"
+          enrollment_id: "REC: f1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "F1 Benefit"
+                product_id: "REC: f1_product.id"
+                benefit_type: "fee_reduction"
+                computation: "fixed"
+                amount_fixed: 400000.0
+                periodicity: "per_payment_term"
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: f1_funding_source.id"
+                percentage: 100.0
+
+      - step: "Find the award's Benefit line"
+        action: "search"
+        model: "school_scholarship_award_benefit"
+        domain: [["award_id", "=", "REC: f1_award.id"]]
+        limit: 1
+        save_as: "f1_benefit"
+
+      - step: "Find the award's Funding line"
+        action: "search"
+        model: "school_scholarship_award_funding"
+        domain: [["award_id", "=", "REC: f1_award.id"]]
+        limit: 1
+        save_as: "f1_funding"
+
+      - step: "Create the Payment Term the Schedule line realizes"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "f1_term"
+        values:
+          enrollment_id: "REC: f1_enrollment.id"
+          name: "F1 TERM"
+          sequence: 10
+          date_invoice: 2026-08-01
+          date_due: 2026-08-15
+
+      - step: "Create the Schedule line realizing the Benefit"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "f1_schedule"
+        values:
+          benefit_id: "REC: f1_benefit.id"
+          payment_term_id: "REC: f1_term.id"
+          date: 2026-08-01
+          state: "scheduled"
+
+      - step: "Create the invoice the partial deduction is allocated against"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "f1_invoice"
+        values:
+          type_id: "REC: f1_invoice_type.id"
+          partner_id: "REC: f1_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: f1_invoice_journal.id"
+          receivable_account_id: "REC: f1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "f1_invoice_line"
+        values:
+          customer_invoice_id: "REC: f1_invoice.id"
+          name: "F1 Invoice Line"
+          account_id: "REC: f1_income_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+
+      - step: "Confirm the invoice"
+        action: "call"
+        target: "f1_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the invoice, posting its journal entry"
+        action: "call"
+        target: "f1_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          amount_residual:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "Link the invoice to the Payment Term its Schedule line realizes"
+        action: "write"
+        target: "f1_term"
+        values:
+          customer_invoice_id: "REC: f1_invoice.id"
+
+      - step: "Create the deduction document"
+        action: "create"
+        model: "school_scholarship_deduction"
+        save_as: "f1_deduction"
+        values:
+          award_id: "REC: f1_award.id"
+          date: 2026-08-05
+          journal_id: "REC: f1_scholarship_journal.id"
+          receivable_account_id: "REC: f1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - schedule_id: "REC: f1_schedule.id"
+                funding_id: "REC: f1_funding.id"
+                final_account_id: "REC: f1_discount_account.id"
+                name: "F1 Deduction Line"
+                uom_quantity: 1
+                price_unit: 400000.0
+          allocation_ids:
+            - - 0
+              - 0
+              - customer_invoice_id: "REC: f1_invoice.id"
+                amount_allocated: 400000.0
+
+      - step: "Force delete check names the scholarship deduction allocation"
+        action: "call"
+        target: "f1_invoice"
+        method: "_check_force_delete_allowed"
+        expect_error:
+          type: "UserError"
+          message_contains: "scholarship deduction allocation"
+
+      - step: "Assert the invoice and the allocation are untouched"
+        action: "assert"
+        target: "f1_deduction"
+        refresh: true
+        asserts:
+          allocation_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Assert the invoice is still open and the term still holds it"
+        action: "assert"
+        target: "f1_term"
+        refresh: true
+        asserts:
+          customer_invoice_id:
+            type: "m2o"
+            expected: "REC: f1_invoice"
+
+  # ══════════════════════════════════════════════════════════════════
+  # Positive: an invoice no allocation refers to is not rejected.
+  # ══════════════════════════════════════════════════════════════════
+  - name: "Force Delete Of An Unreferenced Invoice Is Not Rejected"
+    steps:
+      - step: "Create the student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "g1_contact"
+        values:
+          name: "G1 Contact"
+
+      - step: "Get the account.account.type Income reference"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "g1_account_type_income"
+
+      - step: "Get the account.account.type Receivable reference"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "g1_account_type_receivable"
+
+      - step: "Create the receivable account"
+        action: "create"
+        model: "account.account"
+        save_as: "g1_receivable_account"
+        values:
+          name: "G1 Receivable Account"
+          code: "G1RA"
+          user_type_id: "REC: g1_account_type_receivable.id"
+          reconcile: true
+
+      - step: "Create the income account"
+        action: "create"
+        model: "account.account"
+        save_as: "g1_income_account"
+        values:
+          name: "G1 Income Account"
+          code: "G1IA"
+          user_type_id: "REC: g1_account_type_income.id"
+          reconcile: false
+
+      - step: "Create the sales journal used by the invoice's own move"
+        action: "create"
+        model: "account.journal"
+        save_as: "g1_invoice_journal"
+        values:
+          name: "G1 Invoice Journal"
+          code: "G1IJ"
+          type: "sale"
+
+      - step: "Create the customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "g1_invoice_type"
+        values:
+          name: "G1 Invoice Type"
+          code: "/"
+          journal_id: "REC: g1_invoice_journal.id"
+          receivable_account_id: "REC: g1_receivable_account.id"
+
+      - step: "Create the plain invoice"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "g1_invoice"
+        values:
+          type_id: "REC: g1_invoice_type.id"
+          partner_id: "REC: g1_contact.id"
+          date: 2026-08-01
+          date_due: 2026-08-15
+          currency_id: "REC: company.currency_id.id"
+          journal_id: "REC: g1_invoice_journal.id"
+          receivable_account_id: "REC: g1_receivable_account.id"
+          user_id: "REF: base.user_admin"
+
+      - step: "Add a detail line to the plain invoice"
+        action: "create"
+        model: "customer_invoice.line"
+        save_as: "g1_invoice_line"
+        values:
+          customer_invoice_id: "REC: g1_invoice.id"
+          name: "G1 Invoice Line"
+          account_id: "REC: g1_income_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+
+      - step: "Confirm the plain invoice"
+        action: "call"
+        target: "g1_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the plain invoice, posting its journal entry"
+        action: "call"
+        target: "g1_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          amount_residual:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "Force delete check passes for an invoice without allocation"
+        action: "call"
+        target: "g1_invoice"
+        method: "_check_force_delete_allowed"

@@ -2,7 +2,8 @@
 # Copyright 2026 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class CustomerInvoice(models.Model):
@@ -168,3 +169,45 @@ class CustomerInvoice(models.Model):
         """
         self.ensure_one()
         return [("customer_invoice_id", "=", self.id)]
+
+    def _check_force_delete_allowed(self):
+        """Reject a force delete of an invoice a deduction allocates.
+
+        Cross-module hook (contract K1) called by the Force Delete
+        Invoice flow before anything is changed. Read-only. Calls
+        ``super()`` first, then looks for a scholarship deduction
+        allocation pointing at this invoice. The search ignores the
+        state of the deduction document: the ``restrict`` reference
+        on ``customer_invoice_id`` still blocks the delete even
+        when the document is cancelled.
+
+        :raises UserError: when a scholarship deduction allocation
+            references this invoice
+        :return: None
+        """
+        super()._check_force_delete_allowed()
+        self.ensure_one()
+        Allocation = self.env[  # pylint: disable=invalid-name
+            "school_scholarship_deduction_allocation"
+        ]
+        allocation = Allocation.sudo().search(
+            [("customer_invoice_id", "=", self.id)],
+            limit=1,
+        )
+        if allocation:
+            error_message = (
+                _(
+                    """
+Context: Force delete customer invoice
+Database ID: %s
+Problem: Invoice is referenced by scholarship deduction allocation '%s' of '%s'
+Solution: Remove the allocation from the scholarship deduction document first
+"""
+                )
+                % (
+                    self.id,
+                    allocation.display_name,
+                    allocation.deduction_id.display_name,
+                )
+            )
+            raise UserError(error_message)
