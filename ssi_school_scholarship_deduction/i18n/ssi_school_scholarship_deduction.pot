@@ -47,6 +47,17 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_scholarship_deduction
+#: code:addons/ssi_school_scholarship_deduction/models/customer_invoice.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Force delete customer invoice\n"
+"Database ID: %s\n"
+"Problem: Invoice is referenced by scholarship deduction allocation '%s' of '%s'\n"
+"Solution: Remove the allocation from the scholarship deduction document first\n"
+msgstr ""
+
+#. module: ssi_school_scholarship_deduction
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_award_schedule__deduction_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_allocation__deduction_id
 #: model:ir.model.fields,field_description:ssi_school_scholarship_deduction.field_school_scholarship_deduction_line__deduction_id
