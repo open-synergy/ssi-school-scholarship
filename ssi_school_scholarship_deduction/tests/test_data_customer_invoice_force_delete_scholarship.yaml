@@ -46,6 +46,11 @@ scenarios:
           code: "F1TM"
           date_start: 2026-07-01
           date_end: 2026-12-31
+          # Required before the enrollment using this term can reach
+          # "open" -- school_enrollment._check_enrollment_window
+          # rejects opening an enrollment whose term is not itself
+          # open for enrollment.
+          enrollment_state: "open"
           year_id: "REC: f1_academic_year.id"
 
       - step: "Create the grade"
